@@ -27,7 +27,21 @@ Route::controller(ProductController::class)->group(function(){
         Route::delete("/{id}", "deleteCategory")->name("delete-category");
     });
 
+    Route::prefix("ingredient")->group(function(){
+        Route::get("/{id?}", "getIngredient")->name("get-ingredient");
+        Route::post("/", "postIngredient")->name("post-ingredient");
+        Route::patch("/{id}", "patchIngredient")->name("patch-ingredient");
+        Route::delete("/{id}", "deleteIngredient")->name("delete-ingredient");
+    });
+
     Route::prefix("product")->group(function(){
-        Route::get("/", "getProducts")->name("get-products");
+        Route::get("/{id?}", "getProduct")->name("get-product");
+        Route::post("/", "postProduct")->name("post-product");
+        Route::patch("/{id}", "patchProduct")->name("patch-product");
+        Route::delete("/{id}", "deleteProduct")->name("delete-product");
+    });
+
+    Route::prefix("stock")->group(function(){
+        
     });
 });

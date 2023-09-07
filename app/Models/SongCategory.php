@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StockItem extends Model
+class SongCategory extends Model
 {
     use HasFactory;
 
+    protected $table = "song_categories";
+
     protected $fillable = [
-        "product_id",
-        "amount",
-        "expiration_date",
+        "name"
     ];
 
-    public function product(){
-        return $this->belongsTo(Product::class);
+    public function songs(){
+        return $this->hasMany(Song::class);
     }
 }

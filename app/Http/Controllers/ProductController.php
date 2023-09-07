@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Product;
+use App\Models\StockItem;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -111,4 +112,31 @@ class ProductController extends Controller
     /*****************************
      * STOCK
      */
+    public function getStockItem($id = null){
+        $data = $id ? StockItem::find($id) : StockItem::all();
+        return $data;
+    }
+
+    public function postStockItem(Request $rq){
+        $data = StockItem::create([
+            "product_id" => $rq->productId,
+            "amount" => $rq->amount,
+            "expiration_date" => $rq->expirationDate,
+        ]);
+        return $data;
+    }
+
+    public function patchStockItem($id, Request $rq){
+        $data = StockItem::find($id)->update([
+            "product_id" => $rq->productId,
+            "amount" => $rq->amount,
+            "expiration_date" => $rq->expirationDate,
+        ]);
+        return $data;
+    }
+
+    public function deleteStockItem($id){
+        Category::find($id)->delete();
+        return response("Stock item deleted");
+    }
 }

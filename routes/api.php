@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Middleware\MagicWord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::controller(ProductController::class)->group(function(){
+Route::controller(ProductController::class)->middleware(MagicWord::class)->group(function(){
     Route::prefix("category")->group(function(){
         Route::get("/{id?}", "getCategory")->name("get-category");
         Route::post("/", "postCategory")->name("post-category");

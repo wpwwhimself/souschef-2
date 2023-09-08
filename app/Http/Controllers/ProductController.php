@@ -27,10 +27,11 @@ class ProductController extends Controller
     }
 
     public function patchCategory($id, Request $rq){
-        $data = Category::find($id)->update([
-            "name" => $rq->name,
-            "symbol" => $rq->symbol,
-        ]);
+        $data = Category::find($id);
+        foreach($rq->except("magic_word") as $key => $value){
+            $data->{$key} = $value;
+        }
+        $data->save();
         return $data;
     }
 
@@ -57,11 +58,11 @@ class ProductController extends Controller
     }
 
     public function patchIngredient($id, Request $rq){
-        $data = Ingredient::find($id)->update([
-            "name" => $rq->name,
-            "category_id" => $rq->categoryId,
-            "freezable" => $rq->freezable,
-        ]);
+        $data = Ingredient::find($id);
+        foreach($rq->except("magic_word") as $key => $value){
+            $data->{$key} = $value;
+        }
+        $data->save();
         return $data;
     }
 
@@ -92,15 +93,11 @@ class ProductController extends Controller
     }
 
     public function patchProduct($id, Request $rq){
-        $data = Product::find($id)->update([
-            "ean" => $rq->ean,
-            "name" => $rq->name,
-            "ingredient_id" => $rq->ingredientId,
-            "amount" => $rq->amount,
-            "unit" => $rq->unit,
-            "dash" => $rq->dash,
-            "est_expiration_days" => $rq->estExpirationDays,
-        ]);
+        $data = Product::find($id);
+        foreach($rq->except("magic_word") as $key => $value){
+            $data->{$key} = $value;
+        }
+        $data->save();
         return $data;
     }
 
@@ -127,11 +124,11 @@ class ProductController extends Controller
     }
 
     public function patchStockItem($id, Request $rq){
-        $data = StockItem::find($id)->update([
-            "product_id" => $rq->productId,
-            "amount" => $rq->amount,
-            "expiration_date" => $rq->expirationDate,
-        ]);
+        $data = StockItem::find($id);
+        foreach($rq->except("magic_word") as $key => $value){
+            $data->{$key} = $value;
+        }
+        $data->save();
         return $data;
     }
 

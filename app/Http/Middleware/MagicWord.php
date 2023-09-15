@@ -16,7 +16,10 @@ class MagicWord
     public function handle(Request $request, Closure $next): Response
     {
         if($request->input("magic_word") !== env("MAGIC_WORD")){
-            return response("Nie wiesz, w co się pakujesz", 401);
+            return json_encode([
+                "status" => 401,
+                "message" => "Nie wiesz, w co się pakujesz",
+            ]);
         }
         return $next($request);
     }

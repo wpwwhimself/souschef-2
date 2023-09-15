@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RecipeController;
+use App\Http\Middleware\MagicWord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+Route::middleware(MagicWord::class)->group(function(){
 
 Route::controller(ProductController::class)->group(function(){
     Route::prefix("category")->group(function(){
@@ -47,4 +51,15 @@ Route::controller(ProductController::class)->group(function(){
         Route::patch("/{id}", "patchStockItem")->name("patch-stock");
         Route::delete("/{id}", "deleteStockItem")->name("delete-stock");
     });
+});
+
+Route::controller(RecipeController::class)->group(function(){
+    Route::prefix("recipe")->group(function(){
+        Route::get("/{id?}", "getRecipe")->name("get-recipe");
+        Route::post("/", "postRecipe")->name("post-recipe");
+        Route::patch("/{id}", "patchRecipe")->name("patch-recipe");
+        Route::delete("/{id}", "deleteRecipe")->name("delete-recipe");
+    });
+});
+
 });

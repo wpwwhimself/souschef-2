@@ -14,7 +14,7 @@ class ProductController extends Controller
      * CATEGORIES
      */
     public function getCategory($id = null){
-        $data = $id ? Category::find($id) : Category::all();
+        $data = $id ? Category::find($id) : Category::orderBy("name")->get();
         return $data;
     }
 
@@ -44,7 +44,7 @@ class ProductController extends Controller
      * INGREDIENTS
      */
     public function getIngredient($id = null){
-        $data = $id ? Ingredient::find($id) : Ingredient::all();
+        $data = $id ? Ingredient::find($id) : Ingredient::orderBy("name")->get();
         return $data;
     }
 
@@ -75,7 +75,7 @@ class ProductController extends Controller
      * PRODUCTS
      */
     public function getProduct($id = null){
-        $data = $id ? Product::find($id) : Product::all();
+        $data = $id ? Product::find($id) : Product::orderBy("name")->get();
         return $data;
     }
 

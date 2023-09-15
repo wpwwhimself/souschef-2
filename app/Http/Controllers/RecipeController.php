@@ -12,7 +12,7 @@ class RecipeController extends Controller
      * RECIPES
      */
     public function getRecipe($id = null){
-        $data = $id ? Recipe::find($id) : Recipe::all();
+        $data = $id ? Recipe::find($id) : Recipe::orderBy("name")->get();
         return $data;
     }
 

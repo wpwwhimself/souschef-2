@@ -67,7 +67,7 @@ class ProductController extends Controller
     }
 
     public function deleteIngredient($id){
-        Category::find($id)->delete();
+        Ingredient::find($id)->delete();
         return response("Ingredient deleted");
     }
 
@@ -102,7 +102,7 @@ class ProductController extends Controller
     }
 
     public function deleteProduct($id){
-        Category::find($id)->delete();
+        Product::find($id)->delete();
         return response("Product deleted");
     }
 
@@ -133,7 +133,7 @@ class ProductController extends Controller
     }
 
     public function deleteStockItem($id){
-        Category::find($id)->delete();
+        StockItem::find($id)->delete();
         return response("Stock item deleted");
     }
 }

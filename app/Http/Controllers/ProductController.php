@@ -48,6 +48,11 @@ class ProductController extends Controller
         return $data;
     }
 
+    public function getIngredientByEan($ean){
+        $data = Ingredient::where("ean", $ean)->get();
+        return $data;
+    }
+
     public function postIngredient(Request $rq){
         $data = Ingredient::create([
             "name" => $rq->name,

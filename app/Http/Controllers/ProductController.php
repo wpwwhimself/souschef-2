@@ -48,11 +48,6 @@ class ProductController extends Controller
         return $data;
     }
 
-    public function getIngredientByEan($ean){
-        $data = Ingredient::where("ean", $ean)->get();
-        return $data;
-    }
-
     public function postIngredient(Request $rq){
         $data = Ingredient::create([
             "name" => $rq->name,
@@ -81,6 +76,11 @@ class ProductController extends Controller
      */
     public function getProduct($id = null){
         $data = $id ? Product::find($id) : Product::orderBy("name")->get();
+        return $data;
+    }
+
+    public function getProductByEan($ean){
+        $data = Product::where("ean", $ean)->first();
         return $data;
     }
 

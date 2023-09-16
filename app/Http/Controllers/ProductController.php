@@ -14,7 +14,7 @@ class ProductController extends Controller
      * CATEGORIES
      */
     public function getCategory($id = null){
-        $data = $id ? Category::find($id) : Category::orderBy("name")->get();
+        $data = $id ? Category::findOrFail($id) : Category::orderBy("name")->get();
         return $data;
     }
 
@@ -27,7 +27,7 @@ class ProductController extends Controller
     }
 
     public function patchCategory($id, Request $rq){
-        $data = Category::find($id);
+        $data = Category::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
             $data->{$key} = $value;
         }
@@ -36,7 +36,7 @@ class ProductController extends Controller
     }
 
     public function deleteCategory($id){
-        Category::find($id)->delete();
+        Category::findOrFail($id)->delete();
         return response("Category deleted");
     }
 
@@ -44,7 +44,7 @@ class ProductController extends Controller
      * INGREDIENTS
      */
     public function getIngredient($id = null){
-        $data = $id ? Ingredient::find($id) : Ingredient::orderBy("name")->get();
+        $data = $id ? Ingredient::findOrFail($id) : Ingredient::orderBy("name")->get();
         return $data;
     }
 
@@ -58,7 +58,7 @@ class ProductController extends Controller
     }
 
     public function patchIngredient($id, Request $rq){
-        $data = Ingredient::find($id);
+        $data = Ingredient::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
             $data->{$key} = $value;
         }
@@ -67,7 +67,7 @@ class ProductController extends Controller
     }
 
     public function deleteIngredient($id){
-        Ingredient::find($id)->delete();
+        Ingredient::findOrFail($id)->delete();
         return response("Ingredient deleted");
     }
 
@@ -75,12 +75,12 @@ class ProductController extends Controller
      * PRODUCTS
      */
     public function getProduct($id = null){
-        $data = $id ? Product::find($id) : Product::orderBy("name")->get();
+        $data = $id ? Product::findOrFail($id) : Product::orderBy("name")->get();
         return $data;
     }
 
     public function getProductByEan($ean){
-        $data = Product::where("ean", $ean)->first();
+        $data = Product::where("ean", $ean)->firstOrFail();
         return $data;
     }
 
@@ -98,7 +98,7 @@ class ProductController extends Controller
     }
 
     public function patchProduct($id, Request $rq){
-        $data = Product::find($id);
+        $data = Product::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
             $data->{$key} = $value;
         }
@@ -107,7 +107,7 @@ class ProductController extends Controller
     }
 
     public function deleteProduct($id){
-        Product::find($id)->delete();
+        Product::findOrFail($id)->delete();
         return response("Product deleted");
     }
 
@@ -115,7 +115,7 @@ class ProductController extends Controller
      * STOCK
      */
     public function getStockItem($id = null){
-        $data = $id ? StockItem::find($id) : StockItem::all();
+        $data = $id ? StockItem::findOrFail($id) : StockItem::all();
         return $data;
     }
 
@@ -129,7 +129,7 @@ class ProductController extends Controller
     }
 
     public function patchStockItem($id, Request $rq){
-        $data = StockItem::find($id);
+        $data = StockItem::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
             $data->{$key} = $value;
         }
@@ -138,7 +138,7 @@ class ProductController extends Controller
     }
 
     public function deleteStockItem($id){
-        StockItem::find($id)->delete();
+        StockItem::findOrFail($id)->delete();
         return response("Stock item deleted");
     }
 }

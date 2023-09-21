@@ -7,6 +7,7 @@ use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\StockItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -29,7 +30,7 @@ class ProductController extends Controller
     public function patchCategory($id, Request $rq){
         $data = Category::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
-            $data->{$key} = $value;
+            $data->{Str::snake($key)} = $value;
         }
         $data->save();
         return $data;
@@ -60,7 +61,7 @@ class ProductController extends Controller
     public function patchIngredient($id, Request $rq){
         $data = Ingredient::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
-            $data->{$key} = $value;
+            $data->{Str::snake($key)} = $value;
         }
         $data->save();
         return $data;
@@ -100,7 +101,7 @@ class ProductController extends Controller
     public function patchProduct($id, Request $rq){
         $data = Product::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
-            $data->{$key} = $value;
+            $data->{Str::snake($key)} = $value;
         }
         $data->save();
         return $data;
@@ -131,7 +132,7 @@ class ProductController extends Controller
     public function patchStockItem($id, Request $rq){
         $data = StockItem::findOrFail($id);
         foreach($rq->except("magic_word") as $key => $value){
-            $data->{$key} = $value;
+            $data->{Str::snake($key)} = $value;
         }
         $data->save();
         return $data;

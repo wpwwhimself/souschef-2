@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Recipe;
 use App\Models\RecipeTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
@@ -30,7 +31,7 @@ class RecipeController extends Controller
     public function patchRecipe($id, Request $rq){
         $data = Recipe::find($id);
         foreach($rq->except("magic_word") as $key => $value){
-            $data->{$key} = $value;
+            $data->{Str::snake($key)} = $value;
         }
         $data->save();
         return $data;
@@ -66,7 +67,7 @@ class RecipeController extends Controller
     // public function patchRecipeTemplate($id, Request $rq){
     //     $data = RecipeTemplate::find($id);
     //     foreach($rq->except("magic_word") as $key => $value){
-    //         $data->{$key} = $value;
+    //         $data->{Str::snake($key)} = $value;
     //     }
     //     $data->save();
     //     return $data;

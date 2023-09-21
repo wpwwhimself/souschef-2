@@ -45,7 +45,7 @@ class ProductController extends Controller
      * INGREDIENTS
      */
     public function getIngredient($id = null){
-        $data = $id ? Ingredient::findOrFail($id) : Ingredient::orderBy("name")->get();
+        $data = $id ? Ingredient::findOrFail($id) : Ingredient::orderBy("name")->with("category")->get();
         return $data;
     }
 
@@ -76,12 +76,12 @@ class ProductController extends Controller
      * PRODUCTS
      */
     public function getProduct($id = null){
-        $data = $id ? Product::findOrFail($id) : Product::orderBy("name")->get();
+        $data = $id ? Product::findOrFail($id) : Product::orderBy("name")->with("ingredient", "ingredient.category")->get();
         return $data;
     }
 
     public function getProductByEan($ean){
-        $data = Product::where("ean", $ean)->firstOrFail();
+        $data = Product::where("ean", $ean)->with("ingredient", "ingredient.category")->firstOrFail();
         return $data;
     }
 
@@ -116,7 +116,7 @@ class ProductController extends Controller
      * STOCK
      */
     public function getStockItem($id = null){
-        $data = $id ? StockItem::findOrFail($id) : StockItem::all();
+        $data = $id ? StockItem::findOrFail($id) : StockItem::with("product", "product.ingredient", "product.ingredient.category")->get();
         return $data;
     }
 

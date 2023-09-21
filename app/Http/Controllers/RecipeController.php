@@ -47,7 +47,7 @@ class RecipeController extends Controller
      * RECIPES' TEMPLATES
      */
     // public function getRecipeTemplate($id = null){
-    //     $data = $id ? RecipeTemplate::find($id) : RecipeTemplate::all();
+    //     $data = $id ? RecipeTemplate::find($id) : RecipeTemplate::with("recipe", "template")->get();
     //     return $data;
     // }
 

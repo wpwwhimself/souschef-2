@@ -85,6 +85,11 @@ class ProductController extends Controller
         return $data;
     }
 
+    public function getProductByIngredient($ing_id){
+        $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->get();
+        return $data;
+    }
+
     public function postProduct(Request $rq){
         $data = Product::create([
             "ean" => $rq->ean,

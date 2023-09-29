@@ -40,7 +40,7 @@ class RecipeController extends Controller
     public function deleteRecipe($id){
         RecipeTemplate::where("recipe_id", $id)->delete();
         Recipe::find($id)->delete();
-        return response("Recipe deleted");
+        return response()->json("Recipe deleted");
     }
 
     /*****************************
@@ -75,6 +75,6 @@ class RecipeController extends Controller
 
     // public function deleteRecipeTemplate($id){
     //     RecipeTemplate::find($id)->delete();
-    //     return response("Recipe Template deleted");
+    //     return response()->json("Recipe Template deleted");
     // }
 }

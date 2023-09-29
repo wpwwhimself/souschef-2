@@ -38,7 +38,7 @@ class ProductController extends Controller
 
     public function deleteCategory($id){
         Category::findOrFail($id)->delete();
-        return response("Category deleted");
+        return response()->json("Category deleted");
     }
 
     /*****************************
@@ -69,7 +69,7 @@ class ProductController extends Controller
 
     public function deleteIngredient($id){
         Ingredient::findOrFail($id)->delete();
-        return response("Ingredient deleted");
+        return response()->json("Ingredient deleted");
     }
 
     /*****************************
@@ -114,23 +114,38 @@ class ProductController extends Controller
 
     public function deleteProduct($id){
         Product::findOrFail($id)->delete();
-        return response("Product deleted");
+        return response()->json("Product deleted");
     }
 
     /*****************************
      * STOCK
      */
+    private const STK_CLEANED_UP = "Stock item discarded due to nonexistence";
+
     public function getStockItem($id = null){
         $data = $id ? StockItem::findOrFail($id) : StockItem::with("product", "product.ingredient", "product.ingredient.category")->get();
         return $data;
     }
 
     public function postStockItem(Request $rq){
-        $data = StockItem::create([
-            "product_id" => $rq->productId,
-            "amount" => $rq->amount,
-            "expiration_date" => $rq->expirationDate,
-        ]);
+        if($rq->amount <= 0){
+            return response()->json($this::STK_CLEANED_UP);
+        }
+
+        // find stock items with the same expiration date and post to them
+        $data = StockItem::where("product_id", $rq->productId)
+            ->where("expiration_date", $rq->expirationDate)
+            ->first();
+        if($data){
+            $data->amount += $rq->amount;
+            $data->save();
+        }else{
+            $data = StockItem::create([
+                "product_id" => $rq->productId,
+                "amount" => $rq->amount,
+                "expiration_date" => $rq->expirationDate,
+            ]);
+        }
         return $data;
     }
 
@@ -140,11 +155,20 @@ class ProductController extends Controller
             $data->{Str::snake($key)} = $value;
         }
         $data->save();
+
+        if($data->amount <= 0){
+            $this->stockCleanup();
+            return response()->json($this::STK_CLEANED_UP);
+        }
         return $data;
     }
 
     public function deleteStockItem($id){
         StockItem::findOrFail($id)->delete();
-        return response("Stock item deleted");
+        return response()->json("Stock item deleted");
+    }
+
+    private function stockCleanup(){
+        StockItem::where("amount", "<=", 0)->delete();
     }
 }

@@ -10,7 +10,8 @@ class Ingredient extends Model
     use HasFactory;
 
     protected $fillable = [
-        "name", "category_id", "freezable", "minimal_amount",
+        "name", "category_id", "freezable",
+        "minimal_amount", "unit", "dash",
     ];
 
     public function category(){

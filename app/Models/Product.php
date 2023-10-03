@@ -11,8 +11,7 @@ class Product extends Model
 
     protected $fillable = [
         "ean", "name", "ingredient_id",
-        "amount", "unit", "dash",
-        "est_expiration_days",
+        "amount", "est_expiration_days",
     ];
 
     public function ingredient(){

@@ -55,6 +55,8 @@ class ProductController extends Controller
             "category_id" => $rq->categoryId,
             "freezable" => $rq->freezable,
             "minimal_amount" => $rq->minimalAmount,
+            "unit" => $rq->unit,
+            "dash" => $rq->dash,
         ]);
         return $data;
     }
@@ -97,8 +99,6 @@ class ProductController extends Controller
             "name" => $rq->name,
             "ingredient_id" => $rq->ingredientId,
             "amount" => $rq->amount,
-            "unit" => $rq->unit,
-            "dash" => $rq->dash,
             "est_expiration_days" => $rq->estExpirationDays,
         ]);
         return $data;

@@ -54,6 +54,7 @@ class ProductController extends Controller
             "name" => $rq->name,
             "category_id" => $rq->categoryId,
             "freezable" => $rq->freezable,
+            "minimal_amount" => $rq->minimalAmount,
         ]);
         return $data;
     }

@@ -84,7 +84,7 @@ class ProductController extends Controller
     }
 
     public function getProductByEan($ean){
-        $data = Product::where("ean", $ean)->with("ingredient", "ingredient.category")->firstOrFail();
+        $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->get();
         return $data;
     }
 

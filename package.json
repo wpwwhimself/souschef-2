@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build-android": "cd react && npm run build-android",
+        "build-web": "cd react && npm run build-web",
+        "front": "cd react && npm start"
     },
     "devDependencies": {
         "axios": "^1.1.2",

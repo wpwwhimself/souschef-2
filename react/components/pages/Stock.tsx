@@ -121,7 +121,7 @@ export default function Stock({navigation}){
               subtitle={`${item.product.ingredient.name}`}
               buttons={<>
                 <AmountIndicator amount={item.amount} unit={item.product.ingredient.unit} maxAmount={item.product.amount} expirationDate={item.expiration_date} />
-                <SCButton icon="wrench" title="Popraw" color="lightgray" onPress={() => editStock(item.id, item.product.unit)} />
+                <SCButton icon="wrench" title="Popraw" color="lightgray" onPress={() => editStock(item.id, item.product.ingredient.unit)} />
               </>}
           />
           }

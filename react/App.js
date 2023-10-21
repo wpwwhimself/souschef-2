@@ -53,8 +53,8 @@ export default function App() {
     <PaperProvider theme={theme}>
     <ToastProvider
       placement="bottom"
-      successIcon={<Icon icon="check" color="white" bounce />}
-      dangerIcon={<Icon icon="x" color="white" shake />}
+      // successIcon={<Icon icon="check" color="white" />}
+      // dangerIcon={<Icon icon="times" color="white" />}
       >
     <NavigationContainer>
     <StatusBar barStyle='dark-content' backgroundColor={ACCENT_COLOR} />

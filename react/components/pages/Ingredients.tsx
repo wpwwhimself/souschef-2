@@ -67,9 +67,9 @@ export default function Ingredients({navigation}){
     setCName(ingredient?.name);
     setCCategoryId(ingredient?.category_id);
     setCFreezable(ingredient?.freezable);
-    setCMinimalAmount(ingredient.minimal_amount);
-    setCUnit(ingredient.unit);
-    setCDash(ingredient.dash);
+    setCMinimalAmount(ingredient?.minimal_amount);
+    setCUnit(ingredient?.unit);
+    setCDash(ingredient?.dash);
     setCId(ingredient?.id ?? 0);
     toggleEditor();
   }
@@ -152,10 +152,10 @@ export default function Ingredients({navigation}){
       <View style={[s.margin, s.center]}>
         <SCInput label="Nazwa składnika" value={cName} onChange={setCName} />
         <SCSelect label="Kategoria" value={cCategoryId} items={categories} onChange={setCCategoryId} />
-        <SCInput type="checkbox" label="Trzymany w lodówce" value={cFreezable} onChange={setCFreezable} />
+        <SCInput type="checkbox" label="Trzymany w lodówce" value={!!cFreezable} onChange={setCFreezable} />
         <SCInput label="Jednostka" value={cUnit} onChange={setCUnit} />
         <SCInput type="numeric" label={`Minimalna ilość (${cUnit})`} value={cMinimalAmount} onChange={setCMinimalAmount} />
-        <SCInput type="checkbox" label="Powolne zużycie" value={cDash} onChange={setCDash} />
+        <SCInput type="checkbox" label="Powolne zużycie" value={!!cDash} onChange={setCDash} />
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />

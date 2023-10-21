@@ -11,6 +11,7 @@ import { ACCENT_COLOR } from './assets/constants';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { StatusBar } from 'react-native';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -56,6 +57,7 @@ export default function App() {
       dangerIcon={<Icon icon="x" color="white" shake />}
       >
     <NavigationContainer>
+    <StatusBar barStyle='dark-content' backgroundColor={ACCENT_COLOR} />
     <PasswordInputModal isVisible={isModalVisible} onClose={closeModal} />
     <Tab.Navigator
       initialRouteName='Home'

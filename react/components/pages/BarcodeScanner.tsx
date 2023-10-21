@@ -15,6 +15,7 @@ import Loader from '../Loader'
 import PositionTile from '../PositionTile'
 import HorizontalLine from '../HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
+import { useIsFocused } from '@react-navigation/native'
 
 interface UPCProduct{
   title: string,
@@ -28,11 +29,12 @@ const PRODUCT_NOT_FOUND_ERROR = "This product doesn't exist in the database";
 
 export default function BarcodeScanner({navigation}){
   const [hasPermissions, setHasPermissions] = useState(null)
-  const [scanned, setScanned] = useState(false)
+  const [scannerOn, setScannerOn] = useState(false)
   const [showModal, setShowModal] = useState<false | "prd" | "stk">(false)
   const [manualLookupMode, setManualLookupMode] = useState<false | "ean" | "list">(false)
   const [loaderVisible, setLoaderVisible] = useState(false)
   const toast = useToast();
+  const isFocused = useIsFocused();
 
   const [ingredients, setIngredients] = useState<SelectItem[]>([])
   const [products, setProducts] = useState<Product[]>([])
@@ -56,9 +58,9 @@ export default function BarcodeScanner({navigation}){
       setHasPermissions(status === "granted");
     })();
   }, [])
-  
+
   const handleBarCodeScanned = async ({type, data}) => {
-    setScanned(true);
+    setScannerOn(false);
     const token = await getEANToken();
 
     rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
@@ -71,10 +73,17 @@ export default function BarcodeScanner({navigation}){
   }
 
   const startScan = () => {
-    setScanned(false)
+    setScannerOn(true)
     setShowModal(false)
     setManualLookupMode(false)
   };
+  const stopScan = () => {
+    setScannerOn(false)
+  }
+
+  useEffect(() => {
+    isFocused ? startScan() : stopScan();
+  }, [isFocused])
 
   const openManualLookup = async (mode: "ean" | "list") => {
     const magic_word = await getPassword();
@@ -184,7 +193,7 @@ export default function BarcodeScanner({navigation}){
     <View style={s.center}>
       {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
       {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
-      {hasPermissions === true && !scanned &&
+      {hasPermissions === true && scannerOn &&
       <BarCodeScanner
         onBarCodeScanned={handleBarCodeScanned}
         style={ss.barCode}
@@ -218,7 +227,7 @@ export default function BarcodeScanner({navigation}){
         ? <Loader />
         : <>
           <FlatList data={products}
-            renderItem={({item}) => 
+            renderItem={({item}) =>
               <PositionTile
                 icon={item.ingredient.category.symbol}
                 title={item.name}
@@ -246,7 +255,7 @@ export default function BarcodeScanner({navigation}){
         ? <Loader />
         : <>
           <FlatList data={products}
-            renderItem={({item}) => 
+            renderItem={({item}) =>
               <PositionTile
                 title={item.name}
                 subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}

@@ -64,7 +64,7 @@ export default function BarcodeScanner({navigation}){
     const token = await getEANToken();
 
     rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
-      .then(res => res.json())
+      .then(res => res.data)
       .then(product => {
         setPEan(product.barcode);
         openManualLookup("ean");
@@ -90,7 +90,7 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient", {
       magic_word: magic_word,
     })
-      .then(res => res.json())
+      .then(res => res.data)
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
       .catch(err => console.error(err))
     ;
@@ -100,14 +100,15 @@ export default function BarcodeScanner({navigation}){
   }
 
   const mleEanReady = async (ean: string) => {
-    setLoaderVisible(true);
     setPEan(ean);
+    if(ean.length === 0) return;
+    setLoaderVisible(true);
 
     const magic_word = await getPassword();
     rqGet(API_SOUSCHEF_URL + "product/ean/" + ean, {
       magic_word: magic_word,
     })
-      .then(res => res.json())
+      .then(res => res.data)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -123,7 +124,7 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient/" + ing_id, {
       magic_word: magic_word,
     })
-      .then(res => res.json())
+      .then(res => res.data)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
@@ -131,7 +132,7 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "product/ingredient/" + ing_id, {
       magic_word: magic_word,
     })
-      .then(res => res.json())
+      .then(res => res.data)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -146,6 +147,7 @@ export default function BarcodeScanner({navigation}){
     setPEan(ean || product?.ean)
     setPAmount(product?.amount)
     setPEstExpirationDays(product?.est_expiration_days)
+    setPIngredientUnit(product?.ingredient.unit)
 
     setShowModal("stk");
   }
@@ -169,7 +171,7 @@ export default function BarcodeScanner({navigation}){
       })
     )().then(res => {
       if(res.status >= 300) throw new Error("Błąd w tworzeniu produktu")
-      return res.json()
+      return res.data
     })
     .then(product => { // create stock item
       rqPost(API_SOUSCHEF_URL + "stock", {
@@ -177,7 +179,7 @@ export default function BarcodeScanner({navigation}){
         productId: product.id,
         amount: sAmount || pAmount,
         expirationDate: sExpirationDate,
-      }).then(res => res.json())
+      }).then(res => res.data)
     }).then(res => {
       console.log(res);
       toast.update(toastId, "Pozycja dodana", {type: "success"});
@@ -190,7 +192,7 @@ export default function BarcodeScanner({navigation}){
   }
 
   return <View style={s.wrapper}>
-    <View style={s.center}>
+    <View style={[s.center, ss.barCode]}>
       {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
       {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
       {hasPermissions === true && scannerOn &&
@@ -200,7 +202,7 @@ export default function BarcodeScanner({navigation}){
         />}
     </View>
 
-    <SCButton icon="wrench" title="Wybierz produkt ręcznie" onPress={() => { setShowModal("prd") }} />
+    <SCButton icon="wrench" title="Wybierz produkt ręcznie" onPress={() => { setShowModal("prd"); stopScan(); }} />
 
     {/* get product info */}
     <SCModal
@@ -279,7 +281,7 @@ export default function BarcodeScanner({navigation}){
       title="Dane o produkcie"
       onRequestClose={startScan}
       >
-      <Header icon="sack-xmark">Produkt</Header>
+      <Header icon="flask">Produkt</Header>
       <View style={[s.margin, s.center]}>
         {/* jeżeli produkt istnieje, to do wyboru z listy, jeśli nie, to pola na nazwę itd */}
         {pId

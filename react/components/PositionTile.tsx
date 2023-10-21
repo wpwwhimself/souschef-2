@@ -38,7 +38,7 @@ export default function PositionTile({title, subtitle, icon, buttons}: I){
 
 const ss = StyleSheet.create({
   wrapper: {
-    
+
   },
   icon: {
     flex: 1
@@ -47,6 +47,6 @@ const ss = StyleSheet.create({
     flex: 6
   },
   buttons: {
-    flex: 3
+    flex: 3,
   }
 })

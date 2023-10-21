@@ -38,7 +38,7 @@ export default function Stock({navigation}){
     rqGet(API_SOUSCHEF_URL + "stock", {
       magic_word: magic_word,
     })
-      .then(res => res.json())
+      .then(res => res.data)
       .then(items => {
         const freezables = items.filter(stk => stk.product.ingredient.freezable)
         setStockFreezer(freezables)
@@ -52,7 +52,7 @@ export default function Stock({navigation}){
     rqGet(API_SOUSCHEF_URL + "stock/" + stock_id, {
       magic_word: magic_word,
     })
-      .then(res => res.json())
+      .then(res => res.data)
       .then((item: StockItem) => {
         setSId(item.id)
         setSAmount(item.amount)
@@ -70,7 +70,7 @@ export default function Stock({navigation}){
       magic_word: magic_word,
       amount: sAmount || 0,
       expirationDate: sExpirationDate,
-    }).then(res => res.json())
+    }).then(res => res.data)
     .then(res => {
       setStockEditor(false);
       toast.update(toastId, "Stan poprawiony", {type: "success"});

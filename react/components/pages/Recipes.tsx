@@ -20,7 +20,7 @@ export default function Recipes({navigation}){
       rqGet(API_SOUSCHEF_URL + "recipe", {
         magic_word: magic_word,
       })
-        .then(res => res.json())
+        .then(res => res.data)
         .then(res => setRecipes(res))
         .catch(err => console.error(err))
       ;

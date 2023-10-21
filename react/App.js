@@ -21,10 +21,10 @@ const theme = {
     ...DefaultTheme.colors,
     primary: ACCENT_COLOR,
     background: "white",
+    secondaryContainer: "lightgray",
     surface: "white",
   }
 }
-
 export default function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 

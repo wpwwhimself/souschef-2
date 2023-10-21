@@ -1,6 +1,6 @@
 import { ACCENT_COLOR } from "../assets/constants"
 import { Button } from "react-native"
-import { TextInput, Modal, Portal } from "react-native-paper";
+import { TextInput, Modal, Portal, useTheme } from "react-native-paper";
 import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
 import { pl, registerTranslation, DatePickerInput } from 'react-native-paper-dates'
 import s from "../assets/style"
@@ -15,7 +15,11 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 registerTranslation('pl', pl)
 
 export function SCButton({title, onPress, color = ACCENT_COLOR, icon = undefined}){
-  return <Icon.Button name={icon || "angle-double-right"} onPress={onPress} backgroundColor={color}>
+  return <Icon.Button
+    name={icon || "angle-double-right"}
+    onPress={onPress}
+    backgroundColor={color}
+    >
     {title}
   </Icon.Button>
 }
@@ -31,7 +35,7 @@ export function SCInput({
 }){
   return <View style={[ssinput.container, s.flexRight, s.nowrap]}>
     {
-      type === "date" 
+      type === "date"
     ? <DatePickerInput
         locale="pl"
         label={label}
@@ -56,11 +60,12 @@ export function SCInput({
       label={label}
       disabled={type == "dummy"}
       autoFocus={focus}
-      inputMode={type as InputModeOptions}
+      inputMode={(type == "dummy" ? "text" : type) as InputModeOptions}
       mode="outlined"
-      value={value ?? ""}
+      value={String(value ?? "")}
       onChangeText={onChange}
       secureTextEntry={password}
+      style={{width: "100%"}}
       />
     }
   </View>
@@ -70,13 +75,6 @@ const ssinput = StyleSheet.create({
   container: {
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: 'lightgray',
-    paddingHorizontal: 10,
-    width: 200,
-    marginBottom: 10,
   },
 })
 
@@ -88,6 +86,7 @@ export function SCSelect({
   style = {},
 }){
   const [showdd, setShowdd] = useState(false)
+  const theme = useTheme();
 
   return <View style={[ssselect.container, s.flexRight]}>
     <DropDown
@@ -99,6 +98,7 @@ export function SCSelect({
       value={value}
       setValue={onChange}
       list={items}
+      theme={theme}
       dropDownItemStyle={{ zIndex: 999 }}
       dropDownItemSelectedStyle={{ zIndex: 999 }}
       dropDownStyle={{ zIndex: 999 }}
@@ -108,9 +108,7 @@ export function SCSelect({
 
 const ssselect = StyleSheet.create({
   container: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    zIndex: 0,
+    justifyContent: "center",
   },
 })
 
@@ -131,12 +129,11 @@ export function SCModal({title = undefined, visible, onRequestClose, children}){
 
 const ssmodal = StyleSheet.create({
   outer: {
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 25,
   },
   inner: {
     padding: 25,
-    alignItems: "center",
+    gap: 5,
     backgroundColor: "white",
   }
 })

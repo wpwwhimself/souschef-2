@@ -33,7 +33,6 @@ export default function Categories({navigation}){
     rqGet(API_SOUSCHEF_URL + "category", {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(res => setCategories(res))
       .catch(err => console.error(err))
       .finally(() => setCatLoaderVisible(false))
@@ -65,7 +64,6 @@ export default function Categories({navigation}){
       name: cName,
       symbol: cSymbol,
     })
-      .then(res => res.data)
       .then(res => {
         toggleEditor();
         toast.update(toastId, "Kategoria gotowa", {type: "success"});

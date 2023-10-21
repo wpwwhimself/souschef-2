@@ -40,7 +40,6 @@ export default function Products({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient", {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(ings => setIngredients(prepareSelectItems(ings, "name", "id")))
       .catch(err => console.error(err))
       .finally(() => setIngLoaderVisible(false))
@@ -56,7 +55,6 @@ export default function Products({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient/" + ing_id, {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
@@ -64,7 +62,6 @@ export default function Products({navigation}){
     rqGet(API_SOUSCHEF_URL + "product/ingredient/" + ing_id, {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setPrdLoaderVisible(false))
@@ -103,7 +100,6 @@ export default function Products({navigation}){
       amount: pAmount,
       estExpirationDays: pEstExpirationDays,
     })
-      .then(res => res.data)
       .then(res => {
         toggleEditor();
         toast.update(toastId, "Produkt gotowy", {type: "success"});

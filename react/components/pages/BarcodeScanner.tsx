@@ -64,7 +64,6 @@ export default function BarcodeScanner({navigation}){
     const token = await getEANToken();
 
     rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
-      .then(res => res.data)
       .then(product => {
         setPEan(product.barcode);
         openManualLookup("ean");
@@ -90,7 +89,6 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient", {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
       .catch(err => console.error(err))
     ;
@@ -108,7 +106,6 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "product/ean/" + ean, {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -124,7 +121,6 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient/" + ing_id, {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
@@ -132,7 +128,6 @@ export default function BarcodeScanner({navigation}){
     rqGet(API_SOUSCHEF_URL + "product/ingredient/" + ing_id, {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -179,7 +174,7 @@ export default function BarcodeScanner({navigation}){
         productId: product.id,
         amount: sAmount || pAmount,
         expirationDate: sExpirationDate,
-      }).then(res => res.data)
+      })
     }).then(res => {
       console.log(res);
       toast.update(toastId, "Pozycja dodana", {type: "success"});

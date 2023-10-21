@@ -39,7 +39,6 @@ export default function Ingredients({navigation}){
     rqGet(API_SOUSCHEF_URL + "ingredient", {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(res => setIngredients(res))
       .catch(err => console.error(err))
       .finally(() => setIngLoaderVisible(false))
@@ -59,7 +58,6 @@ export default function Ingredients({navigation}){
     rqGet(API_SOUSCHEF_URL + "category", {
       magic_word: magic_word,
     })
-      .then(res => res.data)
       .then(cats => { setCategories(prepareSelectItems(cats, "name", "id", true)) })
       .catch(err => console.error(err))
     ;
@@ -90,7 +88,6 @@ export default function Ingredients({navigation}){
       unit: cUnit,
       dash: cDash || false,
     })
-      .then(res => res.data)
       .then(res => {
         toggleEditor();
         toast.update(toastId, "Składnik gotowy", {type: "success"});

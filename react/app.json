@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "souschef",
+    "name": "Souschef",
     "slug": "souschef",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "icon": "./assets/icon.svg",
+        "icon": "./assets/icon_color.png",
         "foregroundImage": "./assets/icon_color.png",
         "monochromeImage": "./assets/icon_mono.png"
       },

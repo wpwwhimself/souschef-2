@@ -157,7 +157,7 @@ export default function Ingredients({navigation}){
         <SCInput type="numeric" label={`Minimalna ilość (${cUnit})`} value={cMinimalAmount} onChange={setCMinimalAmount} />
         <SCInput type="checkbox" label="Powolne zużycie" value={cDash} onChange={setCDash} />
       </View>
-      <View style={s.flexRight}>
+      <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
         {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {toggleEditor(); toggleEraser();}} />}
       </View>
@@ -170,7 +170,9 @@ export default function Ingredients({navigation}){
       onRequestClose={toggleEraser}
       >
       <Text>Czy na pewno chcesz usunąć składkik {cName}?</Text>
-      <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      </View>
     </SCModal>
   </View>
 }

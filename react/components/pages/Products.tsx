@@ -168,7 +168,7 @@ export default function Products({navigation}){
         <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={setPAmount} />
         <SCInput type="numeric" label="Szac. przydatność (dni)" value={pEstExpirationDays} onChange={setPEstExpirationDays} />
       </View>
-      <View style={s.flexRight}>
+      <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
         {pId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {toggleEditor(); toggleEraser();}} />}
       </View>
@@ -181,7 +181,9 @@ export default function Products({navigation}){
       onRequestClose={toggleEraser}
       >
       <Text>Czy na pewno chcesz usunąć produkt {pName}?</Text>
-      <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      </View>
     </SCModal>
   </View>
 }

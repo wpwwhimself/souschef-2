@@ -123,7 +123,7 @@ export default function Categories({navigation}){
         <SCInput label="Nazwa kategorii" value={cName} onChange={setCName} />
         <SCInput label="Emotka" value={cSymbol} onChange={setCSymbol} />
       </View>
-      <View style={s.flexRight}>
+      <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
         {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {toggleEditor(); toggleEraser();}} />}
       </View>
@@ -136,7 +136,9 @@ export default function Categories({navigation}){
       onRequestClose={toggleEraser}
       >
       <Text>Czy na pewno chcesz usunąć kategorię {cName}?</Text>
-      <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      </View>
     </SCModal>
   </View>
 }

@@ -299,7 +299,9 @@ export default function BarcodeScanner({navigation}){
         <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />
       </View>
 
-      <SCButton icon="check" title="Potwierdź" onPress={handleSubmit} />
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="check" title="Potwierdź" onPress={handleSubmit} />
+      </View>
     </SCModal>
   </View>
 }

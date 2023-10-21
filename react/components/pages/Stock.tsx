@@ -140,7 +140,9 @@ export default function Stock({navigation}){
         <SCInput type="numeric" label={`Ilość (${pUnit})`} value={sAmount} onChange={setSAmount} />
         <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />
       </View>
-      <SCButton icon="check" title="Zatwierdź" onPress={handleSubmit} />
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="check" title="Zatwierdź" onPress={handleSubmit} />
+      </View>
     </SCModal>
   </View>
 }

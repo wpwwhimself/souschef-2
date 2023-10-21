@@ -1,8 +1,13 @@
 {
   "expo": {
     "name": "Souschef",
+    "description": "An app for a sclerotic cook",
     "slug": "souschef",
     "version": "1.0.0",
+    "platforms": [
+      "android",
+      "web"
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon_color.png",
     "userInterfaceStyle": "light",
@@ -19,8 +24,8 @@
       "bundleIdentifier": "com.wpww.souschef"
     },
     "android": {
+      "icon": "./assets/icon_color.png",
       "adaptiveIcon": {
-        "icon": "./assets/icon_color.png",
         "foregroundImage": "./assets/icon_color.png",
         "monochromeImage": "./assets/icon_mono.png"
       },
@@ -34,6 +39,16 @@
       "eas": {
         "projectId": "517f1c5b-fbdf-4909-aa63-9e3102dabc45"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+    ]
   }
 }

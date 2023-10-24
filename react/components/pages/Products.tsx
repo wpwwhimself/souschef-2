@@ -70,7 +70,10 @@ export default function Products({navigation}){
 
   useEffect(() => {
     setIngLoaderVisible(true);
-    if(isFocused) getIngredients();
+    if(isFocused) {
+      getIngredients();
+      getData(pIngredientId);
+    };
   }, [isFocused]);
 
   // modal

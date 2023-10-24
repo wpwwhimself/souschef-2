@@ -63,12 +63,12 @@ export default function BarcodeScanner({navigation}){
     setScannerOn(false);
     const token = await getEANToken();
 
-    rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
-      .then(product => {
-        setPEan(product.barcode);
+    // rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
+      // .then(product => {
+        setPEan(data);
         openManualLookup("ean");
-      })
-      .catch(err => console.error(err));
+      // })
+      // .catch(err => console.error(err));
   }
 
   const startScan = () => {
@@ -85,15 +85,17 @@ export default function BarcodeScanner({navigation}){
   }, [isFocused])
 
   const openManualLookup = async (mode: "ean" | "list") => {
+    mllIngChosen(pIngredientId);
+
     const magic_word = await getPassword();
     rqGet(API_SOUSCHEF_URL + "ingredient", {
       magic_word: magic_word,
     })
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show(`Problem z szukaniem składników: ${err.message}`, {type: "danger"}))
     ;
-    setPIngredientId(0);
-    setPEan("");
+
+    setShowModal("prd");
     setManualLookupMode(mode);
   }
 
@@ -144,6 +146,7 @@ export default function BarcodeScanner({navigation}){
     setPEstExpirationDays(product?.est_expiration_days)
     setPIngredientUnit(product?.ingredient.unit)
 
+    mllIngChosen(pIngredientId);
     setShowModal("stk");
   }
 
@@ -165,10 +168,12 @@ export default function BarcodeScanner({navigation}){
         magic_word: magic_word
       })
     )().then(res => {
-      if(res.status >= 300) throw new Error("Błąd w tworzeniu produktu")
-      return res.data
+      console.log(res);
+      if(!res.id) throw new Error("Błąd w tworzeniu produktu")
+      return res
     })
     .then(product => { // create stock item
+      console.log(pId, product);
       rqPost(API_SOUSCHEF_URL + "stock", {
         magic_word: magic_word,
         productId: product.id,
@@ -176,13 +181,13 @@ export default function BarcodeScanner({navigation}){
         expirationDate: sExpirationDate,
       })
     }).then(res => {
-      console.log(res);
       toast.update(toastId, "Pozycja dodana", {type: "success"});
     }).catch(err => {
       console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setShowModal(false);
+      setScannerOn(true);
     })
   }
 
@@ -287,7 +292,7 @@ export default function BarcodeScanner({navigation}){
         : <>
           <SCInput label="Nazwa" value={pName} onChange={setPName} />
           <SCInput label="EAN" value={pEan} onChange={setPEan} />
-          <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={setPIngredientId} />
+          <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={mllIngChosen} />
           <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={setPAmount} />
         </>
         }

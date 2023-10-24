@@ -5,10 +5,12 @@ import { useState, useEffect } from "react"
 import PasswordInputModal from "../PasswordInputModal";
 import { deletePassword, getEANToken, setEANToken } from "../../helpers/PasswordStorage";
 import { SCButton, SCInput } from "../SCSpecifics";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Profile(){
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [eanApiToken, setEanApiToken] = useState("");
+  const toast = useToast();
 
   useEffect(() => {
     const checkToken = async () => {
@@ -20,6 +22,7 @@ export default function Profile(){
 
   const saveEanToken = async () => {
     setEANToken(eanApiToken);
+    toast.show("Token do API EANów zapisany", {type: "success"})
   }
 
   const openModal = () => {

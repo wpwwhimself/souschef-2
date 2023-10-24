@@ -11,7 +11,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1.00001, viewport-fit=cover"
     />
-    <title>souschef</title>
+    <title>Souschef</title>
     <style>
       /**
        * Extend the react-native-web reset:
@@ -113,5 +113,5 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/bundles/web-178e27db313297e0d4b05f1dfdaad6d0.js" defer></script></body>
+  <script src="/bundles/web-7e632a01146853f868b756830c6bf420.js" defer></script></body>
 </html>

@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native"
+import { FlatList, SectionList, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import TopHeader from "../TopHeader"
@@ -110,12 +110,10 @@ export default function Stock({navigation}){
 
     {loaderVisible
     ? <Loader />
-    : <>
-      {content.map(({header, icon, data, emptyNotice}, key) => <View key={key}>
-        <Header icon={icon}>{header}</Header>
-        <FlatList data={data}
-          renderItem={({item}) =>
-            <PositionTile
+    : <SectionList
+      sections={content}
+      renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
+      renderItem={({item}) => <PositionTile
               icon={item.product.ingredient.category.symbol}
               title={item.product.name}
               subtitle={`${item.product.ingredient.name}`}
@@ -125,11 +123,9 @@ export default function Stock({navigation}){
               </>}
           />
           }
-          ItemSeparatorComponent={() => <HorizontalLine />}
-          ListEmptyComponent={<BarText color="lightgray">{emptyNotice}</BarText>}
-        />
-      </View>)}
-    </>}
+      ItemSeparatorComponent={() => <HorizontalLine />}
+      ListEmptyComponent={({item}) => <BarText color="lightgray">{item.emptyNotice}</BarText>}
+    />}
 
     <SCModal
       visible={stockEditor}

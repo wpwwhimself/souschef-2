@@ -3,7 +3,8 @@ import { ACCENT_COLOR } from './constants';
 
 export default StyleSheet.create({
   wrapper: {
-    padding: 30,
+    paddingVertical: 30,
+    paddingHorizontal: 15,
     justifyContent: "flex-start",
     gap: 5,
     height: "100%",
@@ -46,5 +47,8 @@ export default StyleSheet.create({
   },
   error: {
     color: "red",
+  },
+  split: {
+    flex: 1,
   },
 })

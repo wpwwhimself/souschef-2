@@ -1,7 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs"
 import Home from './components/pages/Home';
-import Profile from './components/pages/Profile';
 import StockHub from './components/pages/StockHub';
 import { useState, useEffect } from 'react';
 import { getPassword } from './helpers/Storage';
@@ -12,6 +11,7 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { StatusBar } from 'react-native';
+import ProfileHub from './components/pages/ProfileHub';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -49,6 +49,33 @@ export default function App() {
     setIsModalVisible(false);
   };
 
+  const navItems = [
+    {
+      route: "Home",
+      component: Home,
+      title: "Na bieżąco",
+      icon: "house-user",
+    },
+    {
+      route: "StockHub",
+      component: StockHub,
+      title: "Składniki",
+      icon: "box",
+    },
+    {
+      route: "RecipesHub",
+      component: RecipesHub,
+      title: "Przepisy",
+      icon: "scroll",
+    },
+    {
+      route: "ProfileHub",
+      component: ProfileHub,
+      title: "Mój profil",
+      icon: "user",
+    },
+  ]
+
   return (
     <PaperProvider theme={theme}>
     <ToastProvider
@@ -63,38 +90,14 @@ export default function App() {
       initialRouteName='Home'
       activeColor={ACCENT_COLOR}
       >
-      <Tab.Screen
-        name="Home"
-        component={Home}
-        options={{
-          title: "Na bieżąco",
-          tabBarIcon: ({color, size}) => <Icon name="house-user" color={color} size={26} solid />
-        }}
-        />
-      <Tab.Screen
-        name="StockHub"
-        component={StockHub}
-        options={{
-          title: "Składniki",
-          tabBarIcon: ({color, size}) => <Icon name="box" color={color} size={26} solid />
-        }}
-        />
-      <Tab.Screen
-        name="RecipesHub"
-        component={RecipesHub}
-        options={{
-          title: "Przepisy",
-          tabBarIcon: ({color, size}) => <Icon name="scroll" color={color} size={26} solid />
-        }}
-        />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          title: "Mój profil",
-          tabBarIcon: ({color, size}) => <Icon name="user" color={color} size={26} solid />
-        }}
-        />
+      {navItems.map((item, key) => <Tab.Screen key={key}
+      name={item.route}
+      component={item.component}
+      options={{
+        title: item.title,
+        tabBarIcon: ({color}) => <Icon name={item.icon} color={color} size={26} solid />
+      }}
+      />)}
     </Tab.Navigator>
   </NavigationContainer>
   </ToastProvider>

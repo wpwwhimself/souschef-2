@@ -1,24 +1,24 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import Recipes from "./Recipes";
-import ModRecipe from "./ModRecipe";
+import Profile from "./Profile";
+import Settings from "./Settings";
 import { ACCENT_COLOR } from "../../assets/constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
 const Tab = createMaterialBottomTabNavigator();
 
-export default function RecipesHub(){
+export default function ProfileHub(){
   const items = [
     {
-      route: "Recipes",
-      component: Recipes,
-      title: "Lista",
-      icon: "list",
+      route: "Profile",
+      component: Profile,
+      title: "Moje dane",
+      icon: "user",
     },
     {
-      route: "ModRecipe",
-      component: ModRecipe,
-      title: "Dodaj",
-      icon: "plus",
+      route: "Settings",
+      component: Settings,
+      title: "Ustawienia",
+      icon: "cog",
     },
   ]
 

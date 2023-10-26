@@ -3,7 +3,7 @@ import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react"
 import PasswordInputModal from "../PasswordInputModal";
-import { deletePassword, getEANToken, setEANToken } from "../../helpers/Storage";
+import { getKey, saveKey, deleteKey } from "../../helpers/Storage";
 import { SCButton, SCInput } from "../SCSpecifics";
 import { useToast } from "react-native-toast-notifications";
 
@@ -12,16 +12,23 @@ export default function Profile(){
   const [eanApiToken, setEanApiToken] = useState("");
   const toast = useToast();
 
+  const STKEYS = {
+    DBURL: "dbUrl",
+    DBPSW: "magicWord",
+    EANURL: "eanUrl",
+    EANTKN: "EANToken",
+  }
+
   useEffect(() => {
     const checkToken = async () => {
-      const token = await getEANToken();
+      const token = await getKey(STKEYS.EANTKN);
       setEanApiToken(token ?? "");
     }
     checkToken();
   }, []);
 
   const saveEanToken = async () => {
-    setEANToken(eanApiToken);
+    saveKey(STKEYS.EANTKN, eanApiToken);
     toast.show("Token do API EANów zapisany", {type: "success"})
   }
 
@@ -38,7 +45,7 @@ export default function Profile(){
     <Text>Tu znajdziesz hasło dostępu do bazy danych.</Text>
     <View style={s.flexRight}>
       <SCButton icon="wrench" title="Zmień" onPress={openModal} />
-      <SCButton icon="trash" title="Usuń" onPress={deletePassword} />
+      <SCButton icon="trash" title="Usuń" onPress={deleteKey(STKEYS.DBPSW)} />
     </View>
     <PasswordInputModal isVisible={isModalVisible} onClose={closeModal} />
 

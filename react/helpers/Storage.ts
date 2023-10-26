@@ -7,44 +7,24 @@ const storage = new Storage({
   defaultExpires: null, // No expiration for items
 });
 
-const PASSWORD_KEY = 'magicWord';
-const TOKEN_KEY = 'EANToken';
-
-export const getPassword = async (): Promise<string | null> => {
+export const getKey = async (key: string) => {
   try {
-    const password = await storage.load({ key: PASSWORD_KEY });
-    return password;
+    const data = await storage.load({ key: key });
+    return data;
   } catch (error) {
-    throw new Error("No magic word found");
-  }
-};
-
-export const setPassword = (password: string): void => {
-  storage.save({
-    key: PASSWORD_KEY,
-    data: password,
-  });
-};
-
-export const deletePassword = (): void => {
-  storage.remove({
-    key: PASSWORD_KEY,
-  });
-};
-
-export const getEANToken = async (): Promise<string | null> => {
-  try {
-    const token = await storage.load({ key: TOKEN_KEY });
-    return token;
-  } catch (error) {
-    console.log("No EAN API token");
-    return undefined;
+    throw new Error(`Could not fetch ${key} from storage`);
   }
 }
 
-export const setEANToken = (token: string): void => {
+export const saveKey = (key: string, new_val: any) => {
   storage.save({
-    key: TOKEN_KEY,
-    data: token,
+    key: key,
+    data: new_val,
+  });
+};
+
+export const deleteKey = (key: string) => {
+  storage.remove({
+    key: key
   });
 };

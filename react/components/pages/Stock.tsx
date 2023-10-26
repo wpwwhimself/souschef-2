@@ -115,8 +115,8 @@ export default function Stock({navigation}){
       renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR}>{section.header}</Header>}
       renderItem={({item}) => <PositionTile
               icon={item.product.ingredient.category.symbol}
-              title={item.product.name}
-              subtitle={`${item.product.ingredient.name}`}
+              title={item.product.ingredient.name}
+              subtitle={`${item.product.name}`}
               buttons={<>
                 <AmountIndicator amount={item.amount} unit={item.product.ingredient.unit} maxAmount={item.product.amount} expirationDate={item.expiration_date} />
                 <SCButton icon="wrench" color="lightgray" onPress={() => editStock(item.id, item.product.ingredient.unit)} small />

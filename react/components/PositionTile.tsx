@@ -11,7 +11,7 @@ interface I{
 }
 
 export default function PositionTile({title, subtitle, icon, buttons}: I){
-  const Icon = (icon)
+  const iiicon = (icon)
     ? /\p{Emoji}/u.test(icon)
       ? <Text>{icon}</Text>
       : <Icon name={icon} />
@@ -20,7 +20,7 @@ export default function PositionTile({title, subtitle, icon, buttons}: I){
   return <View style={[ss.wrapper, s.flexRight, ss.icon, {justifyContent: "space-between"}]}>
     {/* icon */}
     <View>
-      {Icon}
+      {iiicon}
     </View>
 
     {/* text content */}
@@ -44,9 +44,9 @@ const ss = StyleSheet.create({
     flex: 1
   },
   text: {
-    flex: 6
+    flex: 1
   },
   buttons: {
-    flex: 3,
+
   }
 })

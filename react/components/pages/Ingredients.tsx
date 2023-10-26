@@ -134,7 +134,7 @@ export default function Ingredients({navigation}){
             item.dash && "🤏",
           ].filter(Boolean).join(" • ") || undefined}
           buttons={<>
-            <SCButton icon="wrench" color="lightgray" title="Edytuj" onPress={() => openEditor(item)} />
+            <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
           </>}
         />
       }

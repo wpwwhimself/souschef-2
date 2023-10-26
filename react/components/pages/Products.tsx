@@ -148,7 +148,7 @@ export default function Products({navigation}){
           icon={item.ingredient.category.symbol}
           title={item.name}
           buttons={<>
-            <SCButton icon="wrench" color="lightgray" title="Edytuj" onPress={() => openEditor(item)} />
+            <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
           </>}
         />
       }

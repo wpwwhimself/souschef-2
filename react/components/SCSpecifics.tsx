@@ -5,8 +5,6 @@ import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
 import { pl, registerTranslation, DatePickerInput } from 'react-native-paper-dates'
 import s from "../assets/style"
 import DropDown from "react-native-paper-dropdown"
-import { SelectItem } from "../types"
-import { BlurView } from "expo-blur"
 import BarText from "./BarText"
 import { useState } from "react";
 import { prepareDate } from "../helpers/Prepare";
@@ -14,11 +12,13 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 
 registerTranslation('pl', pl)
 
-export function SCButton({title, onPress, color = ACCENT_COLOR, icon = undefined}){
+export function SCButton({title = undefined, onPress, color = ACCENT_COLOR, icon = undefined, small = false}){
   return <Icon.Button
     name={icon || "angle-double-right"}
     onPress={onPress}
     backgroundColor={color}
+    size={small ? 15 : 20}
+    iconStyle={!title ? {marginRight: 0} : {}}
     >
     {title}
   </Icon.Button>

@@ -104,7 +104,7 @@ export default function Categories({navigation}){
           icon={item.symbol}
           title={item.name}
           buttons={<>
-            <SCButton icon="wrench" color="lightgray" title="Edytuj" onPress={() => openEditor(item)} />
+            <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
           </>}
         />
       }

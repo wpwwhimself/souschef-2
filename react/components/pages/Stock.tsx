@@ -9,7 +9,7 @@ import HorizontalLine from "../HorizontalLine"
 import BarText from "../BarText"
 import { getPassword } from "../../helpers/Storage"
 import { rqGet, rqPatch } from "../../helpers/SCFetch"
-import { API_SOUSCHEF_URL } from "../../assets/constants"
+import { ACCENT_COLOR, API_SOUSCHEF_URL } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
@@ -112,14 +112,14 @@ export default function Stock({navigation}){
     ? <Loader />
     : <SectionList
       sections={content}
-      renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
+      renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR}>{section.header}</Header>}
       renderItem={({item}) => <PositionTile
               icon={item.product.ingredient.category.symbol}
               title={item.product.name}
               subtitle={`${item.product.ingredient.name}`}
               buttons={<>
                 <AmountIndicator amount={item.amount} unit={item.product.ingredient.unit} maxAmount={item.product.amount} expirationDate={item.expiration_date} />
-                <SCButton icon="wrench" title="Popraw" color="lightgray" onPress={() => editStock(item.id, item.product.ingredient.unit)} />
+                <SCButton icon="wrench" color="lightgray" onPress={() => editStock(item.id, item.product.ingredient.unit)} small />
               </>}
           />
           }

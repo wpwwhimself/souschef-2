@@ -2,7 +2,7 @@ import { FlatList, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react";
-import { getPassword } from "../../helpers/PasswordStorage";
+import { getPassword } from "../../helpers/Storage";
 import { useIsFocused } from "@react-navigation/native";
 import { API_SOUSCHEF_URL } from "../../assets/constants";
 import PositionTile from "../PositionTile";

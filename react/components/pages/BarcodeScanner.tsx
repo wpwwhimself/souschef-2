@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, FlatList } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
-import { getEANToken, getPassword } from '../../helpers/PasswordStorage'
+import { getEANToken, getPassword } from '../../helpers/Storage'
 import { API_EAN_URL, API_SOUSCHEF_URL } from '../../assets/constants'
 import BarText from '../BarText'
 import { rqGet, rqPost } from '../../helpers/SCFetch'

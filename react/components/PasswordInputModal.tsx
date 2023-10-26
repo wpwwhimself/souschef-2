@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { setPassword } from '../helpers/PasswordStorage';
+import { setPassword } from '../helpers/Storage';
 import { SCButton, SCModal, SCInput } from './SCSpecifics';
 
 interface PasswordInputModalProps {

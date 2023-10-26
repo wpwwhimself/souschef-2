@@ -4,7 +4,7 @@ import Home from './components/pages/Home';
 import Profile from './components/pages/Profile';
 import StockHub from './components/pages/StockHub';
 import { useState, useEffect } from 'react';
-import { getPassword } from './helpers/PasswordStorage';
+import { getPassword } from './helpers/Storage';
 import PasswordInputModal from './components/PasswordInputModal';
 import RecipesHub from './components/pages/RecipesHub';
 import { ACCENT_COLOR } from './assets/constants';

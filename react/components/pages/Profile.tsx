@@ -3,7 +3,7 @@ import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react"
 import PasswordInputModal from "../PasswordInputModal";
-import { deletePassword, getEANToken, setEANToken } from "../../helpers/PasswordStorage";
+import { deletePassword, getEANToken, setEANToken } from "../../helpers/Storage";
 import { SCButton, SCInput } from "../SCSpecifics";
 import { useToast } from "react-native-toast-notifications";
 

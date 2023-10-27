@@ -6,7 +6,9 @@ use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\StockItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -128,6 +130,55 @@ class ProductController extends Controller
         return $data;
     }
 
+    public function getStockItemByIngredient($ing_id){
+        $data = $ing_id != 0
+            ? StockItem::with("product", "product.ingredient", "product.ingredient.category")
+                ->whereHas("product.ingredient", fn($q) => $q->where("id", $ing_id))
+                ->get()
+            : Ingredient::withSum("stockItems", "amount")
+                ->withMin("stockItems", "expiration_date")
+                ->with("category")
+                ->has("stockItems")
+                ->get()
+                ;
+        return $data;
+    }
+
+    public function getLowStock(){
+        $data = DB::table("ingredients", "i")
+            ->leftJoin("products", "ingredient_id", "=", "i.id")
+            ->leftJoin("stock_items", "product_id", "=", "products.id")
+            ->leftJoin("categories", "category_id", "=", "categories.id")
+            ->groupBy("i.id")
+            ->havingRaw("stock_items_sum_amount <= i.minimal_amount")
+            ->orHavingRaw("stock_items_min_expiration_date < CURDATE()")
+            ->selectRaw(implode(", ", [
+                "i.*",
+                "categories.symbol as category_symbol",
+                "sum(stock_items.amount) as stock_items_sum_amount",
+                "min(stock_items.expiration_date) as stock_items_min_expiration_date",
+            ]))
+            ->get();
+        return $data;
+    }
+
+    public function getSpoiled(){
+        $data = DB::table("ingredients", "i")
+            ->leftJoin("products", "ingredient_id", "=", "i.id")
+            ->leftJoin("stock_items", "product_id", "=", "products.id")
+            ->leftJoin("categories", "category_id", "=", "categories.id")
+            ->groupBy("i.id")
+            ->havingRaw("stock_items_min_expiration_date <= CURDATE() + INTERVAL 2 DAY")
+            ->selectRaw(implode(", ", [
+                "i.*",
+                "categories.symbol as category_symbol",
+                "sum(stock_items.amount) as stock_items_sum_amount",
+                "min(stock_items.expiration_date) as stock_items_min_expiration_date",
+            ]))
+            ->get();
+        return $data;
+    }
+
     public function postStockItem(Request $rq){
         if($rq->amount <= 0){
             return response()->json($this::STK_CLEANED_UP);
@@ -147,6 +198,8 @@ class ProductController extends Controller
                 "expiration_date" => $rq->expirationDate,
             ]);
         }
+
+        $this->estimateExpirationDays($rq->productId, $rq->expirationDate);
         return $data;
     }
 
@@ -171,5 +224,14 @@ class ProductController extends Controller
 
     private function stockCleanup(){
         StockItem::where("amount", "<=", 0)->delete();
+    }
+
+    private function estimateExpirationDays($product_id, $expiration_date){
+        $data = Product::findOrFail($product_id);
+        $new_expiration_days = Carbon::parse($expiration_date)->diffInDays(Carbon::today());
+        $data->est_expiration_days = $data->est_expiration_days
+            ? ($new_expiration_days + $data->est_expiration_days) / 2
+            : $new_expiration_days;
+        $data->save();
     }
 }

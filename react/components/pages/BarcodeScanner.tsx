@@ -16,6 +16,7 @@ import PositionTile from '../PositionTile'
 import HorizontalLine from '../HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native'
+import moment from 'moment'
 
 interface UPCProduct{
   title: string,
@@ -65,7 +66,7 @@ export default function BarcodeScanner({navigation}){
 
     // rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
       // .then(product => {
-        setPEan(data);
+        mleEanReady(data);
         openManualLookup("ean");
       // })
       // .catch(err => console.error(err));
@@ -88,7 +89,7 @@ export default function BarcodeScanner({navigation}){
     mllIngChosen(pIngredientId);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient", {
+    rqGet(API_SOUSCHEF_URL + "ingredients", {
       magic_word: magic_word,
     })
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
@@ -105,7 +106,7 @@ export default function BarcodeScanner({navigation}){
     setLoaderVisible(true);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "product/ean/" + ean, {
+    rqGet(API_SOUSCHEF_URL + "products/ean/" + ean, {
       magic_word: magic_word,
     })
       .then(prds => { setProducts(prds) })
@@ -120,14 +121,14 @@ export default function BarcodeScanner({navigation}){
 
     // get ingredient unit
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient/" + ing_id, {
+    rqGet(API_SOUSCHEF_URL + "ingredients/" + ing_id, {
       magic_word: magic_word,
     })
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(API_SOUSCHEF_URL + "product/ingredient/" + ing_id, {
+    rqGet(API_SOUSCHEF_URL + "products/ingredient/" + ing_id, {
       magic_word: magic_word,
     })
       .then(prds => { setProducts(prds) })
@@ -146,6 +147,9 @@ export default function BarcodeScanner({navigation}){
     setPEstExpirationDays(product?.est_expiration_days)
     setPIngredientUnit(product?.ingredient.unit)
 
+    setSAmount(undefined)
+    setSExpirationDate(moment().add(product?.est_expiration_days, 'd').format("YYYY-MM-DD"));
+
     mllIngChosen(pIngredientId);
     setShowModal("stk");
   }
@@ -156,7 +160,7 @@ export default function BarcodeScanner({navigation}){
     const magic_word = await getPassword();
     // create product if needed
     (async () => (!pId)
-    ? rqPost(API_SOUSCHEF_URL + "product", {
+    ? rqPost(API_SOUSCHEF_URL + "products", {
         magic_word: magic_word,
         ean: pEan,
         name: pName,
@@ -164,7 +168,7 @@ export default function BarcodeScanner({navigation}){
         amount: pAmount,
         estExpirationDays: pEstExpirationDays,
       })
-    : rqGet(API_SOUSCHEF_URL + "product/" + pId, {
+    : rqGet(API_SOUSCHEF_URL + "products/" + pId, {
         magic_word: magic_word
       })
     )().then(res => {
@@ -177,7 +181,7 @@ export default function BarcodeScanner({navigation}){
       rqPost(API_SOUSCHEF_URL + "stock", {
         magic_word: magic_word,
         productId: product.id,
-        amount: sAmount || pAmount,
+        amount: sAmount,
         expirationDate: sExpirationDate,
       })
     }).then(res => {
@@ -259,6 +263,7 @@ export default function BarcodeScanner({navigation}){
           <FlatList data={products}
             renderItem={({item}) =>
               <PositionTile
+                icon={item.ingredient.category.symbol}
                 title={item.name}
                 subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
                 buttons={<>
@@ -293,14 +298,14 @@ export default function BarcodeScanner({navigation}){
           <SCInput label="Nazwa" value={pName} onChange={setPName} />
           <SCInput label="EAN" value={pEan} onChange={setPEan} />
           <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={mllIngChosen} />
-          <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={setPAmount} />
+          <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={(val) => {setPAmount(val); setSAmount(sAmount || val)}} />
         </>
         }
       </View>
 
       <Header icon="box-open">Egzemplarz</Header>
       <View style={[s.margin, s.center]}>
-        <SCInput label={`Ilość (${pIngredientUnit})`} value={sAmount || pAmount} onChange={setSAmount} />
+        <SCInput label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
         <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />
       </View>
 

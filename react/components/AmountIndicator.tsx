@@ -6,7 +6,7 @@ import moment from "moment"
 
 interface AIProps{
   amount: number,
-  maxAmount: number,
+  maxAmount?: number,
   minAmount?: number,
   unit: string,
   expirationDate?: string,
@@ -24,7 +24,7 @@ export default function AmountIndicator({amount, unit, maxAmount, expirationDate
   ]
 
   return <View style={ss.wrapper}>
-    <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount ? ACCENT_COLOR : "lightgray"} width={100} />
+    {maxAmount && <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount ? ACCENT_COLOR : "lightgray"} width={100} />}
     <Text style={dateDiff <= 0 && s.error}>{label.filter(Boolean).join(" • ")}</Text>
   </View>
 }

@@ -49,6 +49,7 @@ Route::controller(ProductController::class)->group(function(){
 
     Route::prefix("stock")->group(function(){
         Route::get("/{id?}", "getStockItem")->name("get-stock");
+        Route::get("/ingredient/{ing_id}", "getStockItemByIngredient")->name("get-stock-by-ingredient");
         Route::post("/", "postStockItem")->name("post-stock");
         Route::patch("/{id}", "patchStockItem")->name("patch-stock");
         Route::delete("/{id}", "deleteStockItem")->name("delete-stock");

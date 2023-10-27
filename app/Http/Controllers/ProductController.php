@@ -128,6 +128,20 @@ class ProductController extends Controller
         return $data;
     }
 
+    public function getStockItemByIngredient($ing_id){
+        $data = $ing_id != 0
+            ? StockItem::with("product", "product.ingredient", "product.ingredient.category")
+                ->whereHas("product.ingredient", fn($q) => $q->where("id", $ing_id))
+                ->get()
+            : Ingredient::withSum("stockItems", "amount")
+                ->withMin("stockItems", "expiration_date")
+                ->with("category")
+                ->has("stockItems")
+                ->get()
+                ;
+        return $data;
+    }
+
     public function postStockItem(Request $rq){
         if($rq->amount <= 0){
             return response()->json($this::STK_CLEANED_UP);

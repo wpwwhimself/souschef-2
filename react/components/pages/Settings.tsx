@@ -3,67 +3,56 @@ import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react"
 import PasswordInputModal from "../PasswordInputModal";
-import { getKey, saveKey, deleteKey } from "../../helpers/Storage";
+import { getKey, setKey } from "../../helpers/Storage";
 import { SCButton, SCInput } from "../SCSpecifics";
 import { useToast } from "react-native-toast-notifications";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Settings(){
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [eanApiToken, setEanApiToken] = useState("");
   const toast = useToast();
+  const isFocused = useIsFocused();
 
-  const STKEYS = {
-    DBURL: "dbUrl",
-    DBPSW: "magicWord",
-    EANURL: "eanUrl",
-    EANTKN: "EANToken",
+  const [dbUrl, setDbUrl] = useState("");
+  const [dbPassword, setDbPassword] = useState("");
+  const [eanUrl, setEanUrl] = useState("");
+  const [eanToken, setEanToken] = useState("");
+
+  const storage = {
+    dbUrl: setDbUrl,
+    magicWord: setDbPassword,
+    eanUrl: setEanUrl,
+    EANToken: setEanToken,
   }
 
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await getKey(STKEYS.EANTKN);
-      setEanApiToken(token ?? "");
-    }
-    checkToken();
-  }, []);
+    if(!isFocused) return;
 
-  const saveEanToken = async () => {
-    saveKey(STKEYS.EANTKN, eanApiToken);
-    toast.show("Token do API EANów zapisany", {type: "success"})
+    // load data from storage
+    Object.keys(storage).forEach(key => {
+      getKey(key).then(res => storage[key](res)).catch(err => toast.show(err.message, {type: "danger"}));
+    });
+  }, [isFocused]);
+
+  const handleDbSave = () => {
+    setKey("dbUrl", dbUrl);
+    setKey("magicWord", dbPassword);
+    toast.show("Dane bazy zmodyfikowane", {type: "success"});
+  }
+  const handleEanSave = () => {
+    setKey("eanUrl", eanUrl);
+    setKey("EANToken", eanToken);
+    toast.show("Dane dot. EAN zmodyfikowane", {type: "success"});
   }
 
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
-
   return <View style={s.wrapper}>
-    <Header icon="key">Magiczne słowo</Header>
-    <Text>Tu znajdziesz hasło dostępu do bazy danych.</Text>
-    <View style={s.flexRight}>
-      <SCButton icon="wrench" title="Zmień" onPress={openModal} />
-      <SCButton icon="trash" title="Usuń" onPress={deleteKey(STKEYS.DBPSW)} />
-    </View>
-    <PasswordInputModal isVisible={isModalVisible} onClose={closeModal} />
+    <Header icon="database">Baza danych</Header>
+    <SCInput label="Adres serwera" value={dbUrl} type="url" onChange={setDbUrl} />
+    <SCInput label="Magiczne słowo" value={dbPassword} onChange={setDbPassword} password />
+    <SCButton icon="check" title="Zatwierdź" onPress={handleDbSave} />
 
-    <Header icon="barcode">Token do API kodów kreskowych</Header>
-    <Text>
-      Ta aplikacja korzysta z upcdatabase.org w celu tłumaczenia kodów kreskowych produktów.
-      W pole poniżej wpisz klucz dostępu do API.
-    </Text>
-    <View style={s.flexRight}>
-      <SCInput
-        value={eanApiToken}
-        onChange={setEanApiToken}
-        style={{ width: 300 }}
-      />
-      <SCButton icon="wrench" title="Zmień" onPress={saveEanToken} />
-    </View>
-    <PasswordInputModal isVisible={isModalVisible} onClose={closeModal} />
-
-    <Header icon="chart-line">Statystyki kucharzowania</Header>
+    <Header icon="barcode">Wyszukiwanie EANów</Header>
+    <SCInput label="Adres serwera" value={eanUrl} type="url" onChange={setEanUrl} />
+    <SCInput label="Magiczne słowo" value={eanToken} onChange={setEanToken} />
+    <SCButton icon="check" title="Zatwierdź" onPress={handleEanSave} />
   </View>
 }

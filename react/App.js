@@ -2,9 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs"
 import Home from './components/pages/Home';
 import StockHub from './components/pages/StockHub';
-import { useState, useEffect } from 'react';
-import { getPassword } from './helpers/Storage';
-import PasswordInputModal from './components/PasswordInputModal';
 import RecipesHub from './components/pages/RecipesHub';
 import { ACCENT_COLOR } from './assets/constants';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -27,28 +24,6 @@ const theme = {
   }
 }
 export default function App() {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  useEffect(() => {
-    const checkPassword = async () => {
-      getPassword()
-        .then(storedPassword => {
-          if (!storedPassword) {
-            setIsModalVisible(true);
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          setIsModalVisible(true);
-        })
-    }
-    checkPassword();
-  }, []);
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
-
   const navItems = [
     {
       route: "Home",
@@ -85,7 +60,6 @@ export default function App() {
       >
     <NavigationContainer>
     <StatusBar barStyle='dark-content' backgroundColor={ACCENT_COLOR} />
-    <PasswordInputModal isVisible={isModalVisible} onClose={closeModal} />
     <Tab.Navigator
       initialRouteName='Home'
       activeColor={ACCENT_COLOR}

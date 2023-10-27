@@ -3,12 +3,9 @@ import { View, Text, Button, StyleSheet, FlatList } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
-import { getEANToken, getPassword } from '../../helpers/Storage'
-import { API_EAN_URL, API_SOUSCHEF_URL } from '../../assets/constants'
 import BarText from '../BarText'
 import { rqGet, rqPost } from '../../helpers/SCFetch'
 import { Product, SelectItem } from '../../types'
-import TitledText from '../TitledText'
 import { SCButton, SCModal, SCInput, SCSelect } from '../SCSpecifics'
 import { prepareSelectItems } from '../../helpers/Prepare'
 import Loader from '../Loader'
@@ -25,8 +22,6 @@ interface UPCProduct{
     quantity: string,
   },
 }
-
-const PRODUCT_NOT_FOUND_ERROR = "This product doesn't exist in the database";
 
 export default function BarcodeScanner({navigation}){
   const [hasPermissions, setHasPermissions] = useState(null)
@@ -62,14 +57,9 @@ export default function BarcodeScanner({navigation}){
 
   const handleBarCodeScanned = async ({type, data}) => {
     setScannerOn(false);
-    const token = await getEANToken();
 
-    // rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
-      // .then(product => {
-        mleEanReady(data);
-        openManualLookup("ean");
-      // })
-      // .catch(err => console.error(err));
+    mleEanReady(data);
+    openManualLookup("ean");
   }
 
   const startScan = () => {
@@ -88,10 +78,7 @@ export default function BarcodeScanner({navigation}){
   const openManualLookup = async (mode: "ean" | "list") => {
     mllIngChosen(pIngredientId);
 
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredients", {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
       .catch(err => toast.show(`Problem z szukaniem składników: ${err.message}`, {type: "danger"}))
     ;
@@ -105,10 +92,7 @@ export default function BarcodeScanner({navigation}){
     if(ean.length === 0) return;
     setLoaderVisible(true);
 
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "products/ean/" + ean, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ean/" + ean)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -120,17 +104,12 @@ export default function BarcodeScanner({navigation}){
     setPIngredientId(ing_id);
 
     // get ingredient unit
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredients/" + ing_id, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients/" + ing_id)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(API_SOUSCHEF_URL + "products/ingredient/" + ing_id, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -157,29 +136,23 @@ export default function BarcodeScanner({navigation}){
   const handleSubmit = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    const magic_word = await getPassword();
     // create product if needed
     (async () => (!pId)
-    ? rqPost(API_SOUSCHEF_URL + "products", {
-        magic_word: magic_word,
+    ? rqPost(["dbUrl", "magicWord", "magic_word"], "products", {
         ean: pEan,
         name: pName,
         ingredientId: pIngredientId,
         amount: pAmount,
         estExpirationDays: pEstExpirationDays,
       })
-    : rqGet(API_SOUSCHEF_URL + "products/" + pId, {
-        magic_word: magic_word
-      })
+    : rqGet(["dbUrl", "magicWord", "magic_word"], "products/" + pId)
     )().then(res => {
       console.log(res);
       if(!res.id) throw new Error("Błąd w tworzeniu produktu")
       return res
     })
     .then(product => { // create stock item
-      console.log(pId, product);
-      rqPost(API_SOUSCHEF_URL + "stock", {
-        magic_word: magic_word,
+      rqPost(["dbUrl", "magicWord", "magic_word"], "stock", {
         productId: product.id,
         amount: sAmount,
         expirationDate: sExpirationDate,

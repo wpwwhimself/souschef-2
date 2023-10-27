@@ -2,8 +2,6 @@ import { FlatList, Text, View } from "react-native"
 import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { getPassword } from "../../helpers/Storage";
-import { API_SOUSCHEF_URL } from "../../assets/constants";
 import PositionTile from "../PositionTile";
 import BarText from "../BarText";
 import { SCButton, SCModal, SCInput } from "../SCSpecifics";
@@ -29,12 +27,9 @@ export default function Categories({navigation}){
   const getData = async () => {
     setCatLoaderVisible(true);
 
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "categories", {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "categories")
       .then(res => setCategories(res))
-      .catch(err => console.error(err))
+      .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setCatLoaderVisible(false))
     ;
   }
@@ -56,11 +51,9 @@ export default function Categories({navigation}){
   const handleSave = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    const magic_word = await getPassword();
     const editing = (cId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(API_SOUSCHEF_URL + "categories" + (editing ? `/${cId}` : ""), {
-      magic_word: magic_word,
+    rq(["dbUrl", "magicWord", "magic_word"], "categories" + (editing ? `/${cId}` : ""), {
       name: cName,
       symbol: cSymbol,
     })
@@ -77,8 +70,7 @@ export default function Categories({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    const magic_word = await getPassword();
-    rqDelete(API_SOUSCHEF_URL + `categories/${cId}`, {magic_word: magic_word})
+    rqDelete(["dbUrl", "magicWord", "magic_word"], `categories/${cId}`)
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Kategoria usunięta", {type: "success"});

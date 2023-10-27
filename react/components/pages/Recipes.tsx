@@ -2,9 +2,7 @@ import { FlatList, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react";
-import { getPassword } from "../../helpers/Storage";
 import { useIsFocused } from "@react-navigation/native";
-import { API_SOUSCHEF_URL } from "../../assets/constants";
 import PositionTile from "../PositionTile";
 import BarText from "../BarText";
 import { rqGet } from "../../helpers/SCFetch";
@@ -16,10 +14,7 @@ export default function Recipes({navigation}){
 
   useEffect(() => {
     const getData = async () => {
-      const magic_word = await getPassword();
-      rqGet(API_SOUSCHEF_URL + "recipes", {
-        magic_word: magic_word,
-      })
+      rqGet(["dbUrl", "magicWord", "magic_word"], "recipes")
         .then(res => setRecipes(res))
         .catch(err => console.error(err))
       ;
@@ -32,7 +27,7 @@ export default function Recipes({navigation}){
 
     <Header icon="list">Lista</Header>
     <FlatList data={recipes}
-      renderItem={({item, index, separators}) => <PositionTile
+      renderItem={({item}) => <PositionTile
           title="Cześć"
           subtitle="Jestem pudełkiem"
           icon="check"

@@ -2,19 +2,19 @@ import { SectionList, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
 import BarText from "../BarText";
-import { ACCENT_COLOR, API_SOUSCHEF_URL } from "../../assets/constants";
+import { ACCENT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import Loader from "../Loader";
-import { getPassword } from "../../helpers/Storage";
 import { rqGet } from "../../helpers/SCFetch";
 import PositionTile from "../PositionTile";
 import AmountIndicator from "../AmountIndicator";
-import { SCButton } from "../SCSpecifics";
 import HorizontalLine from "../HorizontalLine";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Home(){
   const isFocused = useIsFocused();
+  const toast = useToast();
   const [loaderForShoppingList, setLoaderForShoppingList] = useState(false)
   const [loaderForSpoiled, setLoaderForSpoiled] = useState(false)
   const [shoppingList, setShoppingList] = useState([])
@@ -23,24 +23,19 @@ export default function Home(){
   const getData = async () => {
     setLoaderForShoppingList(true);
     setLoaderForSpoiled(true);
-    const magic_word = await getPassword();
 
-    rqGet(API_SOUSCHEF_URL + "stock/status/lowStock", {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/status/lowStock")
       .then(items => {
         setShoppingList(items)
       })
-      .catch(err => console.error(err))
+      .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setLoaderForShoppingList(false))
 
-    rqGet(API_SOUSCHEF_URL + "stock/status/spoiled", {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/status/lowStock")
       .then(items => {
         setSpoiled(items)
       })
-      .catch(err => console.error(err))
+      .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setLoaderForSpoiled(false))
   }
 

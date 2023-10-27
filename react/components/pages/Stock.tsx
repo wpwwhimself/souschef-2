@@ -7,9 +7,8 @@ import Loader from "../Loader"
 import PositionTile from "../PositionTile"
 import HorizontalLine from "../HorizontalLine"
 import BarText from "../BarText"
-import { getPassword } from "../../helpers/Storage"
 import { rqDelete, rqGet, rqPatch } from "../../helpers/SCFetch"
-import { ACCENT_COLOR, API_SOUSCHEF_URL } from "../../assets/constants"
+import { ACCENT_COLOR } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
@@ -40,10 +39,7 @@ export default function Stock({navigation}){
   const getData = async () => {
     setLoaderVisible(true);
 
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "stock/ingredient/0", {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/ingredient/0")
       .then(items => {
         const freezables = items.filter(ing => ing.freezable)
         setStockFreezer(freezables)
@@ -54,10 +50,7 @@ export default function Stock({navigation}){
   }
 
   const drilldown = async (ing_id: number) => {
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "stock/ingredient/" + ing_id, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/ingredient/" + ing_id)
       .then((items) => {
         setIName(items[0].product.ingredient.name)
         setStockDdDetails(items)
@@ -67,10 +60,7 @@ export default function Stock({navigation}){
   }
 
   const editStock = async (stock_id: number, unit: string) => {
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "stock/" + stock_id, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/" + stock_id)
       .then((item: StockItem) => {
         setSId(item.id)
         setSAmount(item.amount)
@@ -83,9 +73,7 @@ export default function Stock({navigation}){
   const handleSubmit = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    const magic_word = await getPassword();
-    rqPatch(API_SOUSCHEF_URL + "stock/" + sId, {
-      magic_word: magic_word,
+    rqPatch(["dbUrl", "magicWord", "magic_word"], "stock/" + sId, {
       amount: sAmount || 0,
       expirationDate: sExpirationDate,
     })
@@ -107,10 +95,7 @@ export default function Stock({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Czyszczę...");
 
-    const magic_word = await getPassword();
-    rqDelete(API_SOUSCHEF_URL + "stock/" + sId, {
-      magic_word: magic_word,
-    })
+    rqDelete(["dbUrl", "magicWord", "magic_word"], "stock/" + sId)
     .then(res => {
       toast.update(toastId, "Stan poprawiony", {type: "success"});
       getData();

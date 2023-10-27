@@ -7,16 +7,15 @@ const storage = new Storage({
   defaultExpires: null, // No expiration for items
 });
 
-export const getKey = async (key: string) => {
-  try {
-    const data = await storage.load({ key: key });
-    return data;
-  } catch (error) {
-    throw new Error(`Could not fetch ${key} from storage`);
-  }
-}
+export const getKey = async (key: string) =>
+  storage.load({ key: key })
+    .then(res => res)
+    .catch(err => {
+      setKey(key, "");
+      getKey(key);
+    })
 
-export const saveKey = (key: string, new_val: any) => {
+export const setKey = (key: string, new_val: any) => {
   storage.save({
     key: key,
     data: new_val,

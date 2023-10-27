@@ -2,8 +2,6 @@ import { FlatList, Text, View } from "react-native"
 import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
-import { getPassword } from "../../helpers/Storage";
-import { API_SOUSCHEF_URL } from "../../assets/constants";
 import PositionTile from "../PositionTile";
 import BarText from "../BarText";
 import { SCButton, SCModal, SCInput, SCSelect } from "../SCSpecifics";
@@ -36,10 +34,7 @@ export default function Products({navigation}){
   const getIngredients = async () => {
     setIngLoaderVisible(true);
 
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredients", {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
       .then(ings => setIngredients(prepareSelectItems(ings, "name", "id")))
       .catch(err => console.error(err))
       .finally(() => setIngLoaderVisible(false))
@@ -51,17 +46,12 @@ export default function Products({navigation}){
     setPIngredientId(ing_id);
 
     // get ingredient unit
-    const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredients/" + ing_id, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients/" + ing_id)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(API_SOUSCHEF_URL + "products/ingredient/" + ing_id, {
-      magic_word: magic_word,
-    })
+    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setPrdLoaderVisible(false))
@@ -92,11 +82,9 @@ export default function Products({navigation}){
   const handleSave = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    const magic_word = await getPassword();
     const editing = (pId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(API_SOUSCHEF_URL + "products" + (editing ? `/${pId}` : ""), {
-      magic_word: magic_word,
+    rq(["dbUrl", "magicWord", "magic_word"], "products" + (editing ? `/${pId}` : ""), {
       ean: pEan,
       name: pName,
       ingredientId: pIngredientId,
@@ -116,8 +104,7 @@ export default function Products({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    const magic_word = await getPassword();
-    rqDelete(API_SOUSCHEF_URL + `products/${pId}`, {magic_word: magic_word})
+    rqDelete(["dbUrl", "magicWord", "magic_word"], `products/${pId}`)
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Produkt usunięty", {type: "success"});

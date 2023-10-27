@@ -37,7 +37,7 @@ export default function Products({navigation}){
     setIngLoaderVisible(true);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient", {
+    rqGet(API_SOUSCHEF_URL + "ingredients", {
       magic_word: magic_word,
     })
       .then(ings => setIngredients(prepareSelectItems(ings, "name", "id")))
@@ -52,14 +52,14 @@ export default function Products({navigation}){
 
     // get ingredient unit
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient/" + ing_id, {
+    rqGet(API_SOUSCHEF_URL + "ingredients/" + ing_id, {
       magic_word: magic_word,
     })
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(API_SOUSCHEF_URL + "product/ingredient/" + ing_id, {
+    rqGet(API_SOUSCHEF_URL + "products/ingredient/" + ing_id, {
       magic_word: magic_word,
     })
       .then(prds => { setProducts(prds) })
@@ -95,7 +95,7 @@ export default function Products({navigation}){
     const magic_word = await getPassword();
     const editing = (pId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(API_SOUSCHEF_URL + "product" + (editing ? `/${pId}` : ""), {
+    rq(API_SOUSCHEF_URL + "products" + (editing ? `/${pId}` : ""), {
       magic_word: magic_word,
       ean: pEan,
       name: pName,
@@ -117,7 +117,7 @@ export default function Products({navigation}){
     const toastId = toast.show("Zapisuję...");
 
     const magic_word = await getPassword();
-    rqDelete(API_SOUSCHEF_URL + `product/${pId}`, {magic_word: magic_word})
+    rqDelete(API_SOUSCHEF_URL + `products/${pId}`, {magic_word: magic_word})
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Produkt usunięty", {type: "success"});

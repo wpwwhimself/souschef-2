@@ -36,7 +36,7 @@ export default function Ingredients({navigation}){
     setIngLoaderVisible(true);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient", {
+    rqGet(API_SOUSCHEF_URL + "ingredients", {
       magic_word: magic_word,
     })
       .then(res => setIngredients(res))
@@ -55,7 +55,7 @@ export default function Ingredients({navigation}){
     setEditorVisible(!editorVisible)
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "category", {
+    rqGet(API_SOUSCHEF_URL + "categories", {
       magic_word: magic_word,
     })
       .then(cats => { setCategories(prepareSelectItems(cats, "name", "id", true)) })
@@ -79,7 +79,7 @@ export default function Ingredients({navigation}){
     const magic_word = await getPassword();
     const editing = (cId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(API_SOUSCHEF_URL + "ingredient" + (editing ? `/${cId}` : ""), {
+    rq(API_SOUSCHEF_URL + "ingredients" + (editing ? `/${cId}` : ""), {
       magic_word: magic_word,
       name: cName,
       categoryId: cCategoryId,
@@ -102,7 +102,7 @@ export default function Ingredients({navigation}){
     const toastId = toast.show("Zapisuję...");
 
     const magic_word = await getPassword();
-    rqDelete(API_SOUSCHEF_URL + `ingredient/${cId}`, {magic_word: magic_word})
+    rqDelete(API_SOUSCHEF_URL + `ingredients/${cId}`, {magic_word: magic_word})
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Składnik usunięty", {type: "success"});

@@ -17,7 +17,7 @@ export default function Recipes({navigation}){
   useEffect(() => {
     const getData = async () => {
       const magic_word = await getPassword();
-      rqGet(API_SOUSCHEF_URL + "recipe", {
+      rqGet(API_SOUSCHEF_URL + "recipes", {
         magic_word: magic_word,
       })
         .then(res => setRecipes(res))

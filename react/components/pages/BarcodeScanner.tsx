@@ -88,7 +88,7 @@ export default function BarcodeScanner({navigation}){
     mllIngChosen(pIngredientId);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient", {
+    rqGet(API_SOUSCHEF_URL + "ingredients", {
       magic_word: magic_word,
     })
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
@@ -105,7 +105,7 @@ export default function BarcodeScanner({navigation}){
     setLoaderVisible(true);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "product/ean/" + ean, {
+    rqGet(API_SOUSCHEF_URL + "products/ean/" + ean, {
       magic_word: magic_word,
     })
       .then(prds => { setProducts(prds) })
@@ -120,14 +120,14 @@ export default function BarcodeScanner({navigation}){
 
     // get ingredient unit
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "ingredient/" + ing_id, {
+    rqGet(API_SOUSCHEF_URL + "ingredients/" + ing_id, {
       magic_word: magic_word,
     })
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(API_SOUSCHEF_URL + "product/ingredient/" + ing_id, {
+    rqGet(API_SOUSCHEF_URL + "products/ingredient/" + ing_id, {
       magic_word: magic_word,
     })
       .then(prds => { setProducts(prds) })
@@ -156,7 +156,7 @@ export default function BarcodeScanner({navigation}){
     const magic_word = await getPassword();
     // create product if needed
     (async () => (!pId)
-    ? rqPost(API_SOUSCHEF_URL + "product", {
+    ? rqPost(API_SOUSCHEF_URL + "products", {
         magic_word: magic_word,
         ean: pEan,
         name: pName,
@@ -164,7 +164,7 @@ export default function BarcodeScanner({navigation}){
         amount: pAmount,
         estExpirationDays: pEstExpirationDays,
       })
-    : rqGet(API_SOUSCHEF_URL + "product/" + pId, {
+    : rqGet(API_SOUSCHEF_URL + "products/" + pId, {
         magic_word: magic_word
       })
     )().then(res => {

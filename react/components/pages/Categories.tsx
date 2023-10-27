@@ -30,7 +30,7 @@ export default function Categories({navigation}){
     setCatLoaderVisible(true);
 
     const magic_word = await getPassword();
-    rqGet(API_SOUSCHEF_URL + "category", {
+    rqGet(API_SOUSCHEF_URL + "categories", {
       magic_word: magic_word,
     })
       .then(res => setCategories(res))
@@ -59,7 +59,7 @@ export default function Categories({navigation}){
     const magic_word = await getPassword();
     const editing = (cId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(API_SOUSCHEF_URL + "category" + (editing ? `/${cId}` : ""), {
+    rq(API_SOUSCHEF_URL + "categories" + (editing ? `/${cId}` : ""), {
       magic_word: magic_word,
       name: cName,
       symbol: cSymbol,
@@ -78,7 +78,7 @@ export default function Categories({navigation}){
     const toastId = toast.show("Zapisuję...");
 
     const magic_word = await getPassword();
-    rqDelete(API_SOUSCHEF_URL + `category/${cId}`, {magic_word: magic_word})
+    rqDelete(API_SOUSCHEF_URL + `categories/${cId}`, {magic_word: magic_word})
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Kategoria usunięta", {type: "success"});

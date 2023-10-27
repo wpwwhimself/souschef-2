@@ -7,6 +7,7 @@ use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\StockItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -139,6 +140,41 @@ class ProductController extends Controller
                 ->has("stockItems")
                 ->get()
                 ;
+        return $data;
+    }
+
+    public function getLowStock(){
+        $data = DB::table("ingredients", "i")
+            ->leftJoin("products", "ingredient_id", "=", "i.id")
+            ->leftJoin("stock_items", "product_id", "=", "products.id")
+            ->leftJoin("categories", "category_id", "=", "categories.id")
+            ->groupBy("i.id")
+            ->havingRaw("stock_items_sum_amount <= i.minimal_amount")
+            ->orHavingRaw("stock_items_min_expiration_date < CURDATE()")
+            ->selectRaw(implode(", ", [
+                "i.*",
+                "categories.symbol as category_symbol",
+                "sum(stock_items.amount) as stock_items_sum_amount",
+                "min(stock_items.expiration_date) as stock_items_min_expiration_date",
+            ]))
+            ->get();
+        return $data;
+    }
+
+    public function getSpoiled(){
+        $data = DB::table("ingredients", "i")
+            ->leftJoin("products", "ingredient_id", "=", "i.id")
+            ->leftJoin("stock_items", "product_id", "=", "products.id")
+            ->leftJoin("categories", "category_id", "=", "categories.id")
+            ->groupBy("i.id")
+            ->havingRaw("stock_items_min_expiration_date <= CURDATE() + INTERVAL 2 DAY")
+            ->selectRaw(implode(", ", [
+                "i.*",
+                "categories.symbol as category_symbol",
+                "sum(stock_items.amount) as stock_items_sum_amount",
+                "min(stock_items.expiration_date) as stock_items_min_expiration_date",
+            ]))
+            ->get();
         return $data;
     }
 

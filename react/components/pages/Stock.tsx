@@ -150,7 +150,9 @@ export default function Stock({navigation}){
           />
           }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={({item}) => <BarText color="lightgray">{item.emptyNotice}</BarText>}
+      renderSectionFooter={({section}) => section.data.length === 0 &&
+        <BarText color="lightgray">{section.emptyNotice}</BarText>
+      }
     />}
 
     <SCModal

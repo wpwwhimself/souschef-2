@@ -65,7 +65,7 @@ export default function BarcodeScanner({navigation}){
 
     // rqGet(API_EAN_URL + `product/${data}`, {apikey: token})
       // .then(product => {
-        setPEan(data);
+        mleEanReady(data);
         openManualLookup("ean");
       // })
       // .catch(err => console.error(err));
@@ -177,7 +177,7 @@ export default function BarcodeScanner({navigation}){
       rqPost(API_SOUSCHEF_URL + "stock", {
         magic_word: magic_word,
         productId: product.id,
-        amount: sAmount || pAmount,
+        amount: sAmount,
         expirationDate: sExpirationDate,
       })
     }).then(res => {
@@ -259,6 +259,7 @@ export default function BarcodeScanner({navigation}){
           <FlatList data={products}
             renderItem={({item}) =>
               <PositionTile
+                icon={item.ingredient.category.symbol}
                 title={item.name}
                 subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
                 buttons={<>
@@ -293,14 +294,14 @@ export default function BarcodeScanner({navigation}){
           <SCInput label="Nazwa" value={pName} onChange={setPName} />
           <SCInput label="EAN" value={pEan} onChange={setPEan} />
           <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={mllIngChosen} />
-          <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={setPAmount} />
+          <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={(val) => {setPAmount(val); setSAmount(sAmount || val)}} />
         </>
         }
       </View>
 
       <Header icon="box-open">Egzemplarz</Header>
       <View style={[s.margin, s.center]}>
-        <SCInput label={`Ilość (${pIngredientUnit})`} value={sAmount || pAmount} onChange={setSAmount} />
+        <SCInput label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
         <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />
       </View>
 

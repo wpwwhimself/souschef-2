@@ -8,7 +8,7 @@ import PositionTile from "../PositionTile"
 import HorizontalLine from "../HorizontalLine"
 import BarText from "../BarText"
 import { getPassword } from "../../helpers/Storage"
-import { rqGet, rqPatch } from "../../helpers/SCFetch"
+import { rqDelete, rqGet, rqPatch } from "../../helpers/SCFetch"
 import { ACCENT_COLOR, API_SOUSCHEF_URL } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
@@ -16,6 +16,7 @@ import { SCButton, SCInput, SCModal } from "../SCSpecifics"
 import { StockItem } from "../../types"
 import { useToast } from "react-native-toast-notifications";
 import { prepareDate } from "../../helpers/Prepare"
+import { Text } from "react-native"
 
 export default function Stock({navigation}){
   const isFocused = useIsFocused()
@@ -24,6 +25,7 @@ export default function Stock({navigation}){
   const [loaderVisible, setLoaderVisible] = useState(true)
   const [stockEditor, setStockEditor] = useState(false)
   const [stockDrilldown, setStockDrilldown] = useState(false)
+  const [stockEraser, setStockEraser] = useState(false)
   const toast = useToast();
 
   const [iName, setIName] = useState("")
@@ -100,6 +102,29 @@ export default function Stock({navigation}){
       setStockDdDetails([]);
       setIName("");
       setStockDrilldown(false);
+    })
+  }
+  const handleDelete = async () => {
+    const toastId = toast.show("Czyszczę...");
+
+    const magic_word = await getPassword();
+    rqDelete(API_SOUSCHEF_URL + "stock/" + sId, {
+      magic_word: magic_word,
+    })
+    .then(res => {
+      toast.update(toastId, "Stan poprawiony", {type: "success"});
+      getData();
+    })
+    .catch(err => {
+      console.error(err)
+      toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
+    })
+    .finally(() => {
+      setStockEditor(false);
+      setStockDdDetails([]);
+      setIName("");
+      setStockDrilldown(false);
+      setStockEraser(false);
     })
   }
 
@@ -192,6 +217,19 @@ export default function Stock({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zatwierdź" onPress={handleSubmit} />
+        <SCButton icon="trash" color="red" title="Usuń" onPress={() => {setStockEditor(false); setStockEraser(true);}} />
+      </View>
+    </SCModal>
+
+    {/* eraser */}
+    <SCModal
+      title="Usuń stan"
+      visible={stockEraser}
+      onRequestClose={() => setStockEraser(false)}
+      >
+      <Text>Czy na pewno chcesz wyczyścić ten produkt?</Text>
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
       </View>
     </SCModal>
   </View>

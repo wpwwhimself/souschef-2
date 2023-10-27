@@ -31,7 +31,7 @@ export default function Home(){
       .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setLoaderForShoppingList(false))
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/status/lowStock")
+    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/status/spoiled")
       .then(items => {
         setSpoiled(items)
       })

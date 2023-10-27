@@ -16,6 +16,7 @@ import PositionTile from '../PositionTile'
 import HorizontalLine from '../HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native'
+import moment from 'moment'
 
 interface UPCProduct{
   title: string,
@@ -145,6 +146,9 @@ export default function BarcodeScanner({navigation}){
     setPAmount(product?.amount)
     setPEstExpirationDays(product?.est_expiration_days)
     setPIngredientUnit(product?.ingredient.unit)
+
+    setSAmount(undefined)
+    setSExpirationDate(moment().add(product?.est_expiration_days, 'd').format("YYYY-MM-DD"));
 
     mllIngChosen(pIngredientId);
     setShowModal("stk");

@@ -201,9 +201,6 @@ export default function Stock({navigation}){
         />}
         ItemSeparatorComponent={() => <HorizontalLine />}
       />
-      <View style={[s.flexRight, s.center]}>
-        <SCButton icon="check" title="Zatwierdź" onPress={handleSubmit} />
-      </View>
     </SCModal>
 
     <SCModal

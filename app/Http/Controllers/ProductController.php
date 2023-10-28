@@ -137,6 +137,7 @@ class ProductController extends Controller
                 ->join("products", "products.id", "=", "product_id")
                 ->orderBy("expiration_date")
                 ->orderBy("products.name")
+                ->selectRaw("stock_items.*")
                 ->get()
             : Ingredient::withSum("stockItems", "amount")
                 ->withMin("stockItems", "expiration_date")

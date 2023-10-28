@@ -41,7 +41,7 @@ export function SCInput({
         label={label}
         value={value ? new Date(value) : undefined}
         onChange={(nv) => onChange(prepareDate(nv))}
-        // onChangeText={(nv) => onChange(nv ? prepareDate(new Date(nv)) : null)}
+        onChangeText={(nv) => onChange(nv ? prepareDate(new Date(nv)) : null)}
         inputMode="start"
         mode="outlined"
         />

@@ -85,13 +85,17 @@ class ProductController extends Controller
         return $data;
     }
 
-    public function getProductByEan($ean){
-        $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->get();
+    public function getProductByEan($ean, $inStock = false){
+        $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category");
+        if($inStock) $data = $data->has("stockItems")->withSum("stockItems", "amount");
+        $data = $data->get();
         return $data;
     }
 
-    public function getProductByIngredient($ing_id){
-        $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->get();
+    public function getProductByIngredient($ing_id, $inStock = false){
+        $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category");
+        if($inStock) $data = $data->has("stockItems")->withSum("stockItems", "amount");
+        $data = $data->get();
         return $data;
     }
 

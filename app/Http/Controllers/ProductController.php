@@ -86,12 +86,12 @@ class ProductController extends Controller
     }
 
     public function getProductByEan($ean){
-        $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->get();
+        $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->orderBy("name")->get();
         return $data;
     }
 
     public function getProductByIngredient($ing_id){
-        $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->get();
+        $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->orderBy("name")->get();
         return $data;
     }
 
@@ -134,11 +134,15 @@ class ProductController extends Controller
         $data = $ing_id != 0
             ? StockItem::with("product", "product.ingredient", "product.ingredient.category")
                 ->whereHas("product.ingredient", fn($q) => $q->where("id", $ing_id))
+                ->join("products", "products.id", "=", "product_id")
+                ->orderBy("expiration_date")
+                ->orderBy("products.name")
                 ->get()
             : Ingredient::withSum("stockItems", "amount")
                 ->withMin("stockItems", "expiration_date")
                 ->with("category")
                 ->has("stockItems")
+                ->orderBy("name")
                 ->get()
                 ;
         return $data;
@@ -155,9 +159,11 @@ class ProductController extends Controller
             ->selectRaw(implode(", ", [
                 "i.*",
                 "categories.symbol as category_symbol",
-                "sum(stock_items.amount) as stock_items_sum_amount",
+                "coalesce(sum(stock_items.amount), 0) as stock_items_sum_amount",
                 "min(stock_items.expiration_date) as stock_items_min_expiration_date",
             ]))
+            ->orderBy("stock_items_sum_amount")
+            ->orderBy("i.name")
             ->get();
         return $data;
     }
@@ -175,6 +181,8 @@ class ProductController extends Controller
                 "sum(stock_items.amount) as stock_items_sum_amount",
                 "min(stock_items.expiration_date) as stock_items_min_expiration_date",
             ]))
+            ->orderBy("stock_items_min_expiration_date")
+            ->orderBy("i.name")
             ->get();
         return $data;
     }

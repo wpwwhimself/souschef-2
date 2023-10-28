@@ -127,7 +127,11 @@ export default function BarcodeScanner({navigation}){
     setPIngredientUnit(product?.ingredient.unit)
 
     setSAmount(undefined)
-    setSExpirationDate(moment().add(product?.est_expiration_days, 'd').format("YYYY-MM-DD"));
+    setSExpirationDate(
+      product?.est_expiration_days != 0
+      ? moment().add(product?.est_expiration_days, 'd').format("YYYY-MM-DD")
+      : undefined
+    );
 
     mllIngChosen(pIngredientId);
     setShowModal("stk");

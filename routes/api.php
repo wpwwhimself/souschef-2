@@ -40,8 +40,8 @@ Route::controller(ProductController::class)->group(function(){
 
     Route::prefix("products")->group(function(){
         Route::get("/{id?}", "getProduct")->name("get-product");
-        Route::get("/ean/{ean}", "getProductByEan")->name("get-product-by-ean");
-        Route::get("/ingredient/{ing_id}", "getProductByIngredient")->name("get-product-by-ingredient");
+        Route::get("/ean/{ean}/{inStock?}", "getProductByEan")->name("get-product-by-ean");
+        Route::get("/ingredient/{ing_id}/{inStock?}", "getProductByIngredient")->name("get-product-by-ingredient");
         Route::post("/", "postProduct")->name("post-product");
         Route::patch("/{id}", "patchProduct")->name("patch-product");
         Route::delete("/{id}", "deleteProduct")->name("delete-product");

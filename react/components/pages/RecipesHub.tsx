@@ -3,22 +3,23 @@ import Recipes from "./Recipes";
 import ModRecipe from "./ModRecipe";
 import { ACCENT_COLOR } from "../../assets/constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import CookingMode from "./CookingMode";
 
 const Tab = createMaterialBottomTabNavigator();
 
 export default function RecipesHub(){
   const items = [
     {
-      route: "Recipes",
-      component: Recipes,
-      title: "Lista",
-      icon: "list",
+      route: "CookingMode",
+      component: CookingMode,
+      title: "Stany",
+      icon: "balance-scale",
     },
     {
-      route: "ModRecipe",
-      component: ModRecipe,
-      title: "Dodaj",
-      icon: "plus",
+      route: "Recipes",
+      component: Recipes,
+      title: "Przepisy",
+      icon: "scroll",
     },
   ]
 

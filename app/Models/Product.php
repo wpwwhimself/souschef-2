@@ -17,4 +17,7 @@ class Product extends Model
     public function ingredient(){
         return $this->belongsTo(Ingredient::class);
     }
+    public function stockItems(){
+        return $this->hasMany(StockItem::class);
+    }
 }

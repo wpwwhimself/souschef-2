@@ -34,14 +34,14 @@ export default function App() {
     {
       route: "StockHub",
       component: StockHub,
-      title: "Składniki",
+      title: "Zapasy",
       icon: "box",
     },
     {
       route: "RecipesHub",
       component: RecipesHub,
-      title: "Przepisy",
-      icon: "scroll",
+      title: "Gotowanie",
+      icon: "utensils",
     },
     {
       route: "ProfileHub",
@@ -58,7 +58,10 @@ export default function App() {
       successIcon={<Icon icon="check" color="white" />}
       dangerIcon={<Icon icon="times" color="white" />}
       >
-    <NavigationContainer>
+    <NavigationContainer
+      documentTitle={{
+        formatter: (options, route) => `${options?.title ?? route?.name} | Sous Chef 2`
+      }}>
     <StatusBar barStyle='dark-content' backgroundColor={ACCENT_COLOR} />
     <Tab.Navigator
       initialRouteName='Home'

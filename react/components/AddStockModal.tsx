@@ -64,30 +64,16 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
     }else{
       setShowModal(false)
     }
-    // (async () => {
-    //   const { status } = await BarCodeScanner.requestPermissionsAsync();
-    //   setHasPermissions(status === "granted");
-    // })();
   }, [visible])
 
   const handleBarCodeScanned = async ({type, data}) => {
     setScannerOn(false);
 
     mleEanReady(data);
-    openManualLookup("ean");
-  }
-
-  const startScan = () => {
-    setScannerOn(true)
-    setShowModal(false)
-    setManualLookupMode(false)
-  };
-  const stopScan = () => {
-    setScannerOn(false)
   }
 
   useEffect(() => {
-    isFocused ? startScan() : stopScan();
+    setScannerOn(isFocused)
   }, [isFocused])
 
   const openManualLookup = async (mode: "ean" | "list") => {
@@ -100,6 +86,15 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
 
     setShowModal("prd");
     setManualLookupMode(mode);
+    if(mode === "ean"){
+      (async () => {
+        const { status } = await BarCodeScanner.requestPermissionsAsync();
+        setHasPermissions(status === "granted");
+      })();
+      setScannerOn(true)
+    }else{
+      setScannerOn(false)
+    }
   }
 
   const mleEanReady = async (ean: string) => {
@@ -195,16 +190,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
     }
     onRequestClose={onRequestClose}
     >
-    {/* <View style={[s.center, ss.barCode]}>
-      {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
-      {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
-      {hasPermissions === true && scannerOn &&
-      <BarCodeScanner
-        onBarCodeScanned={handleBarCodeScanned}
-        style={ss.barCode}
-        />}
-    </View> */}
-
     {/* <SCButton icon="wrench" title="Wybierz produkt ręcznie" onPress={() => { setShowModal("prd"); stopScan(); }} /> */}
 
     {/* get product info */}
@@ -220,6 +205,15 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
       {/* lookup by EAN */
       manualLookupMode === "ean" &&
       <>
+        <View style={[s.center, ss.barCode]}>
+          {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
+          {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
+          {hasPermissions === true && scannerOn &&
+          <BarCodeScanner
+            onBarCodeScanned={handleBarCodeScanned}
+            style={ss.barCode}
+            />}
+        </View>
         <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
         {!pEan
         ? <></>
@@ -239,6 +233,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
             }
             ItemSeparatorComponent={() => <HorizontalLine />}
             ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego EANu</BarText>}
+            style={s.popUpList}
           />
           <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />
         </>}
@@ -267,6 +262,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
             }
             ItemSeparatorComponent={() => <HorizontalLine />}
             ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego składnika</BarText>}
+            style={s.popUpList}
           />
           <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />
         </>}
@@ -309,6 +305,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
 const ss = StyleSheet.create({
   barCode: {
     width: "100%",
-    height: "90%",
+    height: 50,
   }
 })

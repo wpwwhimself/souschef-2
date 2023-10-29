@@ -51,4 +51,7 @@ export default StyleSheet.create({
   split: {
     flex: 1,
   },
+  popUpList: {
+    maxHeight: 500,
+  },
 })

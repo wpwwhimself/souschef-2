@@ -102,7 +102,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     if(ean.length === 0) return;
     setLoaderVisible(true);
 
-    rqGet("products/ean/" + ean + (mode === "cookingMode" && "/1"))
+    rqGet("products/ean/" + ean + (mode === "cookingMode" ? "/1" : ""))
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -119,7 +119,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet("products/ingredient/" + ing_id + (mode === "cookingMode" && "/1"))
+    rqGet("products/ingredient/" + ing_id + (mode === "cookingMode" ? "/1" : ""))
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))

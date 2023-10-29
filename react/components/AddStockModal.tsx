@@ -14,6 +14,7 @@ import HorizontalLine from './HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native'
 import moment from 'moment'
+import AmountIndicator from './AmountIndicator'
 
 // interface UPCProduct{
 //   title: string,
@@ -28,16 +29,16 @@ interface BSInput{
   onRequestClose: () => any,
   ean?: string,
   ingId?: number,
+  mode?: "stock" | "cookingMode",
 }
 
-export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSInput){
+export default function AddStockModal({visible, onRequestClose, ean, ingId, mode = "stock"}: BSInput){
   const [hasPermissions, setHasPermissions] = useState(null)
   const [scannerOn, setScannerOn] = useState(false)
   const [showModal, setShowModal] = useState<false | "prd" | "stk">(false)
   const [manualLookupMode, setManualLookupMode] = useState<false | "ean" | "list">(false)
   const [loaderVisible, setLoaderVisible] = useState(false)
   const toast = useToast();
-  const isFocused = useIsFocused();
 
   const [ingredients, setIngredients] = useState<SelectItem[]>([])
   const [products, setProducts] = useState<Product[]>([])
@@ -50,6 +51,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
   const [pIngredientUnit, setPIngredientUnit] = useState("")
   const [pAmount, setPAmount] = useState<number>(undefined)
   const [pEstExpirationDays, setPEstExpirationDays] = useState<number>(undefined)
+  const [pStockItemsSumAmount, setPStockItemsSumAmount] = useState(0)
 
   // stock item parameters
   const [sAmount, setSAmount] = useState<number>(undefined)
@@ -68,15 +70,10 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
 
   const handleBarCodeScanned = async ({type, data}) => {
     setScannerOn(false);
-
     mleEanReady(data);
   }
 
-  useEffect(() => {
-    setScannerOn(isFocused)
-  }, [isFocused])
-
-  const openManualLookup = async (mode: "ean" | "list") => {
+  const openManualLookup = async (lookupMode: "ean" | "list") => {
     mllIngChosen(pIngredientId);
 
     rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
@@ -85,8 +82,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
     ;
 
     setShowModal("prd");
-    setManualLookupMode(mode);
-    if(mode === "ean"){
+    setManualLookupMode(lookupMode);
+    if(lookupMode === "ean"){
       (async () => {
         const { status } = await BarCodeScanner.requestPermissionsAsync();
         setHasPermissions(status === "granted");
@@ -102,7 +99,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
     if(ean.length === 0) return;
     setLoaderVisible(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ean/" + ean)
+    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ean/" + ean + (mode === "cookingMode" && "/1"))
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -119,7 +116,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id)
+    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id + (mode === "cookingMode" && "/1"))
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -135,6 +132,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
     setPAmount(product?.amount)
     setPEstExpirationDays(product?.est_expiration_days)
     setPIngredientUnit(product?.ingredient.unit)
+    setPStockItemsSumAmount(product?.stock_items_sum_amount)
 
     setSAmount(undefined)
     setSExpirationDate(
@@ -143,42 +141,59 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
       : undefined
     );
 
-    mllIngChosen(pIngredientId);
     setShowModal("stk");
   }
 
   const handleSubmit = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    // create product if needed
-    (async () => (!pId)
-    ? rqPost(["dbUrl", "magicWord", "magic_word"], "products", {
-        ean: pEan,
-        name: pName,
-        ingredientId: pIngredientId,
-        amount: pAmount,
-        estExpirationDays: pEstExpirationDays,
-      })
-    : rqGet(["dbUrl", "magicWord", "magic_word"], "products/" + pId)
-    )().then(res => {
-      if(!res.id) throw new Error("Błąd w tworzeniu produktu")
-      return res
-    })
-    .then(product => // create stock item
-      rqPost(["dbUrl", "magicWord", "magic_word"], "stock", {
-        productId: product.id,
-        amount: sAmount,
-        expirationDate: sExpirationDate,
-      })
-    ).then(res => {
-      toast.update(toastId, "Pozycja dodana", {type: "success"});
-    }).catch(err => {
-      console.error(err)
-      toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
-    }).finally(() => {
-      setShowModal(false)
-      onRequestClose()
-    })
+    switch(mode){
+      case "cookingMode":
+        rqPost(["dbUrl", "magicWord", "magic_word"], "cooking-products", {
+          productId: pId,
+          amount: sAmount,
+        }).then(res => {
+          toast.update(toastId, "Pozycja dodana", {type: "success"});
+        }).catch(err => {
+          console.error(err)
+          toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
+        }).finally(() => {
+          setShowModal(false)
+          onRequestClose()
+        })
+        break;
+      case "stock":
+      default:
+        // create product if needed
+        (async () => (!pId)
+        ? rqPost(["dbUrl", "magicWord", "magic_word"], "products", {
+            ean: pEan,
+            name: pName,
+            ingredientId: pIngredientId,
+            amount: pAmount,
+            estExpirationDays: pEstExpirationDays,
+          })
+        : rqGet(["dbUrl", "magicWord", "magic_word"], "products/" + pId)
+        )().then(res => {
+          if(!res.id) throw new Error("Błąd w tworzeniu produktu")
+          return res
+        })
+        .then(product => // create stock item
+          rqPost(["dbUrl", "magicWord", "magic_word"], "stock", {
+            productId: product.id,
+            amount: sAmount,
+            expirationDate: sExpirationDate,
+          })
+        ).then(res => {
+          toast.update(toastId, "Pozycja dodana", {type: "success"});
+        }).catch(err => {
+          console.error(err)
+          toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
+        }).finally(() => {
+          setShowModal(false)
+          onRequestClose()
+        })
+    }
   }
 
   return <SCModal
@@ -186,7 +201,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
     title={
       showModal === "prd" ? "Wybierz produkt"
       : showModal === "stk" ? "Dane o produkcie"
-      : ""
+      : undefined
     }
     onRequestClose={onRequestClose}
     >
@@ -227,6 +242,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
                 title={item.name}
                 subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
                 buttons={<>
+                  {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
                   <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
                 </>}
               />
@@ -235,7 +251,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
             ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego EANu</BarText>}
             style={s.popUpList}
           />
-          <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />
+          {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />}
         </>}
       </>
       }
@@ -256,6 +272,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
                 title={item.name}
                 subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
                 buttons={<>
+                  {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
                   <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
                 </>}
               />
@@ -264,7 +281,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
             ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego składnika</BarText>}
             style={s.popUpList}
           />
-          <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />
+          {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />}
         </>}
       </>
       }
@@ -291,8 +308,9 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSI
 
       <Header icon="box-open">Egzemplarz</Header>
       <View style={[s.margin, s.center]}>
+        {mode === "cookingMode" && <AmountIndicator amount={pStockItemsSumAmount} unit={pIngredientUnit} maxAmount={pAmount} expirationDate="" />}
         <SCInput label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
-        <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />
+        {mode !== "cookingMode" && <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />}
       </View>
 
       <View style={[s.flexRight, s.center]}>

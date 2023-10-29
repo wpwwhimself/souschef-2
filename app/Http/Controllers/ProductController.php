@@ -87,14 +87,14 @@ class ProductController extends Controller
 
     public function getProductByEan($ean, $inStock = false){
         $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->orderBy("name");
-        if($inStock) $data = $data->has("stockItems")->withSum("stockItems", "amount");
+        if($inStock) $data = $data->has("stockItems")->doesntHave("cookingProducts")->withSum("stockItems", "amount");
         $data = $data->get();
         return $data;
     }
 
     public function getProductByIngredient($ing_id, $inStock = false){
         $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->orderBy("name");
-        if($inStock) $data = $data->has("stockItems")->withSum("stockItems", "amount");
+        if($inStock) $data = $data->has("stockItems")->doesntHave("cookingProducts")->withSum("stockItems", "amount");
         $data = $data->get();
         return $data;
     }
@@ -229,7 +229,7 @@ class ProductController extends Controller
         return response()->json("Stock item deleted");
     }
 
-    private function stockCleanup(){
+    public function stockCleanup(){
         StockItem::where("amount", "<=", 0)->delete();
     }
 

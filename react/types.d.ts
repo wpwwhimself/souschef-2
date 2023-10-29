@@ -32,6 +32,7 @@ export interface Product{
   amount: number,
   est_expiration_days: number,
   ingredient: Ingredient,
+  stock_items_sum_amount?: number,
 }
 
 export interface StockItem{

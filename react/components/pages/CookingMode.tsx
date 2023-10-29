@@ -4,49 +4,87 @@ import Header from "../Header";
 import BarText from "../BarText";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import PositionTile from "../PositionTile";
-import { useState } from "react";
-import { rqGet } from "../../helpers/SCFetch";
-import { prepareSelectItems } from "../../helpers/Prepare";
+import { useEffect, useState } from "react";
+import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from "@react-navigation/native";
 import Loader from "../Loader";
 import HorizontalLine from "../HorizontalLine";
-import { Product, SelectItem } from "../../types";
 import AmountIndicator from "../AmountIndicator";
+import AddStockModal from "../AddStockModal";
 
 export default function CookingMode(){
   const toast = useToast()
   const isFocused = useIsFocused()
   const [list, setList] = useState([])
-  const [showModal, setShowModal] = useState<false | "prd" | "stk">(false)
+  const [showAddStockModal, setShowAddStockModal] = useState(false)
+  const [showModStockModal, setShowModStockModal] = useState(false)
   const [dangerModalMode, setDangerModalMode] = useState<false | "clear" | "clearOne" | "submit">(false)
-  const [manualLookupMode, setManualLookupMode] = useState<false | "ean" | "list">(false)
   const [loaderVisible, setLoaderVisible] = useState(false)
 
-  const [ingredients, setIngredients] = useState<SelectItem[]>([])
-  const [products, setProducts] = useState<Product[]>([])
   const [product, setProduct] = useState(undefined)
-
-  // product parameters
-  const [pEan, setPEan] = useState("")
-  const [pIngredientId, setPIngredientId] = useState(0)
   const [sAmount, setSAmount] = useState(0)
 
-  const closeModal = () => {
-    setManualLookupMode(false);
-    setShowModal(false);
+  const getData = () => {
+    setLoaderVisible(true)
+
+    rqGet(["dbUrl", "magicWord", "magic_word"], "cooking-products")
+      .then(csi => setList(csi))
+      .catch(err => toast.show("Nie udało się pobrać listy: "+err.message, {type: "danger"}))
+      .finally(() => setLoaderVisible(false))
   }
+
+  useEffect(() => {
+    if(isFocused && !showAddStockModal) getData();
+  }, [isFocused, showAddStockModal])
+
   const clearList = () => {
-    setList([]);
-    setDangerModalMode(false);
+    const toastId = toast.show("Usuwam...")
+    rqDelete(["dbUrl", "magicWord", "magic_word"], `cooking-products/${product ? product.id : ""}`)
+      .then(res => {
+        toast.update(toastId, "Produkt usunięty z listy", {type: "success"})
+      }).catch(err => {
+        toast.update(toastId, `Nie udało się usunąć produktu: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setDangerModalMode(false)
+        setProduct(undefined)
+        getData()
+      })
   }
-  const clearOne = () => {
-    setList(list.filter(el => el !== product))
-    setDangerModalMode(false);
+
+  const prepareChangeStock = (cookingProduct) => {
+    setProduct(cookingProduct)
+    setSAmount(cookingProduct.amount)
+    setShowModStockModal(true)
   }
+  const changeStock = () => {
+    const toastId = toast.show("Poprawiam...");
+    rqPatch(["dbUrl", "magicWord", "magic_word"], `cooking-products/${product.id}`, {
+      amount: sAmount,
+    }).then(res => {
+      toast.update(toastId, `Stan poprawiony na ${sAmount} ${product.product.ingredient.unit}`, {type: "success"})
+    }).catch(err => {
+      toast.update(toastId, `Nie udało się poprawić stanu: ${err.message}`, {type: "danger"})
+    }).finally(() => {
+      setShowModStockModal(false)
+      setProduct(undefined)
+      getData()
+    })
+  }
+
   const submitList = () => {
-    setDangerModalMode(false);
+    const toastId = toast.show("Poprawiam stany...")
+    rqPost(["dbUrl", "magicWord", "magic_word"], "cooking-products/actions/clear")
+      .then(res => {
+        toast.update(toastId, `Stany odbite`, {type: "success"})
+      }).catch(err => {
+        toast.update(toastId, `Nie udało się odbić stanów: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setDangerModalMode(false);
+        getData()
+      })
   }
+
   const dangerModes = {
     clear: {
       title: "Czyszczenie listy",
@@ -55,8 +93,8 @@ export default function CookingMode(){
     },
     clearOne: {
       title: "Usunięcie produktu z listy",
-      text: `Czy na pewno chcesz usunąć produkt ${product?.name} z listy?`,
-      confirm: clearOne,
+      text: `Czy na pewno chcesz usunąć produkt ${product?.product.name} z listy?`,
+      confirm: clearList,
     },
     submit: {
       title: "Zatwierdzenie list",
@@ -65,178 +103,52 @@ export default function CookingMode(){
     },
   }
 
-  const openManualLookup = async (mode: "ean" | "list") => {
-    mllIngChosen(pIngredientId);
-
-    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
-      .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
-      .catch(err => toast.show(`Problem z szukaniem składników: ${err.message}`, {type: "danger"}))
-    ;
-
-    setShowModal("prd");
-    setManualLookupMode(mode);
-  }
-
-  const mleEanReady = async (ean: string) => {
-    setPEan(ean);
-    if(ean.length === 0) return;
-    setLoaderVisible(true);
-
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ean/" + ean + "/1")
-      .then(prds => { setProducts(prds) })
-      .catch(err => console.error(err))
-      .finally(() => setLoaderVisible(false))
-    ;
-  }
-
-  const mllIngChosen = async (ing_id: number) => {
-    setLoaderVisible(true);
-    setPIngredientId(ing_id);
-
-    // product list based on the chosen ingredient
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id + "/1")
-      .then(prds => { setProducts(prds) })
-      .catch(err => console.error(err))
-      .finally(() => setLoaderVisible(false))
-    ;
-  }
-
-  const mllPrdChosen = async (product_id: number, ean?: string) => {
-    const product = products.find(prd => prd.id === product_id);
-    setList([...list, {...product, amountToClear: 0}])
-    closeModal()
-  }
-
-  const prepareChangeStock = (product) => {
-    setProduct(product)
-    setSAmount(product.amountToClear)
-    setShowModal("stk")
-  }
-  const changeStock = () => {
-    const newList = list.splice(
-      list.findIndex(prd => prd === product),
-      1,
-      {...product, amountToClear: sAmount}
-    )
-    console.log(newList);
-    setList(newList);
-    toast.show(`Stan poprawiony na ${sAmount} ${product.ingredient.unit}`, {type: "success"})
-    setShowModal(false)
-  }
-
   return <View style={s.wrapper}>
     <Header icon="balance-scale">Zmiana stanów</Header>
 
-    <FlatList data={list}
+    {loaderVisible
+    ? <Loader />
+    : <FlatList data={list}
       renderItem={({item}) => <PositionTile
-        title={item.ingredient.name}
-        subtitle={item.name}
-        icon={item.ingredient.category.symbol}
+        title={item.product.ingredient.name}
+        subtitle={item.product.name}
+        icon={item.product.ingredient.category.symbol}
         buttons={<>
           <AmountIndicator
-            amount={item.amountToClear}
-            unit={item.ingredient.unit}
+            amount={item.amount}
+            unit={item.product.ingredient.unit}
             expirationDate=""
           />
-          <SCButton icon="eye" color="pink" onPress={() => console.log(list)} />
-          <SCButton icon="wrench" color="lightgray" onPress={() => prepareChangeStock(item)} />
-          <SCButton icon="times" color="red" onPress={() => {setProduct(item); setDangerModalMode("clearOne");}} />
+          <SCButton icon="wrench" color="lightgray" onPress={() => prepareChangeStock(item)} small />
         </>}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}
       ListEmptyComponent={<BarText color="lightgray">Dodaj pierwszą pozycję</BarText>}
-    />
-
-    {/* product info */}
-    <SCModal
-      visible={showModal == "prd"}
-      title="Wybierz produkt"
-      onRequestClose={closeModal}
-      >
-
-      {/* crossroads */
-      manualLookupMode === false &&
-      <View style={[s.flexRight, s.center]}>
-        <SCButton icon="barcode" title="Po EAN" onPress={() => openManualLookup("ean")} />
-        <SCButton icon="box" title="Po składniku" onPress={() => openManualLookup("list")} />
-      </View>
-      }
-
-      {/* lookup by EAN */
-      manualLookupMode === "ean" &&
-      <>
-        <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
-        {!pEan
-        ? <></>
-        : loaderVisible
-        ? <Loader />
-        : <>
-          <FlatList data={products}
-            renderItem={({item}) =>
-              <PositionTile
-                icon={item.ingredient.category.symbol}
-                title={item.name}
-                subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
-                buttons={<>
-                  <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
-                </>}
-              />
-            }
-            ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego EANu</BarText>}
-          />
-          <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />
-        </>}
-      </>
-      }
-
-      {/* lookup by list */
-      manualLookupMode === "list" &&
-      <>
-        <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={mllIngChosen} />
-        {!pIngredientId
-        ? <></>
-        : loaderVisible
-        ? <Loader />
-        : <>
-          <FlatList data={products}
-            renderItem={({item}) =>
-              <PositionTile
-                icon={item.ingredient.category.symbol}
-                title={item.name}
-                subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
-                buttons={<>
-                  <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
-                </>}
-              />
-            }
-            ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego składnika</BarText>}
-          />
-          <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />
-        </>}
-      </>
-      }
-    </SCModal>
-
-    <SCModal
-      visible={showModal === "stk"}
-      title={product?.name}
-      onRequestClose={() => setShowModal(false)}
-    >
-      <View style={s.margin}>
-        <SCInput label="Ilość do odjęcia" type="numeric" value={sAmount} onChange={setSAmount} />
-        <View style={[s.flexRight, s.center]}>
-          <SCButton icon="check" title="Zmień" onPress={changeStock} />
-        </View>
-      </View>
-    </SCModal>
+    />}
 
     <View style={[s.flexRight]}>
-      <View style={{flexGrow: 1}}><SCButton icon="plus" title="Dodaj" onPress={() => setShowModal("prd")} /></View>
-      <View style={{flexGrow: 1}}><SCButton icon="times" title="Wyczyść" onPress={() => setDangerModalMode("clear")} /></View>
+      <View style={{flexGrow: 1}}><SCButton icon="plus" title="Dodaj" onPress={() => setShowAddStockModal(true)} /></View>
+      <View style={{flexGrow: 1}}><SCButton icon="times" title="Wyczyść" onPress={() => setDangerModalMode("clear")} color="red" /></View>
       <View style={{flexGrow: 1}}><SCButton icon="check" title="Zatwierdź" onPress={() => setDangerModalMode("submit")} color="green" /></View>
     </View>
+
+    {/* cp add */}
+    <AddStockModal visible={showAddStockModal} onRequestClose={() => setShowAddStockModal(false)} mode="cookingMode" />
+
+    {/* cp mod */}
+    <SCModal
+      visible={showModStockModal}
+      onRequestClose={() => setShowModStockModal(false)}
+      title={`${product?.product.name}: stan`}
+      >
+      <View style={[s.margin]}>
+        <SCInput type="numeric" label={`Ilość do odjęcia (${product?.product.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
+      </View>
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="check" title="Popraw" onPress={changeStock} />
+        <SCButton icon="times" title="Wyczyść" onPress={() => {setShowModStockModal(false); setDangerModalMode("clearOne");}} color="red" />
+      </View>
+    </SCModal>
 
     {/* dangerbox */}
     <SCModal

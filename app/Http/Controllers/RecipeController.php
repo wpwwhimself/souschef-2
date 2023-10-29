@@ -2,13 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CookingProduct;
 use App\Models\Recipe;
 use App\Models\RecipeTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Http\Controllers\ProductController;
 
 class RecipeController extends Controller
 {
+    /*****************************
+     * COOKING STOCK ITEMS
+     */
+    public function getCookingProduct($id = null){
+        $data = $id
+            ? CookingProduct::with("product", "product.ingredient", "product.ingredient.category")->findOrFail($id)
+            : CookingProduct::with("product", "product.ingredient", "product.ingredient.category")
+                ->join("products", "products.id", "=", "product_id")
+                ->select("cooking_products.*")
+                ->orderBy("products.name")
+                ->get()
+        ;
+        return $data;
+    }
+
+    public function postCookingProduct(Request $rq){
+        $data = CookingProduct::create([
+            "product_id" => $rq->productId,
+            "amount" => $rq->amount,
+        ]);
+        return $data;
+    }
+
+    public function patchCookingProduct($id, Request $rq){
+        $data = CookingProduct::findOrFail($id);
+        foreach($rq->except("magic_word") as $key => $value){
+            $data->{Str::snake($key)} = $value;
+        }
+        $data->save();
+        return $data;
+    }
+
+    public function deleteCookingProduct($id = null){
+        if($id){
+          CookingProduct::findOrFail($id)->delete();
+        }else{
+          CookingProduct::truncate();
+        }
+        return response()->json("Cooking Product deleted");
+    }
+
+    public function clearCookingProducts(){
+        $report = [];
+        foreach(CookingProduct::all() as $cp){
+            $report[$cp->id] = [
+                "product_id" => $cp->product_id,
+                "cleared_stock_items" => [],
+            ];
+
+            $amountToClear = $cp->amount;
+            foreach($cp->product->stockItems as $stockItem){
+                $amountToClearNow = min($stockItem->amount, $amountToClear);
+                $amountToClear -= $amountToClearNow;
+
+                $report[$cp->id]["cleared_stock_items"][] = [
+                  "id" => $stockItem->id,
+                  "amount_before" => $stockItem->amount,
+                  "amount_cleared" => $amountToClearNow,
+                  "amount_remaining" => $amountToClear,
+                ];
+
+                $stockItem->amount -= $amountToClearNow;
+                $stockItem->save();
+
+                if($amountToClear <= 0) break;
+            }
+        }
+        CookingProduct::truncate();
+        (new ProductController)->stockCleanup();
+        return response()->json($report);
+    }
+
     /*****************************
      * RECIPES
      */

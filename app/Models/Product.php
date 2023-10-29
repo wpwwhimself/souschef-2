@@ -18,6 +18,9 @@ class Product extends Model
         return $this->belongsTo(Ingredient::class);
     }
     public function stockItems(){
-        return $this->hasMany(StockItem::class);
+        return $this->hasMany(StockItem::class)->orderBy("expiration_date")->orderBy("amount");
+    }
+    public function cookingProducts(){
+        return $this->hasMany(CookingProduct::class);
     }
 }

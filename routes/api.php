@@ -59,6 +59,14 @@ Route::controller(ProductController::class)->group(function(){
 });
 
 Route::controller(RecipeController::class)->group(function(){
+    Route::prefix("cooking-products")->group(function(){
+        Route::get("/{id?}", "getCookingProduct");
+        Route::post("/", "postCookingProduct");
+        Route::patch("/{id}", "patchCookingProduct");
+        Route::delete("/{id?}", "deleteCookingProduct");
+        Route::post("/actions/clear", "clearCookingProducts");
+    });
+
     Route::prefix("recipes")->group(function(){
         Route::get("/{id?}", "getRecipe")->name("get-recipe");
         Route::post("/", "postRecipe")->name("post-recipe");

@@ -174,21 +174,15 @@ class ProductController extends Controller
     }
 
     public function getSpoiled(){
-        $data = DB::table("ingredients", "i")
-            ->leftJoin("products", "ingredient_id", "=", "i.id")
-            ->leftJoin("stock_items", "product_id", "=", "products.id")
-            ->leftJoin("categories", "category_id", "=", "categories.id")
-            ->groupBy("i.id")
-            ->havingRaw("stock_items_min_expiration_date <= CURDATE() + INTERVAL 2 DAY")
-            ->selectRaw(implode(", ", [
-                "i.*",
-                "categories.symbol as category_symbol",
-                "sum(stock_items.amount) as stock_items_sum_amount",
-                "min(stock_items.expiration_date) as stock_items_min_expiration_date",
-            ]))
-            ->orderBy("stock_items_min_expiration_date")
-            ->orderBy("i.name")
-            ->get();
+        $data = StockItem::with("product", "product.ingredient", "product.ingredient.category")
+          ->whereDate("expiration_date", "<=", Carbon::today()->addDays(2))
+          ->whereNotNull("expiration_date")
+          ->join("products", "products.id", "=", "product_id")
+          ->join("ingredients", "ingredients.id", "=", "ingredient_id")
+          ->select("stock_items.*")
+          ->orderBy("expiration_date")
+          ->orderBy("ingredients.name")
+          ->get();
         return $data;
     }
 

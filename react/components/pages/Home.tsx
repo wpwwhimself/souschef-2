@@ -1,4 +1,4 @@
-import { SectionList, View } from "react-native";
+import { SectionList, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
 import BarText from "../BarText";
@@ -6,11 +6,13 @@ import { ACCENT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import Loader from "../Loader";
-import { rqGet } from "../../helpers/SCFetch";
+import { rqDelete, rqGet } from "../../helpers/SCFetch";
 import PositionTile from "../PositionTile";
 import AmountIndicator from "../AmountIndicator";
 import HorizontalLine from "../HorizontalLine";
 import { useToast } from "react-native-toast-notifications";
+import { SCButton, SCModal } from "../SCSpecifics";
+import { StockItem } from "../../types";
 
 export default function Home(){
   const isFocused = useIsFocused();
@@ -19,6 +21,8 @@ export default function Home(){
   const [loaderForSpoiled, setLoaderForSpoiled] = useState(false)
   const [shoppingList, setShoppingList] = useState([])
   const [spoiled, setSpoiled] = useState([])
+  const [throwOutModal, setThrowOutModal] = useState(false)
+  const [stockItemToThrowOut, setStockItemToThrowOut] = useState(undefined)
 
   const getData = async () => {
     setLoaderForShoppingList(true);
@@ -47,6 +51,7 @@ export default function Home(){
   ];
 
   interface ContentEl{
+    name: string,
     header: string,
     icon: string,
     data: any[],
@@ -54,12 +59,14 @@ export default function Home(){
   }
   const content: ContentEl[] = [
     {
+      name: "shoppingList",
       header: "Lista zakupów",
       icon: "shopping-cart",
       data: shoppingList,
       emptyNotice: "Niczego nam nie brakuje",
     },
     {
+      name: "spoiled",
       header: "Do wyrzucenia",
       icon: "trash",
       data: spoiled,
@@ -71,6 +78,24 @@ export default function Home(){
     if(isFocused) getData();
   }, [isFocused]);
 
+  const prepareThrowOutSpoiled = (stock_item: StockItem) => {
+    setStockItemToThrowOut(stock_item)
+    setThrowOutModal(true);
+  }
+  const throwOutSpoiled = () => {
+    rqDelete(["dbUrl", "magicWord", "magic_word"], "stock/" + stockItemToThrowOut.id)
+      .then(res => {
+        getData();
+        toast.show("Produkt wyrzucony", {type: "success"})
+      })
+      .catch(err => toast.show("Nie udało się usunąć, " + err.message, {type: "danger"}))
+      .finally(() => closeThrowOutSpoiledModal())
+  }
+  const closeThrowOutSpoiledModal = () => {
+    setThrowOutModal(false)
+    setStockItemToThrowOut(false)
+  }
+
   return (
     <View style={[s.wrapper]}>
       <BarText color={ACCENT_COLOR}>{hello_texts[Math.floor(Math.random() * hello_texts.length)]}</BarText>
@@ -79,23 +104,60 @@ export default function Home(){
       ? <Loader />
       : <SectionList sections={content}
         renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR}>{section.header}</Header>}
-        renderItem={({item}) => <PositionTile
-              icon={item.category_symbol}
-              title={item.name}
-              buttons={<>
-                <AmountIndicator amount={item.stock_items_sum_amount}
-                  unit={item.unit}
-                  minAmount={item.minimal_amount}
-                  expirationDate={item.stock_items_min_expiration_date}
-                  />
-              </>}
+        renderItem={({item, section}) => section.name == "shoppingList"
+          ? <PositionTile
+            icon={item.category_symbol}
+            title={item.name}
+            buttons={<>
+              <AmountIndicator amount={item.stock_items_sum_amount}
+                unit={item.unit}
+                minAmount={item.minimal_amount}
+                expirationDate={item.stock_items_min_expiration_date}
+                />
+              <SCButton
+                icon="shopping-cart"
+                onPress={() => {}}
+                small
+                />
+            </>}
           />
-          }
+          : <PositionTile
+            icon={item.product.ingredient.category.symbol}
+            title={item.product.name}
+            subtitle={item.product.ingredient.name}
+            buttons={<>
+              <AmountIndicator amount={item.amount}
+                maxAmount={item.product.amount}
+                unit={item.product.ingredient.unit}
+                minAmount={item.product.ingredient.minimal_amount}
+                expirationDate={item.expiration_date}
+                />
+              <SCButton
+                icon="trash"
+                color="lightgray"
+                onPress={() => prepareThrowOutSpoiled(item)}
+                small
+                />
+            </>}
+          />
+        }
         ItemSeparatorComponent={() => <HorizontalLine />}
         renderSectionFooter={({section}) => section.data.length === 0 &&
           <BarText color="lightgray">{section.emptyNotice}</BarText>
         }
       />}
+
+      {/* danger modal */}
+      <SCModal
+        title="Wyrzuć produkt"
+        visible={throwOutModal}
+        onRequestClose={closeThrowOutSpoiledModal}
+        >
+        {stockItemToThrowOut && <Text>Czy na pewno chcesz usunąć produkt {stockItemToThrowOut.product.name}?</Text>}
+        <View style={[s.flexRight, s.center]}>
+          <SCButton icon="fire-alt" title="Tak" color="red" onPress={throwOutSpoiled} />
+        </View>
+      </SCModal>
     </View>
   )
 }

@@ -37,6 +37,7 @@ export default function Stock({navigation}){
   const [sAmount, setSAmount] = useState(0)
   const [sExpirationDate, setSExpirationDate] = useState("")
   const [pUnit, setPUnit] = useState("")
+  const [ingId, setIngId] = useState<number>(undefined)
 
   const getData = async () => {
     setLoaderVisible(true);
@@ -59,6 +60,11 @@ export default function Stock({navigation}){
       })
       .catch(err => console.error(err))
       .finally(() => setStockDrilldown(true))
+  }
+
+  const addStockByIngredient = (ingId: number) => {
+    setIngId(ingId)
+    setShowAddStockModal(true)
   }
 
   const editStock = async (stock_id: number, unit: string) => {
@@ -146,7 +152,8 @@ export default function Stock({navigation}){
     <SCButton icon="plus" title="Dodaj" onPress={() => setShowAddStockModal(true)} />
     <AddStockModal
       visible={showAddStockModal}
-      onRequestClose={() => {setShowAddStockModal(false)}}
+      onRequestClose={() => {setShowAddStockModal(false); setIngId(undefined);}}
+      ingId={ingId}
     />
 
     {loaderVisible
@@ -163,6 +170,7 @@ export default function Stock({navigation}){
                   minAmount={item.minimal_amount}
                   expirationDate={item.stock_items_min_expiration_date}
                   />
+                <SCButton icon="plus" onPress={() => addStockByIngredient(item.id)} small />
                 <SCButton color="lightgray" onPress={() => drilldown(item.id)} small />
               </>}
           />

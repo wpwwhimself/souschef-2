@@ -47,13 +47,6 @@ export default function Home(){
       .finally(() => setLoaderForSpoiled(false))
   }
 
-  const hello_texts = [
-    "Witaj w swojej kuchni!",
-    "Sous Chef do usług!",
-    "Co gotujemy dzisiaj?",
-    "Czas na papu?",
-  ];
-
   interface ContentEl{
     name: string,
     header: string,
@@ -107,8 +100,6 @@ export default function Home(){
 
   return (
     <View style={[s.wrapper]}>
-      <BarText color={ACCENT_COLOR}>{hello_texts[Math.floor(Math.random() * hello_texts.length)]}</BarText>
-
       {loaderForShoppingList || loaderForSpoiled
       ? <Loader />
       : <SectionList sections={content}

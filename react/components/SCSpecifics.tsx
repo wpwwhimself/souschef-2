@@ -9,6 +9,7 @@ import BarText from "./BarText"
 import { useState } from "react";
 import { prepareDate } from "../helpers/Prepare";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import Loader from "./Loader";
 
 registerTranslation('pl', pl)
 
@@ -120,7 +121,7 @@ const ssselect = StyleSheet.create({
   },
 })
 
-export function SCModal({title = undefined, visible, onRequestClose, children}){
+export function SCModal({title = undefined, visible, loader = false, onRequestClose, children}){
   return <Portal>
     <Modal
       visible={visible}
@@ -128,8 +129,10 @@ export function SCModal({title = undefined, visible, onRequestClose, children}){
       style={ssmodal.outer}
       >
       <View style={ssmodal.inner}>
+      {loader ? <Loader /> : <>
         {title && <BarText>{title}</BarText>}
         {children}
+      </>}
       </View>
     </Modal>
   </Portal>

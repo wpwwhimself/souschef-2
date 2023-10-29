@@ -23,6 +23,7 @@ export default function Stock({navigation}){
   const [stockFreezer, setStockFreezer] = useState([])
   const [stockCupboard, setStockCupboard] = useState([])
   const [loaderVisible, setLoaderVisible] = useState(true)
+  const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
   const [stockEditor, setStockEditor] = useState(false)
   const [stockDrilldown, setStockDrilldown] = useState(false)
   const [stockEraser, setStockEraser] = useState(false)
@@ -53,13 +54,15 @@ export default function Stock({navigation}){
   }
 
   const drilldown = async (ing_id: number) => {
+    setSmallLoaderVisible(true)
+    setStockDrilldown(true)
     rqGet("stock/ingredient/" + ing_id)
       .then((items) => {
         setIName(items[0].product.ingredient.name)
         setStockDdDetails(items)
       })
       .catch(err => console.error(err))
-      .finally(() => setStockDrilldown(true))
+      .finally(() => setSmallLoaderVisible(false))
   }
 
   const addStockByIngredient = (ingId: number) => {
@@ -68,6 +71,8 @@ export default function Stock({navigation}){
   }
 
   const editStock = async (stock_id: number, unit: string) => {
+    setSmallLoaderVisible(true)
+    setStockEditor(true)
     rqGet("stock/" + stock_id)
       .then((item: StockItem) => {
         setSId(item.id)
@@ -76,7 +81,7 @@ export default function Stock({navigation}){
         setPUnit(unit)
       })
       .catch(err => console.error(err))
-      .finally(() => setStockEditor(true))
+      .finally(() => setSmallLoaderVisible(false))
   }
   const handleSubmit = async () => {
     const toastId = toast.show("Zapisuję...");
@@ -182,7 +187,7 @@ export default function Stock({navigation}){
     />}
 
     <SCModal
-      visible={stockDrilldown}
+      visible={stockDrilldown} loader={smallLoaderVisible}
       title={`${iName}: produkty`}
       onRequestClose={() => setStockDrilldown(false)}
       >
@@ -205,7 +210,7 @@ export default function Stock({navigation}){
     </SCModal>
 
     <SCModal
-      visible={stockEditor}
+      visible={stockEditor} loader={smallLoaderVisible}
       title="Edytuj stan"
       onRequestClose={() => setStockEditor(false)}
       >

@@ -103,9 +103,10 @@ export default function CookingMode(){
     },
   }
 
-  return <View style={s.wrapper}>
+  return <View style={[s.wrapper]}>
     <Header icon="balance-scale">Zmiana stanów</Header>
 
+    <View style={{flex: 1}}>
     {loaderVisible
     ? <Loader />
     : <FlatList data={list}
@@ -125,6 +126,7 @@ export default function CookingMode(){
       ItemSeparatorComponent={() => <HorizontalLine />}
       ListEmptyComponent={<BarText color="lightgray">Dodaj pierwszą pozycję</BarText>}
     />}
+    </View>
 
     <View style={[s.flexRight]}>
       <View style={{flexGrow: 1}}><SCButton icon="plus" title="Dodaj" onPress={() => setShowAddStockModal(true)} /></View>

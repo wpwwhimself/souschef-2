@@ -159,7 +159,7 @@ class ProductController extends Controller
             ->leftJoin("stock_items", "product_id", "=", "products.id")
             ->leftJoin("categories", "category_id", "=", "categories.id")
             ->groupBy("i.id")
-            ->havingRaw("stock_items_sum_amount < i.minimal_amount")
+            ->havingRaw("stock_items_sum_amount <= i.minimal_amount")
             ->orHavingRaw("stock_items_min_expiration_date < CURDATE()")
             ->selectRaw(implode(", ", [
                 "i.*",

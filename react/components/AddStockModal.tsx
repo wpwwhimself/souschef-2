@@ -1,29 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { View, Text, Button, StyleSheet, FlatList } from "react-native"
-import Header from "../Header"
-import s from "../../assets/style"
+import Header from "./Header"
+import s from "../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
-import BarText from '../BarText'
-import { rqGet, rqPost } from '../../helpers/SCFetch'
-import { Product, SelectItem } from '../../types'
-import { SCButton, SCModal, SCInput, SCSelect } from '../SCSpecifics'
-import { prepareSelectItems } from '../../helpers/Prepare'
-import Loader from '../Loader'
-import PositionTile from '../PositionTile'
-import HorizontalLine from '../HorizontalLine'
+import BarText from './BarText'
+import { rqGet, rqPost } from '../helpers/SCFetch'
+import { Product, SelectItem } from '../types'
+import { SCButton, SCModal, SCInput, SCSelect } from './SCSpecifics'
+import { prepareSelectItems } from '../helpers/Prepare'
+import Loader from './Loader'
+import PositionTile from './PositionTile'
+import HorizontalLine from './HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native'
 import moment from 'moment'
 
-interface UPCProduct{
-  title: string,
-  barcode: string,
-  metadata: {
-    quantity: string,
-  },
+// interface UPCProduct{
+//   title: string,
+//   barcode: string,
+//   metadata: {
+//     quantity: string,
+//   },
+// }
+
+interface BSInput{
+  visible: boolean,
+  onRequestClose: () => any,
+  ean?: string,
+  ingId?: number,
 }
 
-export default function BarcodeScanner({navigation}){
+export default function AddStockModal({visible, onRequestClose, ean, ingId}: BSInput){
   const [hasPermissions, setHasPermissions] = useState(null)
   const [scannerOn, setScannerOn] = useState(false)
   const [showModal, setShowModal] = useState<false | "prd" | "stk">(false)
@@ -49,11 +56,19 @@ export default function BarcodeScanner({navigation}){
   const [sExpirationDate, setSExpirationDate] = useState<string>(undefined)
 
   useEffect(() => {
-    (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermissions(status === "granted");
-    })();
-  }, [])
+    if(visible){
+      setShowModal("prd")
+      setManualLookupMode(false)
+      setPEan(ean)
+      setPIngredientId(ingId)
+    }else{
+      setShowModal(false)
+    }
+    // (async () => {
+    //   const { status } = await BarCodeScanner.requestPermissionsAsync();
+    //   setHasPermissions(status === "granted");
+    // })();
+  }, [visible])
 
   const handleBarCodeScanned = async ({type, data}) => {
     setScannerOn(false);
@@ -151,29 +166,36 @@ export default function BarcodeScanner({navigation}){
       })
     : rqGet(["dbUrl", "magicWord", "magic_word"], "products/" + pId)
     )().then(res => {
-      console.log(res);
       if(!res.id) throw new Error("Błąd w tworzeniu produktu")
       return res
     })
-    .then(product => { // create stock item
+    .then(product => // create stock item
       rqPost(["dbUrl", "magicWord", "magic_word"], "stock", {
         productId: product.id,
         amount: sAmount,
         expirationDate: sExpirationDate,
       })
-    }).then(res => {
+    ).then(res => {
       toast.update(toastId, "Pozycja dodana", {type: "success"});
     }).catch(err => {
       console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     }).finally(() => {
-      setShowModal(false);
-      setScannerOn(true);
+      setShowModal(false)
+      onRequestClose()
     })
   }
 
-  return <View style={s.wrapper}>
-    <View style={[s.center, ss.barCode]}>
+  return <SCModal
+    visible={visible}
+    title={
+      showModal === "prd" ? "Wybierz produkt"
+      : showModal === "stk" ? "Dane o produkcie"
+      : ""
+    }
+    onRequestClose={onRequestClose}
+    >
+    {/* <View style={[s.center, ss.barCode]}>
       {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
       {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
       {hasPermissions === true && scannerOn &&
@@ -181,17 +203,12 @@ export default function BarcodeScanner({navigation}){
         onBarCodeScanned={handleBarCodeScanned}
         style={ss.barCode}
         />}
-    </View>
+    </View> */}
 
-    <SCButton icon="wrench" title="Wybierz produkt ręcznie" onPress={() => { setShowModal("prd"); stopScan(); }} />
+    {/* <SCButton icon="wrench" title="Wybierz produkt ręcznie" onPress={() => { setShowModal("prd"); stopScan(); }} /> */}
 
     {/* get product info */}
-    <SCModal
-      visible={showModal === "prd"}
-      title="Wybierz produkt"
-      onRequestClose={startScan}
-      >
-
+    {showModal === "prd" && <>
       {/* crossroads */
       manualLookupMode === false &&
       <View style={[s.flexRight, s.center]}>
@@ -255,14 +272,10 @@ export default function BarcodeScanner({navigation}){
         </>}
       </>
       }
-    </SCModal>
+    </>}
 
     {/* write product and stock info */}
-    <SCModal
-      visible={showModal === "stk"}
-      title="Dane o produkcie"
-      onRequestClose={startScan}
-      >
+    {showModal === "stk" && <>
       <Header icon="flask">Produkt</Header>
       <View style={[s.margin, s.center]}>
         {/* jeżeli produkt istnieje, to do wyboru z listy, jeśli nie, to pola na nazwę itd */}
@@ -289,8 +302,8 @@ export default function BarcodeScanner({navigation}){
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Potwierdź" onPress={handleSubmit} />
       </View>
-    </SCModal>
-  </View>
+    </>}
+  </SCModal>
 }
 
 const ss = StyleSheet.create({

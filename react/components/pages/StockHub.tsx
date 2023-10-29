@@ -1,6 +1,5 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Stock from "./Stock";
-import BarcodeScanner from "./BarcodeScanner";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { ACCENT_COLOR } from "../../assets/constants";
 import Categories from "./Categories";
@@ -16,12 +15,6 @@ export default function StockHub(){
       component: Stock,
       title: "Stan",
       icon: "box-open",
-    },
-    {
-      route: "BarcodeScanner",
-      component: BarcodeScanner,
-      title: "Skanuj",
-      icon: "barcode",
     },
     {
       route: "Categories",

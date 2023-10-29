@@ -13,6 +13,7 @@ import HorizontalLine from "../HorizontalLine";
 import { useToast } from "react-native-toast-notifications";
 import { SCButton, SCModal } from "../SCSpecifics";
 import { StockItem } from "../../types";
+import AddStockModal from "../AddStockModal";
 
 export default function Home(){
   const isFocused = useIsFocused();
@@ -23,6 +24,9 @@ export default function Home(){
   const [spoiled, setSpoiled] = useState([])
   const [throwOutModal, setThrowOutModal] = useState(false)
   const [stockItemToThrowOut, setStockItemToThrowOut] = useState(undefined)
+
+  const [showAddStockModal, setShowAddStockModal] = useState(false)
+  const [ingredientId, setIngredientId] = useState<number>(undefined)
 
   const getData = async () => {
     setLoaderForShoppingList(true);
@@ -75,8 +79,8 @@ export default function Home(){
   ]
 
   useEffect(() => {
-    if(isFocused) getData();
-  }, [isFocused]);
+    if(isFocused && !showAddStockModal) getData();
+  }, [isFocused, showAddStockModal]);
 
   const prepareThrowOutSpoiled = (stock_item: StockItem) => {
     setStockItemToThrowOut(stock_item)
@@ -96,6 +100,11 @@ export default function Home(){
     setStockItemToThrowOut(false)
   }
 
+  const prepareAddStock = (ingId: number) => {
+    setIngredientId(ingId)
+    setShowAddStockModal(true)
+  }
+
   return (
     <View style={[s.wrapper]}>
       <BarText color={ACCENT_COLOR}>{hello_texts[Math.floor(Math.random() * hello_texts.length)]}</BarText>
@@ -103,7 +112,7 @@ export default function Home(){
       {loaderForShoppingList || loaderForSpoiled
       ? <Loader />
       : <SectionList sections={content}
-        renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR}>{section.header}</Header>}
+        renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR} center>{section.header}</Header>}
         renderItem={({item, section}) => section.name == "shoppingList"
           ? <PositionTile
             icon={item.category_symbol}
@@ -116,7 +125,7 @@ export default function Home(){
                 />
               <SCButton
                 icon="shopping-cart"
-                onPress={() => {}}
+                onPress={() => prepareAddStock(item.id)}
                 small
                 />
             </>}
@@ -146,6 +155,12 @@ export default function Home(){
           <BarText color="lightgray">{section.emptyNotice}</BarText>
         }
       />}
+
+      <AddStockModal
+        visible={showAddStockModal}
+        onRequestClose={() => {setShowAddStockModal(false)}}
+        ingId={ingredientId}
+      />
 
       {/* danger modal */}
       <SCModal

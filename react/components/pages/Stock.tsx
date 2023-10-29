@@ -16,6 +16,7 @@ import { StockItem } from "../../types"
 import { useToast } from "react-native-toast-notifications";
 import { prepareDate } from "../../helpers/Prepare"
 import { Text } from "react-native"
+import AddStockModal from "../AddStockModal"
 
 export default function Stock({navigation}){
   const isFocused = useIsFocused()
@@ -26,6 +27,7 @@ export default function Stock({navigation}){
   const [stockDrilldown, setStockDrilldown] = useState(false)
   const [stockEraser, setStockEraser] = useState(false)
   const toast = useToast();
+  const [showAddStockModal, setShowAddStockModal] = useState(false)
 
   const [iName, setIName] = useState("")
   const [stockDdDetails, setStockDdDetails] = useState([])
@@ -114,8 +116,8 @@ export default function Stock({navigation}){
   }
 
   useEffect(() => {
-    if(isFocused) getData();
-  }, [isFocused])
+    if(isFocused && !showAddStockModal) getData();
+  }, [isFocused, showAddStockModal]);
 
   interface ContentEl{
     header: string,
@@ -141,11 +143,17 @@ export default function Stock({navigation}){
   return <View style={s.wrapper}>
     <TopHeader title="Przeglądaj obecny stan swojej kuchni" />
 
+    <SCButton icon="plus" title="Dodaj" onPress={() => setShowAddStockModal(true)} />
+    <AddStockModal
+      visible={showAddStockModal}
+      onRequestClose={() => {setShowAddStockModal(false)}}
+    />
+
     {loaderVisible
     ? <Loader />
     : <SectionList
       sections={content}
-      renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR}>{section.header}</Header>}
+      renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR} center>{section.header}</Header>}
       renderItem={({item}) => <PositionTile
               icon={item.category.symbol}
               title={item.name}

@@ -69,7 +69,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   }, [visible])
 
   const handleBarCodeScanned = async ({type, data}) => {
-    setScannerOn(false);
+    openScanner(false);
     mleEanReady(data);
   }
 
@@ -83,7 +83,10 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
     setShowModal("prd");
     setManualLookupMode(lookupMode);
-    if(lookupMode === "ean"){
+  }
+
+  const openScanner = (on: boolean) => {
+    if(on){
       (async () => {
         const { status } = await BarCodeScanner.requestPermissionsAsync();
         setHasPermissions(status === "granted");
@@ -220,7 +223,11 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
       {/* lookup by EAN */
       manualLookupMode === "ean" &&
       <>
-        <View style={[s.center, ss.barCode]}>
+        <SCModal
+          visible={scannerOn}
+          onRequestClose={() => openScanner(false)}
+          title="Skaner"
+          >
           {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
           {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
           {hasPermissions === true && scannerOn &&
@@ -228,7 +235,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
             onBarCodeScanned={handleBarCodeScanned}
             style={ss.barCode}
             />}
-        </View>
+        </SCModal>
+        <SCButton icon="barcode" title="Skanuj" onPress={() => openScanner(true)} />
         <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
         {!pEan
         ? <></>
@@ -322,7 +330,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
 const ss = StyleSheet.create({
   barCode: {
-    width: "100%",
-    height: 50,
+    height: "85%",
   }
 })

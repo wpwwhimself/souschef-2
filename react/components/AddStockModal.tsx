@@ -236,8 +236,10 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
             style={ss.barCode}
             />}
         </SCModal>
-        <SCButton icon="barcode" title="Skanuj" onPress={() => openScanner(true)} />
-        <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
+        <View style={[s.flexRight, s.center]}>
+          <SCButton icon="barcode" title="Skanuj" onPress={() => openScanner(true)} />
+          <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
+        </View>
         {!pEan
         ? <></>
         : loaderVisible

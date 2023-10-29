@@ -36,15 +36,23 @@ export function SCInput({
   return <View style={[ssinput.container, s.flexRight, s.nowrap]}>
     {
       type === "date"
-    ? <DatePickerInput
+    ? <>
+      <DatePickerInput
         locale="pl"
         label={label}
         value={value ? new Date(value) : undefined}
         onChange={(nv) => onChange(prepareDate(nv))}
-        onChangeText={(nv) => onChange(nv ? prepareDate(new Date(nv)) : null)}
+        // onChangeText={(nv) => onChange(nv ? prepareDate(new Date(nv)) : null)}
         inputMode="start"
         mode="outlined"
+        validRange={{startDate: new Date()}}
         />
+      <SCButton
+        color="lightgray"
+        icon="calendar-times"
+        onPress={() => onChange("")}
+        />
+    </>
     : type === "checkbox"
     ? <>
       {label && <Text>{label}</Text>}

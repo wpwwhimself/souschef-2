@@ -42,7 +42,7 @@ export default function Stock({navigation}){
   const getData = async () => {
     setLoaderVisible(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/ingredient/0")
+    rqGet("stock/ingredient/0")
       .then(items => {
         const freezables = items.filter(ing => ing.freezable)
         setStockFreezer(freezables)
@@ -53,7 +53,7 @@ export default function Stock({navigation}){
   }
 
   const drilldown = async (ing_id: number) => {
-    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/ingredient/" + ing_id)
+    rqGet("stock/ingredient/" + ing_id)
       .then((items) => {
         setIName(items[0].product.ingredient.name)
         setStockDdDetails(items)
@@ -68,7 +68,7 @@ export default function Stock({navigation}){
   }
 
   const editStock = async (stock_id: number, unit: string) => {
-    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/" + stock_id)
+    rqGet("stock/" + stock_id)
       .then((item: StockItem) => {
         setSId(item.id)
         setSAmount(item.amount)
@@ -81,7 +81,7 @@ export default function Stock({navigation}){
   const handleSubmit = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    rqPatch(["dbUrl", "magicWord", "magic_word"], "stock/" + sId, {
+    rqPatch("stock/" + sId, {
       amount: sAmount || 0,
       expirationDate: sExpirationDate,
     })
@@ -103,7 +103,7 @@ export default function Stock({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Czyszczę...");
 
-    rqDelete(["dbUrl", "magicWord", "magic_word"], "stock/" + sId)
+    rqDelete("stock/" + sId)
     .then(res => {
       toast.update(toastId, "Stan poprawiony", {type: "success"});
       getData();

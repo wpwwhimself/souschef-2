@@ -7,7 +7,7 @@ import { getKey } from "./Storage"
  * @param params Request parameters
  * @returns
  */
-export const rqGet = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: string, params = {}) =>
+export const rqGet = (URLTail: string, params = {}, keys = ["dbUrl", "magicWord", "magic_word"]) =>
   getKey(keys[0]).then(URLHead => getKey(keys[1]).then(password => {
     params[keys[2]] = password;
     return fetch(URLHead + URLTail + "?" + new URLSearchParams(params))
@@ -21,7 +21,7 @@ export const rqGet = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: stri
  * @param params Request parameters
  * @returns
  */
-export const rqPost = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: string, params = {}) =>
+export const rqPost = (URLTail: string, params = {}, keys = ["dbUrl", "magicWord", "magic_word"]) =>
   getKey(keys[0]).then(URLHead => getKey(keys[1]).then(password => {
     params[keys[2]] = password;
     return fetch(URLHead + URLTail, {
@@ -34,7 +34,7 @@ export const rqPost = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: str
     }).then(res => res.json())
   }))
 
-export const rqPatch = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: string, params = {}) =>
+export const rqPatch = (URLTail: string, params = {}, keys = ["dbUrl", "magicWord", "magic_word"]) =>
   getKey(keys[0]).then(URLHead => getKey(keys[1]).then(password => {
     params[keys[2]] = password;
     return fetch(URLHead + URLTail, {
@@ -47,7 +47,7 @@ export const rqPatch = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: st
     }).then(res => res.json())
   }))
 
-export const rqDelete = (keys = ["dbUrl", "magicWord", "magic_word"], URLTail: string, params = {}) =>
+export const rqDelete = (URLTail: string, params = {}, keys = ["dbUrl", "magicWord", "magic_word"]) =>
   getKey(keys[0]).then(URLHead => getKey(keys[1]).then(password => {
     params[keys[2]] = password;
     return fetch(URLHead + URLTail, {

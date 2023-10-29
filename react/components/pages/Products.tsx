@@ -34,7 +34,7 @@ export default function Products({navigation}){
   const getIngredients = async () => {
     setIngLoaderVisible(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
+    rqGet("ingredients")
       .then(ings => setIngredients(prepareSelectItems(ings, "name", "id")))
       .catch(err => console.error(err))
       .finally(() => setIngLoaderVisible(false))
@@ -46,12 +46,12 @@ export default function Products({navigation}){
     setPIngredientId(ing_id);
 
     // get ingredient unit
-    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients/" + ing_id)
+    rqGet("ingredients/" + ing_id)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id)
+    rqGet("products/ingredient/" + ing_id)
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setPrdLoaderVisible(false))
@@ -84,7 +84,7 @@ export default function Products({navigation}){
 
     const editing = (pId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(["dbUrl", "magicWord", "magic_word"], "products" + (editing ? `/${pId}` : ""), {
+    rq("products" + (editing ? `/${pId}` : ""), {
       ean: pEan,
       name: pName,
       ingredientId: pIngredientId,
@@ -104,7 +104,7 @@ export default function Products({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    rqDelete(["dbUrl", "magicWord", "magic_word"], `products/${pId}`)
+    rqDelete(`products/${pId}`)
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Produkt usunięty", {type: "success"});

@@ -27,7 +27,7 @@ export default function Categories({navigation}){
   const getData = async () => {
     setCatLoaderVisible(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "categories")
+    rqGet("categories")
       .then(res => setCategories(res))
       .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setCatLoaderVisible(false))
@@ -53,7 +53,7 @@ export default function Categories({navigation}){
 
     const editing = (cId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(["dbUrl", "magicWord", "magic_word"], "categories" + (editing ? `/${cId}` : ""), {
+    rq("categories" + (editing ? `/${cId}` : ""), {
       name: cName,
       symbol: cSymbol,
     })
@@ -70,7 +70,7 @@ export default function Categories({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    rqDelete(["dbUrl", "magicWord", "magic_word"], `categories/${cId}`)
+    rqDelete(`categories/${cId}`)
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Kategoria usunięta", {type: "success"});

@@ -14,7 +14,7 @@ export default function Recipes({navigation}){
 
   useEffect(() => {
     const getData = async () => {
-      rqGet(["dbUrl", "magicWord", "magic_word"], "recipes")
+      rqGet("recipes")
         .then(res => setRecipes(res))
         .catch(err => console.error(err))
       ;

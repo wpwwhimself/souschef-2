@@ -32,14 +32,14 @@ export default function Home(){
     setLoaderForShoppingList(true);
     setLoaderForSpoiled(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/status/lowStock")
+    rqGet("stock/status/lowStock")
       .then(items => {
         setShoppingList(items)
       })
       .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setLoaderForShoppingList(false))
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "stock/status/spoiled")
+    rqGet("stock/status/spoiled")
       .then(items => {
         setSpoiled(items)
       })
@@ -87,7 +87,7 @@ export default function Home(){
     setThrowOutModal(true);
   }
   const throwOutSpoiled = () => {
-    rqDelete(["dbUrl", "magicWord", "magic_word"], "stock/" + stockItemToThrowOut.id)
+    rqDelete("stock/" + stockItemToThrowOut.id)
       .then(res => {
         getData();
         toast.show("Produkt wyrzucony", {type: "success"})

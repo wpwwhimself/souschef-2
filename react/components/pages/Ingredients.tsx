@@ -33,7 +33,7 @@ export default function Ingredients({navigation}){
   const getData = async () => {
     setIngLoaderVisible(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
+    rqGet("ingredients")
       .then(res => setIngredients(res))
       .catch(err => console.error(err))
       .finally(() => setIngLoaderVisible(false))
@@ -49,7 +49,7 @@ export default function Ingredients({navigation}){
   const toggleEditor = async () => {
     setEditorVisible(!editorVisible)
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "categories")
+    rqGet("categories")
       .then(cats => { setCategories(prepareSelectItems(cats, "name", "id", true)) })
       .catch(err => console.error(err))
     ;
@@ -70,7 +70,7 @@ export default function Ingredients({navigation}){
 
     const editing = (cId != 0);
     const rq = (editing) ? rqPatch : rqPost;
-    rq(["dbUrl", "magicWord", "magic_word"], "ingredients" + (editing ? `/${cId}` : ""), {
+    rq("ingredients" + (editing ? `/${cId}` : ""), {
       name: cName,
       categoryId: cCategoryId,
       freezable: cFreezable || false,
@@ -91,7 +91,7 @@ export default function Ingredients({navigation}){
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    rqDelete(["dbUrl", "magicWord", "magic_word"], `ingredients/${cId}`)
+    rqDelete(`ingredients/${cId}`)
       .then(res => {
         toggleEraser();
         toast.update(toastId, "Składnik usunięty", {type: "success"});

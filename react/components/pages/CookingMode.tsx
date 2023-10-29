@@ -28,7 +28,7 @@ export default function CookingMode(){
   const getData = () => {
     setLoaderVisible(true)
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "cooking-products")
+    rqGet("cooking-products")
       .then(csi => setList(csi))
       .catch(err => toast.show("Nie udało się pobrać listy: "+err.message, {type: "danger"}))
       .finally(() => setLoaderVisible(false))
@@ -40,7 +40,7 @@ export default function CookingMode(){
 
   const clearList = () => {
     const toastId = toast.show("Usuwam...")
-    rqDelete(["dbUrl", "magicWord", "magic_word"], `cooking-products/${product ? product.id : ""}`)
+    rqDelete(`cooking-products/${product ? product.id : ""}`)
       .then(res => {
         toast.update(toastId, "Produkt usunięty z listy", {type: "success"})
       }).catch(err => {
@@ -59,7 +59,7 @@ export default function CookingMode(){
   }
   const changeStock = () => {
     const toastId = toast.show("Poprawiam...");
-    rqPatch(["dbUrl", "magicWord", "magic_word"], `cooking-products/${product.id}`, {
+    rqPatch(`cooking-products/${product.id}`, {
       amount: sAmount,
     }).then(res => {
       toast.update(toastId, `Stan poprawiony na ${sAmount} ${product.product.ingredient.unit}`, {type: "success"})
@@ -74,7 +74,7 @@ export default function CookingMode(){
 
   const submitList = () => {
     const toastId = toast.show("Poprawiam stany...")
-    rqPost(["dbUrl", "magicWord", "magic_word"], "cooking-products/actions/clear")
+    rqPost("cooking-products/actions/clear")
       .then(res => {
         toast.update(toastId, `Stany odbite`, {type: "success"})
       }).catch(err => {

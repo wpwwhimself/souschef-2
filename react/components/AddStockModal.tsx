@@ -76,7 +76,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const openManualLookup = async (lookupMode: "ean" | "list") => {
     mllIngChosen(pIngredientId);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients")
+    rqGet("ingredients")
       .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
       .catch(err => toast.show(`Problem z szukaniem składników: ${err.message}`, {type: "danger"}))
     ;
@@ -99,7 +99,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     if(ean.length === 0) return;
     setLoaderVisible(true);
 
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ean/" + ean + (mode === "cookingMode" && "/1"))
+    rqGet("products/ean/" + ean + (mode === "cookingMode" && "/1"))
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -111,12 +111,12 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     setPIngredientId(ing_id);
 
     // get ingredient unit
-    rqGet(["dbUrl", "magicWord", "magic_word"], "ingredients/" + ing_id)
+    rqGet("ingredients/" + ing_id)
       .then(ing => { setPIngredientUnit(ing.unit) })
       .catch(err => console.error(err))
 
     // product list based on the chosen ingredient
-    rqGet(["dbUrl", "magicWord", "magic_word"], "products/ingredient/" + ing_id + (mode === "cookingMode" && "/1"))
+    rqGet("products/ingredient/" + ing_id + (mode === "cookingMode" && "/1"))
       .then(prds => { setProducts(prds) })
       .catch(err => console.error(err))
       .finally(() => setLoaderVisible(false))
@@ -149,7 +149,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
     switch(mode){
       case "cookingMode":
-        rqPost(["dbUrl", "magicWord", "magic_word"], "cooking-products", {
+        rqPost("cooking-products", {
           productId: pId,
           amount: sAmount,
         }).then(res => {
@@ -166,20 +166,20 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
       default:
         // create product if needed
         (async () => (!pId)
-        ? rqPost(["dbUrl", "magicWord", "magic_word"], "products", {
+        ? rqPost("products", {
             ean: pEan,
             name: pName,
             ingredientId: pIngredientId,
             amount: pAmount,
             estExpirationDays: pEstExpirationDays,
           })
-        : rqGet(["dbUrl", "magicWord", "magic_word"], "products/" + pId)
+        : rqGet("products/" + pId)
         )().then(res => {
           if(!res.id) throw new Error("Błąd w tworzeniu produktu")
           return res
         })
         .then(product => // create stock item
-          rqPost(["dbUrl", "magicWord", "magic_word"], "stock", {
+          rqPost("stock", {
             productId: product.id,
             amount: sAmount,
             expirationDate: sExpirationDate,

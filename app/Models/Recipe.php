@@ -14,7 +14,7 @@ class Recipe extends Model
         "for_dinner", "for_supper",
     ];
 
-    public function templates(){
-        return $this->hasMany(RecipeTemplate::class);
+    public function ingredients(){
+        return $this->hasMany(RecipeIngredient::class);
     }
 }

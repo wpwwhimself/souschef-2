@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CookingProduct;
 use App\Models\Recipe;
-use App\Models\RecipeTemplate;
+use App\Models\RecipeIngredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\ProductController;
@@ -112,7 +112,7 @@ class RecipeController extends Controller
     }
 
     public function deleteRecipe($id){
-        RecipeTemplate::where("recipe_id", $id)->delete();
+        RecipeIngredient::where("recipe_id", $id)->delete();
         Recipe::find($id)->delete();
         return response()->json("Recipe deleted");
     }

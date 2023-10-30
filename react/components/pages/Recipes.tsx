@@ -7,18 +7,25 @@ import PositionTile from "../PositionTile";
 import BarText from "../BarText";
 import { rqGet } from "../../helpers/SCFetch";
 import { SCButton } from "../SCSpecifics";
+import Loader from "../Loader";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Recipes({navigation}){
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
+  const [loaderVisible, setLoaderVisible] = useState(false)
+  const toast = useToast();
+
+  const getData = () => {
+    setLoaderVisible(true)
+    rqGet("recipes")
+      .then(res => setRecipes(res))
+      .catch(err => toast.show(err.message, {type: "danger"}))
+      .finally(() => setLoaderVisible(false))
+    ;
+  }
 
   useEffect(() => {
-    const getData = async () => {
-      rqGet("recipes")
-        .then(res => setRecipes(res))
-        .catch(err => console.error(err))
-      ;
-    }
     if(isFocused) getData();
   }, [isFocused]);
 
@@ -26,18 +33,24 @@ export default function Recipes({navigation}){
     <Header icon="lightbulb">Propozycje</Header>
 
     <Header icon="list">Lista</Header>
-    <FlatList data={recipes}
-      renderItem={({item}) => <PositionTile
-          title="Cześć"
-          subtitle="Jestem pudełkiem"
-          icon="check"
-          buttons={<>
-            <SCButton title="Hi there" onPress={() => {}} />
-            <SCButton title="Hi there" onPress={() => {}} />
-          </>}
+    <SCButton icon="plus" title="Dodaj nowy" onPress={() => {}} />
+    <View style={{ flex: 1 }}>
+      {loaderVisible
+      ? <Loader />
+      : <FlatList data={recipes}
+        renderItem={({item}) => <PositionTile
+            title="Cześć"
+            subtitle="Jestem pudełkiem"
+            icon="check"
+            buttons={<>
+              <SCButton title="Hi there" onPress={() => {}} />
+              <SCButton title="Hi there" onPress={() => {}} />
+            </>}
+          />
+        }
+        ListEmptyComponent={<BarText color="lightgray">Brak przepisów</BarText>}
         />
       }
-      ListEmptyComponent={<BarText color="lightgray">Brak przepisów</BarText>}
-      />
+    </View>
   </View>
 }

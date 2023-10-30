@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RecipeTemplate extends Model
+class RecipeIngredient extends Model
 {
     use HasFactory;
     
     protected $fillable = [
-        "recipe_id", "template_id",
+        "recipe_id", "ingredient_id",
         "amount",
         "optional",
     ];
@@ -18,7 +18,7 @@ class RecipeTemplate extends Model
     public function recipe(){
         return $this->belongsTo(Recipe::class);
     }
-    public function template(){
-        return $this->belongsTo(Template::class);
+    public function ingredient(){
+        return $this->belongsTo(Ingredient::class);
     }
 }

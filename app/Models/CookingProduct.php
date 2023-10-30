@@ -14,6 +14,13 @@ class CookingProduct extends Model
       "amount",
     ];
 
+    protected $appends = [
+      "stock_amount",
+    ];
+    public function getStockAmountAttribute(){
+      return $this->product->stockItems->sum("amount");
+    }
+
     public function product(){
       return $this->belongsTo(Product::class);
     }

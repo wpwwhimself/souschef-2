@@ -10,9 +10,10 @@ interface AIProps{
   minAmount?: number,
   unit: string,
   expirationDate?: string,
+  title?: string,
 }
 
-export default function AmountIndicator({amount, unit, maxAmount, expirationDate, minAmount}: AIProps){
+export default function AmountIndicator({amount, unit, maxAmount, expirationDate, minAmount, title}: AIProps){
   const dateDiff = moment(expirationDate).diff(moment(), "days") + 1;
   const dateRendered: string = (!!dateDiff)
     ? `${dateDiff} dni`
@@ -25,7 +26,9 @@ export default function AmountIndicator({amount, unit, maxAmount, expirationDate
 
   return <View style={ss.wrapper}>
     {maxAmount && <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount ? ACCENT_COLOR : "lightgray"} width={100} />}
-    <Text style={dateDiff <= 0 && s.error}>{label.filter(Boolean).join(" • ")}</Text>
+    <Text style={dateDiff <= 0 && s.error}>
+      {(title ? title+": " : "") + label.filter(Boolean).join(" • ")}
+    </Text>
   </View>
 }
 

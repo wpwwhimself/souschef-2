@@ -115,9 +115,10 @@ export default function CookingMode(){
         subtitle={item.product.name}
         icon={item.product.ingredient.category.symbol}
         buttons={<>
-          <AmountIndicator
+          <AmountIndicator title="Do odjęcia"
             amount={item.amount}
             unit={item.product.ingredient.unit}
+            maxAmount={item.stock_amount}
             expirationDate=""
           />
           <SCButton icon="wrench" color="lightgray" onPress={() => prepareChangeStock(item)} small />
@@ -144,6 +145,16 @@ export default function CookingMode(){
       title={`${product?.product.name}: stan`}
       >
       <View style={[s.margin]}>
+        <View style={[s.flexRight, s.center]}>
+          <AmountIndicator title="Stan obecny"
+            amount={product?.stock_amount}
+            unit={product?.product.ingredient.unit}
+            minAmount={product?.product.ingredient.minimal_amount}
+            maxAmount={product?.product.amount}
+            expirationDate="" />
+          <SCButton icon="thermometer-empty" color="lightgray" onPress={() => setSAmount(0)} />
+          <SCButton icon="thermometer-full" color="lightgray" onPress={() => setSAmount(product.stock_amount)} />
+        </View>
         <SCInput type="numeric" label={`Ilość do odjęcia (${product?.product.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
       </View>
       <View style={[s.flexRight, s.center]}>

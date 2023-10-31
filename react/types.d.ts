@@ -44,6 +44,15 @@ export interface Recipe{
   for_supper: boolean,
 }
 
+export interface RecipeIngredient{
+  id: number,
+  recipe_id: number,
+  ingredient_id: number,
+  ingredient: Ingredient,
+  amount: number,
+  optional: boolean,
+}
+
 export interface StockItem{
   id: number,
   product_id: number,

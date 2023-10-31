@@ -9,7 +9,7 @@ import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { SCButton, SCInput, SCModal } from "../SCSpecifics";
 import Loader from "../Loader";
 import { useToast } from "react-native-toast-notifications";
-import { Recipe } from "../../types";
+import { Recipe, RecipeIngredient } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 
 export default function Recipes({navigation}){
@@ -17,16 +17,20 @@ export default function Recipes({navigation}){
   const [recipes, setRecipes] = useState([]);
   const [loaderVisible, setLoaderVisible] = useState(false)
   const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
+  const [previewVisible, setPreviewVisible] = useState(false)
   const [editorVisible, setEditorVisible] = useState(false)
   const [eraserVisible, setEraserVisible] = useState(false)
+  const [editPreview, setEditPreview] = useState(false)
   const toast = useToast();
 
   // recipe header params
   const [rId, setRId] = useState<number>()
   const [rName, setRName] = useState<string>()
   const [rSubtitle, setRSubtitle] = useState<string>()
+  const [rInstructions, setRInstructions] = useState<string>()
   const [rForDinner, setRForDinner] = useState<boolean>()
   const [rForSupper, setRForSupper] = useState<boolean>()
+  const [rIngredients, setRIngredients] = useState<RecipeIngredient[]>()
 
   const getData = () => {
     setLoaderVisible(true)
@@ -35,6 +39,11 @@ export default function Recipes({navigation}){
       .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setLoaderVisible(false))
     ;
+  }
+
+  const showPreview = (recipe: Recipe) => {
+    setRName(recipe.name)
+    setPreviewVisible(true)
   }
 
   const showEditor = (recipe?: Recipe) => {
@@ -77,6 +86,14 @@ export default function Recipes({navigation}){
       })
   }
 
+  const handleSaveIngredients = () => {
+
+  }
+
+  const handleDeleteIngredients = () => {
+
+  }
+
   useEffect(() => {
     if(isFocused) getData();
   }, [isFocused]);
@@ -100,7 +117,7 @@ export default function Recipes({navigation}){
               : "🍰"
             }
             buttons={<>
-              <SCButton onPress={() => {}} small />
+              <SCButton onPress={() => showPreview(item)} small />
               <SCButton icon="wrench" color="lightgray" onPress={() => showEditor(item)} small />
             </>}
           />
@@ -110,6 +127,40 @@ export default function Recipes({navigation}){
         />
       }
     </View>
+
+    {/* preview */}
+    <SCModal
+      visible={previewVisible} loader={smallLoaderVisible}
+      onRequestClose={() => {setPreviewVisible(false); setEditPreview(false)}}
+      title={rName}
+      >
+      {editPreview
+      ? <>
+        <SCInput type="TEXT" label="Przepis" value={rInstructions} onChange={setRInstructions} />
+      </>
+      : <>
+        <Header icon="box-open">Składniki</Header>
+        <FlatList data={rIngredients}
+          renderItem={({item}) =>
+            <PositionTile
+              title={item.ingredient.name}
+              subtitle={`${item.amount} ${item.ingredient.unit}`}
+              />}
+          />
+
+        <Header icon="scroll">Przepis</Header>
+        <Text>{rInstructions || "brak treści przepisu"}</Text>
+      </>}
+      <View style={[s.flexRight, s.center]}>
+        {editPreview
+        ? <>
+          <SCButton icon="check" title="Zapisz" onPress={handleSaveIngredients} />
+          <SCButton icon="trash" title="Usuń" onPress={handleDeleteIngredients} />
+        </>
+        : <SCButton icon={"pen"} title={"Edytuj"} onPress={() => setEditPreview(!editPreview)} />
+        }
+      </View>
+    </SCModal>
 
     {/* editor */}
     <SCModal

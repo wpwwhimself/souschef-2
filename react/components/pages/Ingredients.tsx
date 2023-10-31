@@ -128,7 +128,7 @@ export default function Ingredients({navigation}){
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray">Brak składników</BarText>}
+      ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
       />
     }
 

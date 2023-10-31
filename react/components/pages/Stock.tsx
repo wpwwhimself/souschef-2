@@ -154,7 +154,7 @@ export default function Stock({navigation}){
   return <View style={s.wrapper}>
     <TopHeader title="Przeglądaj obecny stan swojej kuchni" />
 
-    <SCButton icon="plus" title="Dodaj" onPress={() => setShowAddStockModal(true)} />
+    <SCButton icon="plus" title="Dodaj wpis" onPress={() => setShowAddStockModal(true)} />
     <AddStockModal
       visible={showAddStockModal}
       onRequestClose={() => {setShowAddStockModal(false); setIngId(undefined);}}
@@ -182,7 +182,7 @@ export default function Stock({navigation}){
           }
       ItemSeparatorComponent={() => <HorizontalLine />}
       renderSectionFooter={({section}) => section.data.length === 0 &&
-        <BarText color="lightgray">{section.emptyNotice}</BarText>
+        <BarText color="lightgray" small>{section.emptyNotice}</BarText>
       }
     />}
 

@@ -228,8 +228,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
           onRequestClose={() => openScanner(false)}
           title="Skaner"
           >
-          {hasPermissions === null && <BarText color="lightgray">Oczekuję na uprawnienia do aparatu</BarText>}
-          {hasPermissions === false && <BarText color="lightgray">Brak dostępu do aparatu 😟</BarText>}
+          {hasPermissions === null && <BarText color="lightgray" small>Oczekuję na uprawnienia do aparatu</BarText>}
+          {hasPermissions === false && <BarText color="lightgray" small>Brak dostępu do aparatu 😟</BarText>}
           {hasPermissions === true && scannerOn &&
           <BarCodeScanner
             onBarCodeScanned={handleBarCodeScanned}
@@ -258,7 +258,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
               />
             }
             ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego EANu</BarText>}
+            ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego EANu</BarText>}
             style={s.popUpList}
           />
           {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />}
@@ -288,7 +288,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
               />
             }
             ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color="lightgray">Brak produktów dla tego składnika</BarText>}
+            ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego składnika</BarText>}
             style={s.popUpList}
           />
           {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />}

@@ -125,7 +125,7 @@ export default function CookingMode(){
         </>}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray">Dodaj pierwszą pozycję</BarText>}
+      ListEmptyComponent={<BarText color="lightgray" small>Dodaj pierwszą pozycję</BarText>}
     />}
     </View>
 

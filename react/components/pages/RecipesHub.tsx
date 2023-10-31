@@ -10,16 +10,16 @@ const Tab = createMaterialBottomTabNavigator();
 export default function RecipesHub(){
   const items = [
     {
-      route: "CookingMode",
-      component: CookingMode,
-      title: "Stany",
-      icon: "balance-scale",
-    },
-    {
       route: "Recipes",
       component: Recipes,
       title: "Przepisy",
       icon: "scroll",
+    },
+    {
+      route: "CookingMode",
+      component: CookingMode,
+      title: "Podliczanie",
+      icon: "balance-scale",
     },
   ]
 

@@ -101,7 +101,7 @@ export default function Categories({navigation}){
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray">Brak kategorii</BarText>}
+      ListEmptyComponent={<BarText color="lightgray" small>Brak kategorii</BarText>}
       />
     }
 

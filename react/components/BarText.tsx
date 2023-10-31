@@ -1,15 +1,16 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TextStyle, StyleProp, ViewStyle } from "react-native";
 
 export default function BarText({children, color = "black", small = false}){
-  const lineStyle = {
+  const lineStyle: StyleProp<ViewStyle> = {
     ...bts.line,
     backgroundColor: color,
   };
 
-  const textStyle = {
+  const textStyle: StyleProp<TextStyle> = {
     ...bts.text,
     color: color,
-    fontSize: small ? 12 : 18,
+    fontSize: small ? 14 : 18,
+    fontWeight: (small ? 'normal' : 'bold'),
   };
 
   return <View style={bts.container}>
@@ -31,6 +32,5 @@ const bts = StyleSheet.create({
   },
   text: {
     marginHorizontal: 10,
-    fontWeight: 'bold',
   },
 });

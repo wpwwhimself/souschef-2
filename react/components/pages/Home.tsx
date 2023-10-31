@@ -143,7 +143,7 @@ export default function Home(){
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
         renderSectionFooter={({section}) => section.data.length === 0 &&
-          <BarText color="lightgray">{section.emptyNotice}</BarText>
+          <BarText color="lightgray" small>{section.emptyNotice}</BarText>
         }
       />}
 

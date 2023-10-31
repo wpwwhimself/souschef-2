@@ -1,20 +1,32 @@
-import { FlatList, View } from "react-native"
+import { FlatList, Text, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import PositionTile from "../PositionTile";
 import BarText from "../BarText";
-import { rqGet } from "../../helpers/SCFetch";
-import { SCButton } from "../SCSpecifics";
+import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
+import { SCButton, SCInput, SCModal } from "../SCSpecifics";
 import Loader from "../Loader";
 import { useToast } from "react-native-toast-notifications";
+import { Recipe } from "../../types";
+import HorizontalLine from "../HorizontalLine";
 
 export default function Recipes({navigation}){
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState([]);
   const [loaderVisible, setLoaderVisible] = useState(false)
+  const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
+  const [editorVisible, setEditorVisible] = useState(false)
+  const [eraserVisible, setEraserVisible] = useState(false)
   const toast = useToast();
+
+  // recipe header params
+  const [rId, setRId] = useState<number>()
+  const [rName, setRName] = useState<string>()
+  const [rSubtitle, setRSubtitle] = useState<string>()
+  const [rForDinner, setRForDinner] = useState<boolean>()
+  const [rForSupper, setRForSupper] = useState<boolean>()
 
   const getData = () => {
     setLoaderVisible(true)
@@ -25,6 +37,46 @@ export default function Recipes({navigation}){
     ;
   }
 
+  const showEditor = (recipe?: Recipe) => {
+    setRId(recipe?.id)
+    setRName(recipe?.name)
+    setRSubtitle(recipe?.subtitle)
+    setRForDinner(recipe?.for_dinner)
+    setRForSupper(recipe?.for_supper)
+    setEditorVisible(true)
+  }
+
+  const handleSave = () => {
+    const toastId = toast.show("Zapisuję...");
+    const rq = rId ? rqPatch : rqPost;
+    rq(`recipes/${rId || ""}`, {
+      name: rName,
+      subtitle: rSubtitle,
+      forDinner: rForDinner || false,
+      forSupper: rForSupper || false,
+    }).then(res => {
+      toast.update(toastId, "Przepis gotowy", {type: "success"})
+    }).catch(err => {
+      toast.update(toastId, "Problem: " + err.message, {type: "danger"})
+    }).finally(() => {
+      setEditorVisible(false)
+      getData()
+    })
+  }
+
+  const handleDelete = () => {
+    const toastId = toast.show("Usuwam...");
+    rqDelete(`recipes/${rId}`)
+      .then(res => {
+        toast.update(toastId, "Przepis usunięty", {type: "success"})
+      }).catch(err => {
+        toast.update(toastId, "Problem: " + err.message, {type: "danger"})
+      }).finally(() => {
+        setEditorVisible(false)
+        getData()
+      })
+  }
+
   useEffect(() => {
     if(isFocused) getData();
   }, [isFocused]);
@@ -33,24 +85,63 @@ export default function Recipes({navigation}){
     <Header icon="lightbulb">Propozycje</Header>
 
     <Header icon="list">Lista</Header>
-    <SCButton icon="plus" title="Dodaj nowy" onPress={() => {}} />
+    <SCButton icon="plus" title="Dodaj nowy" onPress={() => showEditor()} />
     <View style={{ flex: 1 }}>
       {loaderVisible
       ? <Loader />
       : <FlatList data={recipes}
-        renderItem={({item}) => <PositionTile
-            title="Cześć"
-            subtitle="Jestem pudełkiem"
-            icon="check"
+        renderItem={({item}: {item: Recipe}) => <PositionTile
+            title={item.name}
+            subtitle={item.subtitle}
+            icon={
+              item.for_dinner && item.for_supper ? "🟢"
+              : item.for_dinner ? "🌞"
+              : item.for_supper ? "🌙"
+              : "🍰"
+            }
             buttons={<>
-              <SCButton title="Hi there" onPress={() => {}} />
-              <SCButton title="Hi there" onPress={() => {}} />
+              <SCButton onPress={() => {}} small />
+              <SCButton icon="wrench" color="lightgray" onPress={() => showEditor(item)} small />
             </>}
           />
         }
+        ItemSeparatorComponent={() => <HorizontalLine />}
         ListEmptyComponent={<BarText color="lightgray">Brak przepisów</BarText>}
         />
       }
     </View>
+
+    {/* editor */}
+    <SCModal
+      visible={editorVisible} loader={smallLoaderVisible}
+      onRequestClose={() => setEditorVisible(false)}
+      title={`${rId ? 'Edytuj' : 'Dodaj'} przepis`}
+      >
+      <View style={[s.margin, s.center]}>
+        <SCInput label="Nazwa" value={rName} onChange={setRName} />
+        <SCInput label="Podtytuł" value={rSubtitle} onChange={setRSubtitle} />
+        <View style={[s.flexRight, s.center]}>
+          <Text>Danie na:</Text>
+          <SCInput type="checkbox" label="obiad" value={rForDinner} onChange={setRForDinner} />
+          <SCInput type="checkbox" label="kolację" value={rForSupper} onChange={setRForSupper} />
+        </View>
+      </View>
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="check" title="Zapisz" onPress={handleSave} />
+        {rId && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {showEditor(); setEraserVisible(true);}} />}
+      </View>
+    </SCModal>
+
+    {/* eraser */}
+    <SCModal
+      title="Usuń składnik"
+      visible={eraserVisible}
+      onRequestClose={() => setEraserVisible(false)}
+      >
+      <Text>Czy na pewno chcesz usunąć przepis {rName}?</Text>
+      <View style={[s.flexRight, s.center]}>
+        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+      </View>
+    </SCModal>
   </View>
 }

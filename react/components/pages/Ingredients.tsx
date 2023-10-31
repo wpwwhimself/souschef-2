@@ -158,7 +158,7 @@ export default function Ingredients({navigation}){
       visible={eraserVisible}
       onRequestClose={toggleEraser}
       >
-      <Text>Czy na pewno chcesz usunąć składkik {cName}?</Text>
+      <Text>Czy na pewno chcesz usunąć składnik {cName}?</Text>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
       </View>

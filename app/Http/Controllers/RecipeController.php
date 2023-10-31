@@ -96,8 +96,8 @@ class RecipeController extends Controller
             "name" => $rq->name,
             "subtitle" => $rq->subtitle,
             "instructions" => $rq->instructions,
-            "for_dinner" => $rq->for_dinner,
-            "for_supper" => $rq->for_supper,
+            "for_dinner" => $rq->forDinner,
+            "for_supper" => $rq->forSupper,
         ]);
         return $data;
     }

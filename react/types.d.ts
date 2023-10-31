@@ -35,6 +35,15 @@ export interface Product{
   stock_items_sum_amount?: number,
 }
 
+export interface Recipe{
+  id: number,
+  name: string,
+  subtitle?: string,
+  instructions?: string,
+  for_dinner: boolean,
+  for_supper: boolean,
+}
+
 export interface StockItem{
   id: number,
   product_id: number,

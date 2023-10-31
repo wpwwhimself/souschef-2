@@ -18,36 +18,36 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+  //     return $request->user();
+  // });
 
-Route::middleware(MagicWord::class)->group(function(){
+  Route::middleware(MagicWord::class)->group(function(){
 
-Route::controller(ProductController::class)->group(function(){
-    Route::prefix("categories")->group(function(){
+    Route::controller(ProductController::class)->group(function(){
+      Route::prefix("categories")->group(function(){
         Route::get("/{id?}", "getCategory")->name("get-category");
         Route::post("/", "postCategory")->name("post-category");
         Route::patch("/{id}", "patchCategory")->name("patch-category");
         Route::delete("/{id}", "deleteCategory")->name("delete-category");
-    });
+      });
 
-    Route::prefix("ingredients")->group(function(){
+      Route::prefix("ingredients")->group(function(){
         Route::get("/{id?}", "getIngredient")->name("get-ingredient");
         Route::post("/", "postIngredient")->name("post-ingredient");
         Route::patch("/{id}", "patchIngredient")->name("patch-ingredient");
         Route::delete("/{id}", "deleteIngredient")->name("delete-ingredient");
-    });
+      });
 
-    Route::prefix("products")->group(function(){
+      Route::prefix("products")->group(function(){
         Route::get("/{id?}", "getProduct")->name("get-product");
         Route::get("/ean/{ean}/{inStock?}", "getProductByEan")->name("get-product-by-ean");
         Route::get("/ingredient/{ing_id}/{inStock?}", "getProductByIngredient")->name("get-product-by-ingredient");
         Route::post("/", "postProduct")->name("post-product");
         Route::patch("/{id}", "patchProduct")->name("patch-product");
         Route::delete("/{id}", "deleteProduct")->name("delete-product");
-    });
+      });
 
-    Route::prefix("stock")->group(function(){
+      Route::prefix("stock")->group(function(){
         Route::get("/{id?}", "getStockItem")->name("get-stock");
         Route::get("/ingredient/{ing_id}", "getStockItemByIngredient")->name("get-stock-by-ingredient");
         Route::get("/status/lowStock", "getLowStock")->name("get-low-stock");
@@ -55,24 +55,28 @@ Route::controller(ProductController::class)->group(function(){
         Route::post("/", "postStockItem")->name("post-stock");
         Route::patch("/{id}", "patchStockItem")->name("patch-stock");
         Route::delete("/{id}", "deleteStockItem")->name("delete-stock");
+      });
     });
-});
 
-Route::controller(RecipeController::class)->group(function(){
-    Route::prefix("cooking-products")->group(function(){
+    Route::controller(RecipeController::class)->group(function(){
+      Route::prefix("cooking-products")->group(function(){
         Route::get("/{id?}", "getCookingProduct");
         Route::post("/", "postCookingProduct");
         Route::patch("/{id}", "patchCookingProduct");
         Route::delete("/{id?}", "deleteCookingProduct");
         Route::post("/actions/clear", "clearCookingProducts");
-    });
+      });
 
-    Route::prefix("recipes")->group(function(){
+      Route::prefix("recipes")->group(function(){
         Route::get("/{id?}", "getRecipe")->name("get-recipe");
         Route::post("/", "postRecipe")->name("post-recipe");
         Route::patch("/{id}", "patchRecipe")->name("patch-recipe");
         Route::delete("/{id}", "deleteRecipe")->name("delete-recipe");
-    });
-});
+      });
 
-});
+      Route::prefix("recipe-ingredients")->group(function(){
+
+      });
+    });
+
+  });

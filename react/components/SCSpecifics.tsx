@@ -69,10 +69,11 @@ export function SCInput({
       label={label}
       disabled={type == "dummy"}
       autoFocus={focus}
-      inputMode={(type == "dummy" ? "text" : type) as InputModeOptions}
+      inputMode={(type == "dummy" ? "text" : type.toLocaleLowerCase()) as InputModeOptions}
       mode="outlined"
+      multiline={type === "TEXT"}
       value={String(value ?? "")}
-      onChangeText={onChange}
+      onChangeText={(nv) => type == "numeric" ? onChange(nv.replace(/,/g, ".")) : onChange(nv)}
       secureTextEntry={password}
       style={{width: "100%"}}
       />

@@ -325,9 +325,9 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
             maxAmount={pAmount}
             expirationDate="" />
           <SCButton icon="thermometer-empty" color="lightgray" onPress={() => setSAmount(0)} />
-          <SCButton icon="thermometer-full" color="lightgray" onPress={() => setSAmount(pAmount)} />
+          <SCButton icon="thermometer-full" color="lightgray" onPress={() => setSAmount(pStockItemsSumAmount)} />
         </View>}
-        <SCInput label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
+        <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
         {mode !== "cookingMode" && <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />}
       </View>
 

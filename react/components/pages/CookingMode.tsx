@@ -46,6 +46,7 @@ export default function CookingMode(){
       }).catch(err => {
         toast.update(toastId, `Nie udało się usunąć produktu: ${err.message}`, {type: "danger"})
       }).finally(() => {
+        setShowModStockModal(false)
         setDangerModalMode(false)
         setProduct(undefined)
         getData()
@@ -159,7 +160,7 @@ export default function CookingMode(){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Popraw" onPress={changeStock} />
-        <SCButton icon="times" title="Wyczyść" onPress={() => {setShowModStockModal(false); setDangerModalMode("clearOne");}} color="red" />
+        <SCButton icon="times" title="Wyczyść" onPress={() => setDangerModalMode("clearOne")} color="red" />
       </View>
     </SCModal>
 
@@ -171,7 +172,7 @@ export default function CookingMode(){
       >
       <Text>{dangerModalMode && dangerModes[dangerModalMode ?? ""].text}</Text>
       <View style={[s.flexRight, s.center]}>
-        <SCButton icon="fire-alt" title="Tak" color="red" onPress={dangerModalMode && dangerModes[dangerModalMode ?? ""].confirm} />
+        <SCButton icon="fire-alt" title="Tak" color={dangerModalMode === "submit" ? "green" : "red"} onPress={dangerModalMode && dangerModes[dangerModalMode ?? ""].confirm} />
       </View>
     </SCModal>
   </View>

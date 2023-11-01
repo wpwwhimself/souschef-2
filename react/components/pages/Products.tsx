@@ -67,8 +67,6 @@ export default function Products({navigation}){
   }, [isFocused]);
 
   // modal
-  const toggleEditor = () => {setEditorVisible(!editorVisible)}
-  const toggleEraser = () => {setEraserVisible(!eraserVisible)}
   const openEditor = (product?: Product) => {
     setPId(product?.id ?? 0);
     setPEan(product.ean);
@@ -77,7 +75,7 @@ export default function Products({navigation}){
     setPAmount(product.amount);
     setPEstExpirationDays(product.est_expiration_days);
 
-    toggleEditor();
+    setEditorVisible(true);
   }
   const handleSave = async () => {
     const toastId = toast.show("Zapisuję...");
@@ -90,29 +88,29 @@ export default function Products({navigation}){
       ingredientId: pIngredientId,
       amount: pAmount,
       estExpirationDays: pEstExpirationDays,
+    }).then(res => {
+      toast.update(toastId, "Produkt gotowy", {type: "success"});
+    }).catch(err => {
+      console.error(err)
+      toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
+    }).finally(() => {
+      setEditorVisible(false)
+      getData(pIngredientId)
     })
-      .then(res => {
-        toggleEditor();
-        toast.update(toastId, "Produkt gotowy", {type: "success"});
-        getData(pIngredientId);
-      })
-      .catch(err => {
-        console.error(err)
-        toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
-      })
   }
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
     rqDelete(`products/${pId}`)
       .then(res => {
-        toggleEraser();
         toast.update(toastId, "Produkt usunięty", {type: "success"});
-        getData(pIngredientId);
-      })
-      .catch(err => {
+      }).catch(err => {
         console.error(err)
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setEraserVisible(false);
+        setEditorVisible(false);
+        getData(pIngredientId);
       })
   }
 
@@ -149,7 +147,7 @@ export default function Products({navigation}){
     <SCModal
       title={`${(pId != 0) ? "Edytuj" : "Dodaj"} produkt`}
       visible={editorVisible}
-      onRequestClose={toggleEditor}
+      onRequestClose={() => setEditorVisible(false)}
       >
       <View style={[s.margin, s.center]}>
         <SCInput label="Nazwa" value={pName} onChange={setPName} />
@@ -160,7 +158,7 @@ export default function Products({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
-        {pId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {toggleEditor(); toggleEraser();}} />}
+        {pId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => setEraserVisible(true)} />}
       </View>
     </SCModal>
 
@@ -168,7 +166,7 @@ export default function Products({navigation}){
     <SCModal
       title="Usuń produkt"
       visible={eraserVisible}
-      onRequestClose={toggleEraser}
+      onRequestClose={() => setEraserVisible(false)}
       >
       <Text>Czy na pewno chcesz usunąć produkt {pName}?</Text>
       <View style={[s.flexRight, s.center]}>

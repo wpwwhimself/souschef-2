@@ -46,16 +46,11 @@ export default function Ingredients({navigation}){
   }, [isFocused]);
 
   // modal
-  const toggleEditor = async () => {
-    setEditorVisible(!editorVisible)
-
+  const openEditor = (ingredient?: Ingredient) => {
     rqGet("categories")
       .then(cats => { setCategories(prepareSelectItems(cats, "name", "id", true)) })
       .catch(err => console.error(err))
-    ;
-  }
-  const toggleEraser = () => {setEraserVisible(!eraserVisible)}
-  const openEditor = (ingredient?: Ingredient) => {
+
     setCName(ingredient?.name);
     setCCategoryId(ingredient?.category_id);
     setCFreezable(ingredient?.freezable);
@@ -63,7 +58,8 @@ export default function Ingredients({navigation}){
     setCUnit(ingredient?.unit);
     setCDash(ingredient?.dash);
     setCId(ingredient?.id ?? 0);
-    toggleEditor();
+
+    setEditorVisible(true);
   }
   const handleSave = async () => {
     const toastId = toast.show("Zapisuję...");
@@ -77,29 +73,29 @@ export default function Ingredients({navigation}){
       minimalAmount: cMinimalAmount,
       unit: cUnit,
       dash: cDash || false,
+    }).then(res => {
+      toast.update(toastId, "Składnik gotowy", {type: "success"});
+    }).catch(err => {
+      console.error(err)
+      toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
+    }).finally(() => {
+      setEditorVisible(false)
+      getData()
     })
-      .then(res => {
-        toggleEditor();
-        toast.update(toastId, "Składnik gotowy", {type: "success"});
-        getData();
-      })
-      .catch(err => {
-        console.error(err)
-        toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
-      })
   }
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
     rqDelete(`ingredients/${cId}`)
       .then(res => {
-        toggleEraser();
         toast.update(toastId, "Składnik usunięty", {type: "success"});
-        getData();
-      })
-      .catch(err => {
+      }).catch(err => {
         console.error(err)
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setEraserVisible(false)
+        setEditorVisible(false)
+        getData()
       })
   }
 
@@ -136,7 +132,7 @@ export default function Ingredients({navigation}){
     <SCModal
       title={`${(cId != 0) ? "Edytuj" : "Dodaj"} składnik`}
       visible={editorVisible}
-      onRequestClose={toggleEditor}
+      onRequestClose={() => setEditorVisible(false)}
       >
       <View style={[s.margin, s.center]}>
         <SCInput label="Nazwa składnika" value={cName} onChange={setCName} />
@@ -148,7 +144,7 @@ export default function Ingredients({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
-        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {toggleEditor(); toggleEraser();}} />}
+        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => setEraserVisible(true)} />}
       </View>
     </SCModal>
 
@@ -156,7 +152,7 @@ export default function Ingredients({navigation}){
     <SCModal
       title="Usuń składnik"
       visible={eraserVisible}
-      onRequestClose={toggleEraser}
+      onRequestClose={() => setEraserVisible(false)}
       >
       <Text>Czy na pewno chcesz usunąć składnik {cName}?</Text>
       <View style={[s.flexRight, s.center]}>

@@ -40,13 +40,11 @@ export default function Categories({navigation}){
   }, [isFocused]);
 
   // modal
-  const toggleEditor = () => {setEditorVisible(!editorVisible)}
-  const toggleEraser = () => {setEraserVisible(!eraserVisible)}
   const openEditor = (category?: Category) => {
     setCName(category?.name);
     setCSymbol(category?.symbol);
     setCId(category?.id ?? 0);
-    toggleEditor();
+    setEditorVisible(true);
   }
   const handleSave = async () => {
     const toastId = toast.show("Zapisuję...");
@@ -56,29 +54,28 @@ export default function Categories({navigation}){
     rq("categories" + (editing ? `/${cId}` : ""), {
       name: cName,
       symbol: cSymbol,
+    }).then(res => {
+      toast.update(toastId, "Kategoria gotowa", {type: "success"});
+    }).catch(err => {
+      console.error(err)
+      toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
+    }).finally(() => {
+      setEditorVisible(false)
+      getData()
     })
-      .then(res => {
-        toggleEditor();
-        toast.update(toastId, "Kategoria gotowa", {type: "success"});
-        getData();
-      })
-      .catch(err => {
-        console.error(err)
-        toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
-      })
   }
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
     rqDelete(`categories/${cId}`)
       .then(res => {
-        toggleEraser();
         toast.update(toastId, "Kategoria usunięta", {type: "success"});
-        getData();
-      })
-      .catch(err => {
-        console.error(err)
+      }).catch(err => {
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setEditorVisible(false)
+        setEraserVisible(false)
+        getData()
       })
   }
 
@@ -109,7 +106,7 @@ export default function Categories({navigation}){
     <SCModal
       title={`${(cId != 0) ? "Edytuj" : "Dodaj"} kategorię`}
       visible={editorVisible}
-      onRequestClose={toggleEditor}
+      onRequestClose={() => setEditorVisible(false)}
       >
       <View style={[s.margin, s.center]}>
         <SCInput label="Nazwa kategorii" value={cName} onChange={setCName} />
@@ -117,7 +114,7 @@ export default function Categories({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
-        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => {toggleEditor(); toggleEraser();}} />}
+        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => setEraserVisible(true)} />}
       </View>
     </SCModal>
 
@@ -125,7 +122,7 @@ export default function Categories({navigation}){
     <SCModal
       title="Usuń kategorię"
       visible={eraserVisible}
-      onRequestClose={toggleEraser}
+      onRequestClose={() => setEraserVisible(false)}
       >
       <Text>Czy na pewno chcesz usunąć kategorię {cName}?</Text>
       <View style={[s.flexRight, s.center]}>

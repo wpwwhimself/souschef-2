@@ -220,7 +220,7 @@ export default function Stock({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zatwierdź" onPress={handleSubmit} />
-        <SCButton icon="trash" color="red" title="Usuń" onPress={() => {setStockEditor(false); setStockEraser(true);}} />
+        <SCButton icon="trash" color="red" title="Usuń" onPress={() => setStockEraser(true)} />
       </View>
     </SCModal>
 

@@ -9,6 +9,7 @@ export interface Category{
   symbol: string,
   created_at: Date,
   updated_at: Date,
+  ingredients_count?: number,
 }
 
 export interface Ingredient{

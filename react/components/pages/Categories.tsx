@@ -91,6 +91,7 @@ export default function Categories({navigation}){
         <PositionTile
           icon={item.symbol}
           title={item.name}
+          subtitle={`${item.ingredients_count} skł.`}
           buttons={<>
             <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
           </>}

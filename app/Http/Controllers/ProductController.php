@@ -17,7 +17,7 @@ class ProductController extends Controller
   * CATEGORIES
   */
   public function getCategory($id = null){
-    $data = $id ? Category::findOrFail($id) : Category::orderBy("name")->get();
+    $data = $id ? Category::findOrFail($id) : Category::orderBy("name")->withCount("ingredients")->get();
     return $data;
   }
 

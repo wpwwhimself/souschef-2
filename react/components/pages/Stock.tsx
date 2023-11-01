@@ -49,7 +49,7 @@ export default function Stock({navigation}){
         setStockFreezer(freezables)
         setStockCupboard(items.filter(ing => !freezables.includes(ing)))
       })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setLoaderVisible(false))
   }
 
@@ -61,7 +61,7 @@ export default function Stock({navigation}){
         setIName(items[0].product.ingredient.name)
         setStockDdDetails(items)
       })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setSmallLoaderVisible(false))
   }
 
@@ -80,7 +80,7 @@ export default function Stock({navigation}){
         setSExpirationDate(item.expiration_date)
         setPUnit(unit)
       })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setSmallLoaderVisible(false))
   }
   const handleSubmit = async () => {
@@ -95,7 +95,6 @@ export default function Stock({navigation}){
       getData();
     })
     .catch(err => {
-      console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     })
     .finally(() => {
@@ -114,7 +113,6 @@ export default function Stock({navigation}){
       getData();
     })
     .catch(err => {
-      console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     })
     .finally(() => {

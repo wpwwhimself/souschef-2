@@ -104,7 +104,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
     rqGet("products/ean/" + ean + (mode === "cookingMode" ? "/1" : ""))
       .then(prds => { setProducts(prds) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setLoaderVisible(false))
     ;
   }
@@ -116,12 +116,12 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     // get ingredient unit
     rqGet("ingredients/" + ing_id)
       .then(ing => { setPIngredientUnit(ing.unit) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
 
     // product list based on the chosen ingredient
     rqGet("products/ingredient/" + ing_id + (mode === "cookingMode" ? "/1" : ""))
       .then(prds => { setProducts(prds) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setLoaderVisible(false))
     ;
   }
@@ -158,7 +158,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
         }).then(res => {
           toast.update(toastId, "Pozycja dodana", {type: "success"});
         }).catch(err => {
-          console.error(err)
           toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
         }).finally(() => {
           setShowModal(false)
@@ -190,7 +189,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
         ).then(res => {
           toast.update(toastId, "Pozycja dodana", {type: "success"});
         }).catch(err => {
-          console.error(err)
           toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
         }).finally(() => {
           setShowModal(false)

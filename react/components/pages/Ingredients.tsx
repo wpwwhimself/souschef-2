@@ -35,7 +35,7 @@ export default function Ingredients({navigation}){
 
     rqGet("ingredients")
       .then(res => setIngredients(res))
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setIngLoaderVisible(false))
     ;
   }
@@ -49,7 +49,7 @@ export default function Ingredients({navigation}){
   const openEditor = (ingredient?: Ingredient) => {
     rqGet("categories")
       .then(cats => { setCategories(prepareSelectItems(cats, "name", "id", true)) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
 
     setCName(ingredient?.name);
     setCCategoryId(ingredient?.category_id);
@@ -76,7 +76,6 @@ export default function Ingredients({navigation}){
     }).then(res => {
       toast.update(toastId, "Składnik gotowy", {type: "success"});
     }).catch(err => {
-      console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setEditorVisible(false)
@@ -90,7 +89,6 @@ export default function Ingredients({navigation}){
       .then(res => {
         toast.update(toastId, "Składnik usunięty", {type: "success"});
       }).catch(err => {
-        console.error(err)
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
       }).finally(() => {
         setEraserVisible(false)

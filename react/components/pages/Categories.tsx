@@ -57,7 +57,6 @@ export default function Categories({navigation}){
     }).then(res => {
       toast.update(toastId, "Kategoria gotowa", {type: "success"});
     }).catch(err => {
-      console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setEditorVisible(false)

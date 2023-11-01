@@ -36,7 +36,7 @@ export default function Products({navigation}){
 
     rqGet("ingredients")
       .then(ings => setIngredients(prepareSelectItems(ings, "name", "id")))
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setIngLoaderVisible(false))
     ;
   }
@@ -48,12 +48,12 @@ export default function Products({navigation}){
     // get ingredient unit
     rqGet("ingredients/" + ing_id)
       .then(ing => { setPIngredientUnit(ing.unit) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
 
     // product list based on the chosen ingredient
     rqGet("products/ingredient/" + ing_id)
       .then(prds => { setProducts(prds) })
-      .catch(err => console.error(err))
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
       .finally(() => setPrdLoaderVisible(false))
     ;
   }
@@ -91,7 +91,6 @@ export default function Products({navigation}){
     }).then(res => {
       toast.update(toastId, "Produkt gotowy", {type: "success"});
     }).catch(err => {
-      console.error(err)
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setEditorVisible(false)
@@ -105,7 +104,6 @@ export default function Products({navigation}){
       .then(res => {
         toast.update(toastId, "Produkt usunięty", {type: "success"});
       }).catch(err => {
-        console.error(err)
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
       }).finally(() => {
         setEraserVisible(false);

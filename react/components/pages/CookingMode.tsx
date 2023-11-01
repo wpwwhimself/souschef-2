@@ -12,6 +12,7 @@ import Loader from "../Loader";
 import HorizontalLine from "../HorizontalLine";
 import AmountIndicator from "../AmountIndicator";
 import AddStockModal from "../AddStockModal";
+import { CookingProduct, Product } from "../../types";
 
 export default function CookingMode(){
   const toast = useToast()
@@ -19,10 +20,13 @@ export default function CookingMode(){
   const [list, setList] = useState([])
   const [showAddStockModal, setShowAddStockModal] = useState(false)
   const [showModStockModal, setShowModStockModal] = useState(false)
+  const [showAssignProductModal, setShowAssignProductModal] = useState(false)
   const [dangerModalMode, setDangerModalMode] = useState<false | "clear" | "clearOne" | "submit">(false)
   const [loaderVisible, setLoaderVisible] = useState(false)
+  const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
 
-  const [product, setProduct] = useState(undefined)
+  const [product, setProduct] = useState<CookingProduct>()
+  const [products, setProducts] = useState<Product[]>()
   const [sAmount, setSAmount] = useState(0)
 
   const getData = () => {
@@ -53,7 +57,7 @@ export default function CookingMode(){
       })
   }
 
-  const prepareChangeStock = (cookingProduct) => {
+  const prepareChangeStock = (cookingProduct: CookingProduct) => {
     setProduct(cookingProduct)
     setSAmount(cookingProduct.amount)
     setShowModStockModal(true)
@@ -63,12 +67,41 @@ export default function CookingMode(){
     rqPatch(`cooking-products/${product.id}`, {
       amount: sAmount,
     }).then(res => {
-      toast.update(toastId, `Stan poprawiony na ${sAmount} ${product.product.ingredient.unit}`, {type: "success"})
+      toast.update(toastId, `Stan poprawiony na ${sAmount} ${product.ingredient.unit}`, {type: "success"})
     }).catch(err => {
       toast.update(toastId, `Nie udało się poprawić stanu: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setShowModStockModal(false)
       setProduct(undefined)
+      getData()
+    })
+  }
+
+  const prepareAssignProduct = (cookingProduct: CookingProduct) => {
+    setProduct(cookingProduct)
+    setSmallLoaderVisible(true)
+    rqGet(`products/ingredient/${cookingProduct.ingredient_id}/1`)
+      .then((prds: Product[]) => {
+        setProducts(prds)
+        setShowAssignProductModal(true);
+      }).catch(err => {
+        toast.show("Problem: "+err.message, {type: "danger"})
+      }).finally(() => {
+        setSmallLoaderVisible(false)
+        setShowAssignProductModal(true)
+      })
+  }
+
+  const assignProduct = (cooking_product_id: number, product_id: number) => {
+    const toastId = toast.show("Przypisuję produkt...")
+    rqPatch(`cooking-products/${cooking_product_id}/1`, {
+      productId: product_id,
+    }).then(res => {
+      toast.update(toastId, `Produkt przypisany`, {type: "success"})
+    }).catch(err => {
+      toast.update(toastId, `Problem: ${err.message}`, {type: "danger"})
+    }).finally(() => {
+      setShowAssignProductModal(false)
       getData()
     })
   }
@@ -94,7 +127,7 @@ export default function CookingMode(){
     },
     clearOne: {
       title: "Usunięcie produktu z listy",
-      text: `Czy na pewno chcesz usunąć produkt ${product?.product.name} z listy?`,
+      text: `Czy na pewno chcesz usunąć produkt ${product?.product?.name} z listy?`,
       confirm: clearList,
     },
     submit: {
@@ -111,18 +144,21 @@ export default function CookingMode(){
     {loaderVisible
     ? <Loader />
     : <FlatList data={list}
-      renderItem={({item}) => <PositionTile
-        title={item.product.ingredient.name}
-        subtitle={item.product.name}
-        icon={item.product.ingredient.category.symbol}
+      renderItem={({item}: {item: CookingProduct}) => <PositionTile
+        title={item.ingredient.name}
+        subtitle={item.product?.name}
+        icon={item.ingredient.category.symbol}
         buttons={<>
           <AmountIndicator title="Do odjęcia"
             amount={item.amount}
-            unit={item.product.ingredient.unit}
+            unit={item.ingredient.unit}
             maxAmount={item.stock_amount}
             expirationDate=""
           />
-          <SCButton icon="wrench" color="lightgray" onPress={() => prepareChangeStock(item)} small />
+          {item.product_id
+          ? <SCButton icon="wrench" color="lightgray" onPress={() => prepareChangeStock(item)} small />
+          : <SCButton icon="plus" onPress={() => prepareAssignProduct(item)} small />
+          }
         </>}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}
@@ -143,25 +179,49 @@ export default function CookingMode(){
     <SCModal
       visible={showModStockModal}
       onRequestClose={() => setShowModStockModal(false)}
-      title={`${product?.product.name}: stan`}
+      title={`${product?.product?.name}: stan`}
       >
       <View style={[s.margin]}>
         <View style={[s.flexRight, s.center]}>
           <AmountIndicator title="Stan obecny"
             amount={product?.stock_amount}
-            unit={product?.product.ingredient.unit}
-            minAmount={product?.product.ingredient.minimal_amount}
-            maxAmount={product?.product.amount}
+            unit={product?.ingredient.unit}
+            minAmount={product?.ingredient.minimal_amount}
+            maxAmount={product?.product?.amount}
             expirationDate="" />
           <SCButton icon="thermometer-empty" color="lightgray" onPress={() => setSAmount(0)} />
           <SCButton icon="thermometer-full" color="lightgray" onPress={() => setSAmount(product.stock_amount)} />
         </View>
-        <SCInput type="numeric" label={`Ilość do odjęcia (${product?.product.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
+        <SCInput type="numeric" label={`Ilość do odjęcia (${product?.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Popraw" onPress={changeStock} />
         <SCButton icon="times" title="Wyczyść" onPress={() => setDangerModalMode("clearOne")} color="red" />
       </View>
+    </SCModal>
+
+    {/* cp assign product */}
+    <SCModal
+      visible={showAssignProductModal} loader={smallLoaderVisible}
+      onRequestClose={() => setShowAssignProductModal(false)}
+      title={`Przypisz produkt do: ${product?.ingredient.name}`}
+      >
+      <FlatList data={products}
+        renderItem={({item}: {item: Product}) =>
+          <PositionTile
+            icon={item.ingredient.category.symbol}
+            title={item.name}
+            subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
+            buttons={<>
+              <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />
+              <SCButton color="lightgray" title="Wybierz" onPress={() => assignProduct(product.id, item.id)} />
+            </>}
+          />
+        }
+        ItemSeparatorComponent={() => <HorizontalLine />}
+        ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego EANu</BarText>}
+        style={s.popUpList}
+        />
     </SCModal>
 
     {/* dangerbox */}

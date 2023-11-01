@@ -8,6 +8,7 @@ use App\Models\RecipeIngredient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\ProductController;
+use App\Models\Product;
 
 class RecipeController extends Controller
 {
@@ -16,11 +17,13 @@ class RecipeController extends Controller
   */
   public function getCookingProduct($id = null){
     $data = $id
-    ? CookingProduct::with("product", "product.ingredient", "product.ingredient.category")->findOrFail($id)
-    : CookingProduct::with("product", "product.ingredient", "product.ingredient.category")
-    ->join("products", "products.id", "=", "product_id")
+    ? CookingProduct::with("product", "ingredient", "ingredient.category")->findOrFail($id)
+    : CookingProduct::with("product", "ingredient", "ingredient.category")
+    ->leftJoin("ingredients", "ingredients.id", "=", "ingredient_id")
     ->select("cooking_products.*")
-    ->orderBy("products.name")
+    ->orderByRaw("case when product_id is null then 0 else 1 end")
+    ->orderBy("ingredients.name")
+    ->orderByDesc("cooking_products.amount")
     ->get()
     ;
     return $data;
@@ -29,16 +32,41 @@ class RecipeController extends Controller
   public function postCookingProduct(Request $rq){
     $data = CookingProduct::create([
       "product_id" => $rq->productId,
+      "ingredient_id" => Product::findOrFail($rq->productId)->ingredient->id,
       "amount" => $rq->amount,
     ]);
     return $data;
   }
 
-  public function patchCookingProduct($id, Request $rq){
+  public function addCookingProductsFromRecipe($recipe_id){
+    $report = [];
+    foreach(Recipe::findOrFail($recipe_id)->ingredients as $ingredient){
+      $report[] = CookingProduct::create([
+        "ingredient_id" => $ingredient->ingredient_id,
+        "amount" => $ingredient->amount,
+      ]);
+    }
+    return response()->json($report);
+  }
+
+  public function patchCookingProduct($id, $check_product_sufficient = false, Request $rq){
     $data = CookingProduct::findOrFail($id);
     foreach($rq->except("magic_word") as $key => $value){
       $data->{Str::snake($key)} = $value;
     }
+
+    if(
+      $check_product_sufficient
+      && $data->amount > $data->product->stockItems->sum("amount")
+    ){
+      $missing_amount = $data->amount - $data->product->stockItems->sum("amount");
+      $data->amount = $data->product->stockItems->sum("amount");
+      CookingProduct::create([
+        "ingredient_id" => $data->ingredient_id,
+        "amount" => $missing_amount,
+      ]);
+    }
+
     $data->save();
     return $data;
   }
@@ -56,9 +84,12 @@ class RecipeController extends Controller
     $report = [];
     foreach(CookingProduct::all() as $cp){
       $report[$cp->id] = [
+        "ingredient_id" => $cp->ingredient_id,
         "product_id" => $cp->product_id,
         "cleared_stock_items" => [],
       ];
+
+      if(!$cp->product_id) continue;
 
       $amountToClear = $cp->amount;
       foreach($cp->product->stockItems as $stockItem){

@@ -10,7 +10,7 @@ class CookingProduct extends Model
     use HasFactory;
 
     protected $fillable = [
-      "product_id",
+      "product_id", "ingredient_id",
       "amount",
     ];
 
@@ -18,10 +18,13 @@ class CookingProduct extends Model
       "stock_amount",
     ];
     public function getStockAmountAttribute(){
-      return $this->product->stockItems->sum("amount");
+      return $this->product?->stockItems->sum("amount") ?? 0;
     }
 
     public function product(){
       return $this->belongsTo(Product::class);
+    }
+    public function ingredient(){
+      return $this->belongsTo(Ingredient::class);
     }
 }

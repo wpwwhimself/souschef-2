@@ -2,7 +2,7 @@ import { FlatList, Text, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useRoute } from "@react-navigation/native";
 import PositionTile from "../PositionTile";
 import BarText from "../BarText";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
@@ -24,6 +24,7 @@ export default function Recipes({navigation}){
   const [recipeIngredientModVisible, setRecipeIngredientModVisible] = useState(false)
   const [editPreview, setEditPreview] = useState(false)
   const toast = useToast();
+  const route = useRoute();
 
   const [ingredients, setIngredients] = useState<SelectItem[]>()
 
@@ -184,6 +185,18 @@ export default function Recipes({navigation}){
       })
   }
 
+  const goToCookingMode = () => {
+    const toastId = toast.show("Przygotowuję listę...")
+    rqPost(`cooking-products/actions/add-from-recipe/${rId}`)
+      .then(res => {
+        toast.update(toastId, "Lista gotowa", {type: "success"})
+        setPreviewVisible(false)
+        navigation.navigate("CookingMode")
+      }).catch(err => {
+        toast.update(toastId, "Problem: "+err.message, {type: "danger"})
+      })
+  }
+
   const dangerModes = {
     recipe: {
       title: "Usuń przepis",
@@ -257,6 +270,7 @@ export default function Recipes({navigation}){
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
           ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
+          style={s.popUpList}
           />
         <View style={[s.flexRight, s.center]}>
           <SCButton icon="plus" title="Dodaj składnik" onPress={() => handleEditIngredient()} small />
@@ -277,12 +291,14 @@ export default function Recipes({navigation}){
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
           ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
+          style={s.popUpList}
           />
 
         <Header icon="scroll">Przepis</Header>
         {rInstructions ? <Text>{rInstructions}</Text> : <BarText color="lightgray" small>Brak treści przepisu</BarText>}
         <View style={[s.flexRight, s.center]}>
-          <SCButton icon={"pen"} title={"Edytuj"} onPress={enablePreviewEdit} />
+          <SCButton icon="pen" color="lightgray" title="Edytuj" onPress={enablePreviewEdit} />
+          <SCButton title="Podlicz" onPress={goToCookingMode} />
         </View>
       </>}
     </SCModal>

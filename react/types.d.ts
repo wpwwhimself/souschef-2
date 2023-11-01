@@ -12,6 +12,16 @@ export interface Category{
   ingredients_count?: number,
 }
 
+export interface CookingProduct{
+  id: number,
+  ingredient_id: number,
+  ingredient: Ingredient,
+  product_id?: number,
+  product: Product,
+  stock_amount: number,
+  amount: number,
+}
+
 export interface Ingredient{
   id: number,
   name: string,

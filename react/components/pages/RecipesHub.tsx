@@ -1,6 +1,5 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Recipes from "./Recipes";
-import ModRecipe from "./ModRecipe";
 import { ACCENT_COLOR } from "../../assets/constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import CookingMode from "./CookingMode";

@@ -62,9 +62,10 @@ use Illuminate\Support\Facades\Route;
       Route::prefix("cooking-products")->group(function(){
         Route::get("/{id?}", "getCookingProduct");
         Route::post("/", "postCookingProduct");
-        Route::patch("/{id}", "patchCookingProduct");
+        Route::patch("/{id}/{check_product_sufficient?}", "patchCookingProduct");
         Route::delete("/{id?}", "deleteCookingProduct");
         Route::post("/actions/clear", "clearCookingProducts");
+        Route::post("/actions/add-from-recipe/{recipe_id}", "addCookingProductsFromRecipe");
       });
 
       Route::prefix("recipes")->group(function(){

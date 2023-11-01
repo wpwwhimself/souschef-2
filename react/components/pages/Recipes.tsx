@@ -114,7 +114,7 @@ export default function Recipes({navigation}){
   const handleSave = () => {
     const toastId = toast.show("Zapisuję...");
     const rq = rId ? rqPatch : rqPost;
-    rq(`recipes/${rId || ""}`, {
+    rq("recipes" + (rId ? `/${rId}` : ""), {
       name: rName,
       subtitle: rSubtitle,
       forDinner: rForDinner || false,
@@ -148,7 +148,7 @@ export default function Recipes({navigation}){
   const handleSaveIngredients = () => {
     const toastId = toast.show("Zapisuję...")
     const rq = riId ? rqPatch : rqPost
-    rq(`recipe-ingredients/${riId || ""}`, {
+    rq("recipe-ingredients" + (riId ? `/${riId}` : ""), {
       recipeId: rId,
       ingredientId: riIngredientId,
       amount: riAmount,

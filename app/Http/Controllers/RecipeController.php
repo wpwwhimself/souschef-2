@@ -88,8 +88,8 @@ class RecipeController extends Controller
   */
   public function getRecipe($id = null){
     $data = $id
-    ? Recipe::with("ingredients")->find($id)
-    : Recipe::orderBy("name")->get();
+    ? Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")->find($id)
+    : Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")->orderBy("name")->get();
     return $data;
   }
 
@@ -120,37 +120,29 @@ class RecipeController extends Controller
   }
 
   /*****************************
-  * RECIPES' TEMPLATES
+  * RECIPE INGREDIENTS
   */
-  // public function getRecipeTemplate($id = null){
-    //     $data = $id ? RecipeTemplate::find($id) : RecipeTemplate::with("recipe", "template")->get();
-    //     return $data;
-    // }
+  public function postRecipeIngredient(Request $rq){
+    $data = RecipeIngredient::create([
+      "recipe_id" => $rq->recipeId,
+      "ingredient_id" => $rq->ingredientId,
+      "amount" => $rq->amount,
+      "optional" => $rq->optional,
+    ]);
+    return $data;
+  }
 
-    // public function postRecipeTemplate(Request $rq){
-      //     $data = RecipeTemplate::create([
-        //         "ean" => $rq->ean,
-        //         "name" => $rq->name,
-        //         "ingredient_id" => $rq->ingredientId,
-        //         "amount" => $rq->amount,
-        //         "unit" => $rq->unit,
-        //         "dash" => $rq->dash,
-        //         "est_expiration_days" => $rq->estExpirationDays,
-        //     ]);
-        //     return $data;
-        // }
+  public function patchRecipeIngredient($id, Request $rq){
+    $data = RecipeIngredient::find($id);
+    foreach($rq->except("magic_word") as $key => $value){
+      $data->{Str::snake($key)} = $value;
+    }
+    $data->save();
+    return $data;
+  }
 
-        // public function patchRecipeTemplate($id, Request $rq){
-          //     $data = RecipeTemplate::find($id);
-          //     foreach($rq->except("magic_word") as $key => $value){
-            //         $data->{Str::snake($key)} = $value;
-            //     }
-            //     $data->save();
-            //     return $data;
-            // }
-
-            // public function deleteRecipeTemplate($id){
-              //     RecipeTemplate::find($id)->delete();
-              //     return response()->json("Recipe Template deleted");
-              // }
-            }
+  public function deleteRecipeIngredient($id){
+    RecipeIngredient::find($id)->delete();
+    return response()->json("Recipe Ingredient deleted");
+  }
+}

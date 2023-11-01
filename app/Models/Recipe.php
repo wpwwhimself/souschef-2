@@ -15,6 +15,9 @@ class Recipe extends Model
     ];
 
     public function ingredients(){
-        return $this->hasMany(RecipeIngredient::class);
+        return $this->hasMany(RecipeIngredient::class)
+          ->orderByDesc("amount")
+          ->orderByDesc("optional")
+        ;
     }
 }

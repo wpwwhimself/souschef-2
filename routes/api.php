@@ -75,7 +75,9 @@ use Illuminate\Support\Facades\Route;
       });
 
       Route::prefix("recipe-ingredients")->group(function(){
-
+        Route::post("/", "postRecipeIngredient");
+        Route::patch("/{id}", "patchRecipeIngredient");
+        Route::delete("/{id}", "deleteRecipeIngredient");
       });
     });
 

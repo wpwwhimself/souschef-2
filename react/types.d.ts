@@ -42,6 +42,7 @@ export interface Recipe{
   instructions?: string,
   for_dinner: boolean,
   for_supper: boolean,
+  ingredients?: RecipeIngredient[],
 }
 
 export interface RecipeIngredient{

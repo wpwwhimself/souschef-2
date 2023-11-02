@@ -12,6 +12,8 @@ import { useToast } from "react-native-toast-notifications";
 import { Ingredient, Recipe, RecipeIngredient, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { prepareSelectItems } from "../../helpers/Prepare";
+import { ACCENT_COLOR } from "../../assets/constants";
+import AmountIndicator from "../AmountIndicator";
 
 export default function Recipes({navigation}){
   const isFocused = useIsFocused();
@@ -233,6 +235,13 @@ export default function Recipes({navigation}){
               : "🍰"
             }
             buttons={<>
+              <AmountIndicator
+                amount={item.ingredients.length - item.stock_insufficient_count}
+                unit="skł."
+                maxAmount={item.ingredients.length}
+                amountAsFraction
+                highlightAt={1}
+                />
               <SCButton onPress={() => showPreview(item)} small />
               <SCButton icon="wrench" color="lightgray" onPress={() => showHeaderEditor(item)} small />
             </>}
@@ -288,6 +297,7 @@ export default function Recipes({navigation}){
                 item.optional ? "➕" : undefined,
               ].filter(Boolean).join(" • ")}
               icon={item.ingredient.category.symbol}
+              buttons={item.stock_amount < item.amount && !item.optional && <Text style={{ color: ACCENT_COLOR }}>Za mało na stanie</Text>}
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
           ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}

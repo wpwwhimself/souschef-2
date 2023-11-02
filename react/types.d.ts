@@ -54,6 +54,7 @@ export interface Recipe{
   for_dinner: boolean,
   for_supper: boolean,
   ingredients?: RecipeIngredient[],
+  stock_insufficient_count: number,
 }
 
 export interface RecipeIngredient{
@@ -63,6 +64,7 @@ export interface RecipeIngredient{
   ingredient: Ingredient,
   amount: number,
   optional: boolean,
+  stock_amount: number,
 }
 
 export interface StockItem{

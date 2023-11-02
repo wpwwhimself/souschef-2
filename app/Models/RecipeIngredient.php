@@ -14,6 +14,13 @@ class RecipeIngredient extends Model
         "amount",
         "optional",
     ];
+    protected $appends = [
+        "stock_amount",
+    ];
+
+    public function getStockAmountAttribute(){
+        return $this->ingredient->stockItems->sum("amount");
+    }
 
     public function recipe(){
         return $this->belongsTo(Recipe::class);

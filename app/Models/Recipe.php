@@ -13,11 +13,27 @@ class Recipe extends Model
         "name", "subtitle", "instructions",
         "for_dinner", "for_supper",
     ];
+    protected $appends = [
+        "stock_insufficient_count",
+    ];
+    
+    public function getStockInsufficientCountAttribute(){
+        $count = 0;
+        foreach($this->ingredients as $ingredient){
+            if($ingredient->stock_amount < $ingredient->amount && !$ingredient->optional){
+                $count++;
+            }
+        }
+        return $count;
+    }
 
     public function ingredients(){
         return $this->hasMany(RecipeIngredient::class)
           ->orderByDesc("amount")
           ->orderByDesc("optional")
+          ->join("ingredients", "ingredients.id", "=", "ingredient_id")
+          ->orderBy("ingredients.name")
+          ->select("recipe_ingredients.*")
         ;
     }
 }

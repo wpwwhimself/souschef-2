@@ -119,8 +119,12 @@ class RecipeController extends Controller
   */
   public function getRecipe($id = null){
     $data = $id
-    ? Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")->find($id)
-    : Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")->orderBy("name")->get();
+    ? Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
+      ->find($id)
+    : Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
+      ->orderBy("name")
+      ->get()
+    ;
     return $data;
   }
 

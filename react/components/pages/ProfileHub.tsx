@@ -3,6 +3,7 @@ import Profile from "./Profile";
 import Settings from "./Settings";
 import { ACCENT_COLOR } from "../../assets/constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import About from "./About";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -19,6 +20,12 @@ export default function ProfileHub(){
       component: Settings,
       title: "Ustawienia",
       icon: "cog",
+    },
+    {
+      route: "About",
+      component: About,
+      title: "O aplikacji",
+      icon: "question-circle",
     },
   ]
 

@@ -14,11 +14,13 @@ import HorizontalLine from "../HorizontalLine";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import { ACCENT_COLOR } from "../../assets/constants";
 import AmountIndicator from "../AmountIndicator";
+import TitledText from "../TitledText";
 
 export default function Recipes({navigation}){
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState<Recipe[]>();
   const [loaderVisible, setLoaderVisible] = useState(false)
+  const [suggestionsLoaderVisible, setSuggestionsLoaderVisible] = useState(false)
   const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
   const [editorVisible, setEditorVisible] = useState(false)
@@ -29,6 +31,7 @@ export default function Recipes({navigation}){
   const route = useRoute();
 
   const [ingredients, setIngredients] = useState<SelectItem[]>()
+  const [suggestions, setSuggestions] = useState<{for_dinner: Recipe, for_supper: Recipe}>()
 
   // recipe header params
   const [rId, setRId] = useState<number>()
@@ -53,6 +56,21 @@ export default function Recipes({navigation}){
       .catch(err => toast.show(err.message, {type: "danger"}))
       .finally(() => setLoaderVisible(false))
     ;
+  }
+
+  const getSuggestions = () => {
+    setSuggestionsLoaderVisible(true)
+    rqGet("recipes/actions/suggestions")
+      .then(rcps => setSuggestions(rcps))
+      .catch(err => {
+        toast.show("Problem z wczytaniem sugestii: "+err.message, {type: "danger"})
+      }).finally(() => {
+        setSuggestionsLoaderVisible(false)
+      })
+  }
+  const sgsLabels = {
+    for_dinner: "Na obiad 🌞",
+    for_supper: "Na kolację 🌙",
   }
 
   const setRecipeParams = (recipe: Recipe) => {
@@ -213,11 +231,26 @@ export default function Recipes({navigation}){
   }
 
   useEffect(() => {
-    if(isFocused) getData();
+    if(isFocused){
+      getData()
+      getSuggestions()
+    }
   }, [isFocused]);
 
   return <View style={s.wrapper}>
     <Header icon="lightbulb">Propozycje</Header>
+    <SCButton icon="dice" color="lightgray" title="Losuj propozycje" onPress={getSuggestions} />
+    {suggestionsLoaderVisible
+    ? <Loader />
+    : <View style={[s.flexRight]}>
+      {suggestions && Object.keys(suggestions).map((key) =>
+        <View key={key} style={[s.flexRight, s.center, { flexGrow: 1 }]}>
+        <TitledText title={sgsLabels[key]}>
+          {suggestions[key]?.name || "nie mam propozycji..."}
+        </TitledText>
+        {suggestions[key] && <SCButton onPress={() => showPreview(suggestions[key])} />}
+      </View>)}
+    </View>}
 
     <Header icon="list">Lista</Header>
     <SCButton icon="plus" title="Dodaj przepis" onPress={() => showHeaderEditor()} />
@@ -225,7 +258,7 @@ export default function Recipes({navigation}){
       {loaderVisible
       ? <Loader />
       : <FlatList data={recipes}
-        renderItem={({item}: {item: Recipe}) => <PositionTile
+        renderItem={({item}) => <PositionTile
             title={item.name}
             subtitle={item.subtitle}
             icon={

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
+use Exception;
 
 class RecipeController extends Controller
 {
@@ -126,6 +127,31 @@ class RecipeController extends Controller
       ->get()
     ;
     return $data;
+  }
+
+  public function suggestRecipes(){
+    try{
+      $for_dinner = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
+        ->where("for_dinner", true)
+        ->get()
+        ->sortBy("stock_insufficient_count")->values()
+        ->random()
+      ;
+    }catch(Exception $e){
+      $for_dinner = null;
+    }
+    try{
+      $for_supper = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
+        ->where("for_supper", true)
+        ->get()
+        ->sortBy("stock_insufficient_count")->values()
+        ->filter(fn($el) => $el->id !== $for_dinner->id)
+        ->random()
+      ;
+    }catch(Exception $e){
+      $for_supper = null;
+    }
+    return compact("for_dinner", "for_supper");
   }
 
   public function postRecipe(Request $rq){

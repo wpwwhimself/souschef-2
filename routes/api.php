@@ -69,6 +69,7 @@ Route::middleware(MagicWord::class)->group(function(){
       Route::post("/", "postRecipe")->name("post-recipe");
       Route::patch("/{id}", "patchRecipe")->name("patch-recipe");
       Route::delete("/{id}", "deleteRecipe")->name("delete-recipe");
+      Route::get("/actions/suggestions", "suggestRecipes");
     });
 
     Route::prefix("recipe-ingredients")->group(function(){

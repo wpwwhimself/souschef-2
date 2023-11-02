@@ -7,7 +7,7 @@ import { ACCENT_COLOR } from './assets/constants';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text, View } from 'react-native';
 import ProfileHub from './components/pages/ProfileHub';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -55,8 +55,8 @@ export default function App() {
     <PaperProvider theme={theme}>
     <ToastProvider
       placement="top"
-      successIcon={<Icon icon="check" color="white" />}
-      dangerIcon={<Icon icon="times" color="white" />}
+      successIcon={<Text>✅</Text>}
+      dangerIcon={<Text>🔥</Text>}
       >
     <NavigationContainer
       documentTitle={{

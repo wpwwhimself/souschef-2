@@ -44,7 +44,7 @@ export default function CookingMode(){
 
   const clearList = () => {
     const toastId = toast.show("Usuwam...")
-    rqDelete(`cooking-products/${product ? product.id : ""}`)
+    rqDelete(`cooking-products${product ? `/${product.id}` : ""}`)
       .then(res => {
         toast.update(toastId, "Produkt usunięty z listy", {type: "success"})
       }).catch(err => {

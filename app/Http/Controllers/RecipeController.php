@@ -50,7 +50,7 @@ class RecipeController extends Controller
     return response()->json($report);
   }
 
-  public function patchCookingProduct($id, $check_product_sufficient = false, Request $rq){
+  public function patchCookingProduct($id, Request $rq, $check_product_sufficient = false){
     $data = CookingProduct::findOrFail($id);
     foreach($rq->except("magic_word") as $key => $value){
       $data->{Str::snake($key)} = $value;

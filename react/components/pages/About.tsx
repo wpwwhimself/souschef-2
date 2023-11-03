@@ -6,7 +6,9 @@ import Splash from "../../assets/sc_splash.svg"
 
 export default function About({navigation}){
   return <View style={[s.wrapper]}>
-    <Splash />
+    <View style={{flex: 1}}>
+      <Splash />
+    </View>
     <TitledText title="Wersja aplikacji">{pkg.version}</TitledText>
     <TitledText title="Projekt i wykonanie">Wojciech Przybyła</TitledText>
   </View>

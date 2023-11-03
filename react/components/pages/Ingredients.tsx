@@ -112,7 +112,7 @@ export default function Ingredients({navigation}){
           title={item.name}
           subtitle={[
             item.unit,
-            item.minimal_amount !== undefined && "min. " + item.minimal_amount,
+            item.minimal_amount !== null && "min. " + item.minimal_amount,
             item.freezable && "🧊",
             item.dash && "🤏",
           ].filter(Boolean).join(" • ") || undefined}

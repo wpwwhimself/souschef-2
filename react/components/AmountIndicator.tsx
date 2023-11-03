@@ -27,7 +27,7 @@ export default function AmountIndicator({amount, unit, maxAmount, expirationDate
   ]
 
   return <View style={ss.wrapper}>
-    {maxAmount && <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount || highlightAt == amount / maxAmount ? ACCENT_COLOR : "lightgray"} width={100} />}
+    {!!maxAmount && <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount || highlightAt == amount / maxAmount ? ACCENT_COLOR : "lightgray"} width={100} />}
     <Text style={dateDiff <= 0 && s.error}>
       {(title ? title+": " : "") + label.filter(Boolean).join(" • ")}
     </Text>

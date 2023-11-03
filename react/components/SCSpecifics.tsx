@@ -60,7 +60,7 @@ export function SCInput({
       <View style={s.center}>
         <Switch
           trackColor={{ false: "dimgray", true: ACCENT_COLOR }}
-          value={value}
+          value={!!value}
           onValueChange={onChange}
         />
       </View>

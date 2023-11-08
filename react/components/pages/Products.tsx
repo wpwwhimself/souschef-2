@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native"
+import { FlatList, RefreshControl, Text, View } from "react-native"
 import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ import { SCButton, SCModal, SCInput, SCSelect } from "../SCSpecifics";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Product, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import Loader from "../Loader";
 import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
 import { prepareSelectItems } from "../../helpers/Prepare";
@@ -122,10 +121,9 @@ export default function Products({navigation}){
     {/* list */}
     {!pIngredientId
     ? <></>
-    : prdLoaderVisible
-    ? <Loader />
     : <>
       <FlatList data={products}
+      refreshControl={<RefreshControl refreshing={prdLoaderVisible} onRefresh={() => getData(pIngredientId)} />}
       renderItem={({item}) =>
         <PositionTile
           icon={item.ingredient.category.symbol}

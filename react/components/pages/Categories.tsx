@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native"
+import { FlatList, RefreshControl, Text, View } from "react-native"
 import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ import { SCButton, SCModal, SCInput } from "../SCSpecifics";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Category } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import Loader from "../Loader";
 import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
 
@@ -84,9 +83,8 @@ export default function Categories({navigation}){
     <SCButton icon="plus" title="Dodaj kategorię" onPress={() => openEditor()} />
 
     {/* list */}
-    {catLoaderVisible
-    ? <Loader />
-    : <FlatList data={categories}
+    <FlatList data={categories}
+      refreshControl={<RefreshControl refreshing={catLoaderVisible} onRefresh={getData} />}
       renderItem={({item}) =>
         <PositionTile
           icon={item.symbol}
@@ -100,7 +98,6 @@ export default function Categories({navigation}){
       ItemSeparatorComponent={() => <HorizontalLine />}
       ListEmptyComponent={<BarText color="lightgray" small>Brak kategorii</BarText>}
       />
-    }
 
     {/* editor */}
     <SCModal

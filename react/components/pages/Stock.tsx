@@ -1,9 +1,8 @@
-import { FlatList, SectionList, View } from "react-native"
+import { FlatList, RefreshControl, SectionList, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import TopHeader from "../TopHeader"
 import { useState, useEffect } from "react"
-import Loader from "../Loader"
 import PositionTile from "../PositionTile"
 import HorizontalLine from "../HorizontalLine"
 import BarText from "../BarText"
@@ -14,7 +13,6 @@ import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
 import { StockItem } from "../../types"
 import { useToast } from "react-native-toast-notifications";
-import { prepareDate } from "../../helpers/Prepare"
 import { Text } from "react-native"
 import AddStockModal from "../AddStockModal"
 
@@ -159,11 +157,10 @@ export default function Stock({navigation}){
       ingId={ingId}
     />
 
-    {loaderVisible
-    ? <Loader />
-    : <SectionList
+    <SectionList
       sections={content}
       renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR} center>{section.header}</Header>}
+      refreshControl={<RefreshControl refreshing={loaderVisible} onRefresh={getData} />}
       renderItem={({item}) => <PositionTile
               icon={item.category.symbol}
               title={item.name}
@@ -182,7 +179,7 @@ export default function Stock({navigation}){
       renderSectionFooter={({section}) => section.data.length === 0 &&
         <BarText color="lightgray" small>{section.emptyNotice}</BarText>
       }
-    />}
+    />
 
     <SCModal
       visible={stockDrilldown} loader={smallLoaderVisible}

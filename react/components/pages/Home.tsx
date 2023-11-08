@@ -1,11 +1,10 @@
-import { SectionList, Text, View } from "react-native";
+import { RefreshControl, SectionList, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
 import BarText from "../BarText";
 import { ACCENT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import Loader from "../Loader";
 import { rqDelete, rqGet } from "../../helpers/SCFetch";
 import PositionTile from "../PositionTile";
 import AmountIndicator from "../AmountIndicator";
@@ -18,8 +17,8 @@ import AddStockModal from "../AddStockModal";
 export default function Home(){
   const isFocused = useIsFocused();
   const toast = useToast();
-  const [loaderForShoppingList, setLoaderForShoppingList] = useState(false)
-  const [loaderForSpoiled, setLoaderForSpoiled] = useState(false)
+  const [loaderForShoppingList, setLoaderForShoppingList] = useState(true)
+  const [loaderForSpoiled, setLoaderForSpoiled] = useState(true)
   const [shoppingList, setShoppingList] = useState([])
   const [spoiled, setSpoiled] = useState([])
   const [throwOutModal, setThrowOutModal] = useState(false)
@@ -100,10 +99,9 @@ export default function Home(){
 
   return (
     <View style={[s.wrapper]}>
-      {loaderForShoppingList || loaderForSpoiled
-      ? <Loader />
-      : <SectionList sections={content}
+      <SectionList sections={content}
         renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR} center>{section.header}</Header>}
+        refreshControl={<RefreshControl refreshing={loaderForShoppingList || loaderForSpoiled} onRefresh={getData} />}
         renderItem={({item, section}) => section.name == "shoppingList"
           ? <PositionTile
             icon={item.category_symbol}
@@ -145,7 +143,7 @@ export default function Home(){
         renderSectionFooter={({section}) => section.data.length === 0 &&
           <BarText color="lightgray" small>{section.emptyNotice}</BarText>
         }
-      />}
+      />
 
       <AddStockModal
         visible={showAddStockModal}

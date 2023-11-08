@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native";
+import { FlatList, RefreshControl, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
 import BarText from "../BarText";
@@ -22,7 +22,7 @@ export default function CookingMode(){
   const [showModStockModal, setShowModStockModal] = useState(false)
   const [showAssignProductModal, setShowAssignProductModal] = useState(false)
   const [dangerModalMode, setDangerModalMode] = useState<false | "clear" | "clearOne" | "submit">(false)
-  const [loaderVisible, setLoaderVisible] = useState(false)
+  const [loaderVisible, setLoaderVisible] = useState(true)
   const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
 
   const [product, setProduct] = useState<CookingProduct>()
@@ -141,9 +141,8 @@ export default function CookingMode(){
     <Header icon="balance-scale">Zmiana stanów</Header>
 
     <View style={{flex: 1}}>
-    {loaderVisible
-    ? <Loader />
-    : <FlatList data={list}
+    <FlatList data={list}
+      refreshControl={<RefreshControl refreshing={loaderVisible} onRefresh={getData} />}
       renderItem={({item}: {item: CookingProduct}) => <PositionTile
         title={item.ingredient.name}
         subtitle={item.product?.name}
@@ -163,7 +162,7 @@ export default function CookingMode(){
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}
       ListEmptyComponent={<BarText color="lightgray" small>Dodaj pierwszą pozycję</BarText>}
-    />}
+    />
     </View>
 
     <View style={[s.flexRight]}>

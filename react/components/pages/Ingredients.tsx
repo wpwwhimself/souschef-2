@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native"
+import { FlatList, RefreshControl, Text, View } from "react-native"
 import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -7,7 +7,6 @@ import BarText from "../BarText";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Ingredient, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import Loader from "../Loader";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import TopHeader from "../TopHeader";
@@ -103,9 +102,8 @@ export default function Ingredients({navigation}){
     <SCButton icon="plus" title="Dodaj składnik" onPress={() => openEditor()} />
 
     {/* list */}
-    {ingLoaderVisible
-    ? <Loader />
-    : <FlatList data={ingredients}
+    <FlatList data={ingredients}
+      refreshControl={<RefreshControl refreshing={ingLoaderVisible} onRefresh={getData} />}
       renderItem={({item}) =>
         <PositionTile
           icon={item.category.symbol}
@@ -124,7 +122,6 @@ export default function Ingredients({navigation}){
       ItemSeparatorComponent={() => <HorizontalLine />}
       ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
       />
-    }
 
     {/* editor */}
     <SCModal

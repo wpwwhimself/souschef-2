@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from "react-native"
+import { FlatList, RefreshControl, Text, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react";
@@ -19,7 +19,7 @@ import TitledText from "../TitledText";
 export default function Recipes({navigation}){
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState<Recipe[]>();
-  const [loaderVisible, setLoaderVisible] = useState(false)
+  const [loaderVisible, setLoaderVisible] = useState(true)
   const [suggestionsLoaderVisible, setSuggestionsLoaderVisible] = useState(false)
   const [smallLoaderVisible, setSmallLoaderVisible] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
@@ -255,9 +255,8 @@ export default function Recipes({navigation}){
     <Header icon="list">Lista</Header>
     <SCButton icon="plus" title="Dodaj przepis" onPress={() => showHeaderEditor()} />
     <View style={{ flex: 1 }}>
-      {loaderVisible
-      ? <Loader />
-      : <FlatList data={recipes}
+      <FlatList data={recipes}
+        refreshControl={<RefreshControl refreshing={loaderVisible} onRefresh={getData} />}
         renderItem={({item}) => <PositionTile
             title={item.name}
             subtitle={item.subtitle}
@@ -283,7 +282,6 @@ export default function Recipes({navigation}){
         ItemSeparatorComponent={() => <HorizontalLine />}
         ListEmptyComponent={<BarText color="lightgray" small>Brak przepisów</BarText>}
         />
-      }
     </View>
 
     {/* preview */}

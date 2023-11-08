@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, TextStyle, StyleProp, ViewStyle } from "react-native";
+import s from "../assets/style";
+import { FG_COLOR } from "../assets/constants";
 
-export default function BarText({children, color = "black", small = false}){
+export default function BarText({children, color = FG_COLOR, small = false}){
   const lineStyle: StyleProp<ViewStyle> = {
     ...bts.line,
     backgroundColor: color,

@@ -11,6 +11,7 @@ import HorizontalLine from "../HorizontalLine";
 import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
 import { prepareSelectItems } from "../../helpers/Prepare";
+import { LIGHT_COLOR } from "../../assets/constants";
 
 export default function Products({navigation}){
   const isFocused = useIsFocused();
@@ -129,12 +130,12 @@ export default function Products({navigation}){
           icon={item.ingredient.category.symbol}
           title={item.name}
           buttons={<>
-            <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
+            <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => openEditor(item)} small />
           </>}
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray" small>Brak produktów</BarText>}
+      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów</BarText>}
       />
     </>
     }

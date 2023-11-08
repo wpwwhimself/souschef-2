@@ -11,6 +11,7 @@ import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
+import { LIGHT_COLOR } from "../../assets/constants";
 
 export default function Ingredients({navigation}){
   const isFocused = useIsFocused();
@@ -115,12 +116,12 @@ export default function Ingredients({navigation}){
             item.dash && "🤏",
           ].filter(Boolean).join(" • ") || undefined}
           buttons={<>
-            <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
+            <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => openEditor(item)} small />
           </>}
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
+      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak składników</BarText>}
       />
 
     {/* editor */}

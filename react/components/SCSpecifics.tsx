@@ -1,4 +1,4 @@
-import { ACCENT_COLOR } from "../assets/constants"
+import { ACCENT_COLOR, LIGHT_COLOR } from "../assets/constants"
 import { Button } from "react-native"
 import { TextInput, Modal, Portal, useTheme } from "react-native-paper";
 import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
@@ -49,7 +49,7 @@ export function SCInput({
         validRange={{startDate: new Date()}}
         />
       <SCButton
-        color="lightgray"
+        color={LIGHT_COLOR}
         icon="calendar-times"
         onPress={() => onChange("")}
         />

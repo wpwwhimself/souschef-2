@@ -3,7 +3,7 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import Home from './components/pages/Home';
 import StockHub from './components/pages/StockHub';
 import RecipesHub from './components/pages/RecipesHub';
-import { ACCENT_COLOR } from './assets/constants';
+import { ACCENT_COLOR, BG2_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from './assets/constants';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { PaperProvider, DefaultTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -18,9 +18,9 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     primary: ACCENT_COLOR,
-    background: "white",
-    secondaryContainer: "lightgray",
-    surface: "white",
+    background: BG_COLOR,
+    secondaryContainer: LIGHT_COLOR,
+    surface: BG_COLOR,
   }
 }
 export default function App() {
@@ -66,6 +66,8 @@ export default function App() {
     <Tab.Navigator
       initialRouteName='Home'
       activeColor={ACCENT_COLOR}
+      inactiveColor={FG_COLOR}
+      barStyle={{backgroundColor: BG2_COLOR}}
       >
       {navItems.map((item, key) => <Tab.Screen key={key}
       name={item.route}

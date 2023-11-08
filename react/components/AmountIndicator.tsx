@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native"
 import * as Progress from "react-native-progress"
 import s from "../assets/style"
-import { ACCENT_COLOR } from "../assets/constants"
+import { ACCENT_COLOR, LIGHT_COLOR } from "../assets/constants"
 import moment from "moment"
 
 interface AIProps{
@@ -27,8 +27,8 @@ export default function AmountIndicator({amount, unit, maxAmount, expirationDate
   ]
 
   return <View style={ss.wrapper}>
-    {!!maxAmount && <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount || highlightAt == amount / maxAmount ? ACCENT_COLOR : "lightgray"} width={100} />}
-    <Text style={dateDiff <= 0 && s.error}>
+    {!!maxAmount && <Progress.Bar progress={amount / maxAmount} color={amount <= minAmount || highlightAt == amount / maxAmount ? ACCENT_COLOR : LIGHT_COLOR} width={100} />}
+    <Text style={[s.text, dateDiff <= 0 && s.error]}>
       {(title ? title+": " : "") + label.filter(Boolean).join(" • ")}
     </Text>
   </View>

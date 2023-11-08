@@ -14,6 +14,7 @@ import HorizontalLine from './HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
 import moment from 'moment'
 import AmountIndicator from './AmountIndicator'
+import { LIGHT_COLOR } from "../assets/constants"
 
 // interface UPCProduct{
 //   title: string,
@@ -221,8 +222,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
         {/* scanner */
         scannerOn &&
         <>
-          {hasPermissions === null && <BarText color="lightgray" small>Oczekuję na uprawnienia do aparatu</BarText>}
-          {hasPermissions === false && <BarText color="lightgray" small>Brak dostępu do aparatu 😟</BarText>}
+          {hasPermissions === null && <BarText color={LIGHT_COLOR} small>Oczekuję na uprawnienia do aparatu</BarText>}
+          {hasPermissions === false && <BarText color={LIGHT_COLOR} small>Brak dostępu do aparatu 😟</BarText>}
           {hasPermissions === true && scannerOn &&
           <BarCodeScanner
             onBarCodeScanned={handleBarCodeScanned}
@@ -254,12 +255,12 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
                   subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
                   buttons={<>
                     {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
-                    <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
+                    <SCButton color={LIGHT_COLOR} title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
                   </>}
                 />
               }
               ItemSeparatorComponent={() => <HorizontalLine />}
-              ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego EANu</BarText>}
+              ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów dla tego EANu</BarText>}
               style={s.popUpList}
             />
             {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />}
@@ -286,12 +287,12 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
                 subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
                 buttons={<>
                   {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
-                  <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
+                  <SCButton color={LIGHT_COLOR} title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
                 </>}
               />
             }
             ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego składnika</BarText>}
+            ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów dla tego składnika</BarText>}
             style={s.popUpList}
           />
           {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />}
@@ -327,8 +328,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
             unit={pIngredientUnit}
             maxAmount={pAmount}
             expirationDate="" />
-          <SCButton icon="thermometer-empty" color="lightgray" onPress={() => setSAmount(0)} />
-          <SCButton icon="thermometer-full" color="lightgray" onPress={() => setSAmount(pStockItemsSumAmount)} />
+          <SCButton icon="thermometer-empty" color={LIGHT_COLOR} onPress={() => setSAmount(0)} />
+          <SCButton icon="thermometer-full" color={LIGHT_COLOR} onPress={() => setSAmount(pStockItemsSumAmount)} />
         </View>}
         <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
         {mode !== "cookingMode" && <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />}

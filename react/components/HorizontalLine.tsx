@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native";
+import { LIGHT_COLOR } from "../assets/constants";
 
-const HorizontalLine = ({color = "lightgray"}) =>
+const HorizontalLine = ({color = LIGHT_COLOR}) =>
   <View style={{ ...ss.line, backgroundColor: color }} />
 
 const ss = StyleSheet.create({

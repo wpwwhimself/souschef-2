@@ -12,7 +12,7 @@ import { useToast } from "react-native-toast-notifications";
 import { Ingredient, Recipe, RecipeIngredient, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { prepareSelectItems } from "../../helpers/Prepare";
-import { ACCENT_COLOR } from "../../assets/constants";
+import { ACCENT_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import AmountIndicator from "../AmountIndicator";
 import TitledText from "../TitledText";
 
@@ -239,7 +239,7 @@ export default function Recipes({navigation}){
 
   return <View style={s.wrapper}>
     <Header icon="lightbulb">Propozycje</Header>
-    <SCButton icon="dice" color="lightgray" title="Losuj propozycje" onPress={getSuggestions} />
+    <SCButton icon="dice" color={LIGHT_COLOR} title="Losuj propozycje" onPress={getSuggestions} />
     {suggestionsLoaderVisible
     ? <Loader />
     : <View style={[s.flexRight]}>
@@ -275,12 +275,12 @@ export default function Recipes({navigation}){
                 highlightAt={1}
                 />
               <SCButton onPress={() => showPreview(item)} small />
-              <SCButton icon="wrench" color="lightgray" onPress={() => showHeaderEditor(item)} small />
+              <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => showHeaderEditor(item)} small />
             </>}
           />
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
-        ListEmptyComponent={<BarText color="lightgray" small>Brak przepisów</BarText>}
+        ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak przepisów</BarText>}
         />
     </View>
 
@@ -305,11 +305,11 @@ export default function Recipes({navigation}){
               ].filter(Boolean).join(" • ")}
               icon={item.ingredient.category.symbol}
               buttons={<>
-                <SCButton icon="wrench" color="lightgray" onPress={() => handleEditIngredient(item)} small />
+                <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => handleEditIngredient(item)} small />
               </>}
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
-          ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
+          ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak składników</BarText>}
           style={s.popUpList}
           />
         <View style={[s.flexRight, s.center]}>
@@ -331,14 +331,14 @@ export default function Recipes({navigation}){
               buttons={item.stock_amount < item.amount && !item.optional && <Text style={{ color: ACCENT_COLOR }}>Za mało na stanie</Text>}
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
-          ListEmptyComponent={<BarText color="lightgray" small>Brak składników</BarText>}
+          ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak składników</BarText>}
           style={s.popUpList}
           />
 
         <Header icon="scroll">Przepis</Header>
-        {rInstructions ? <Text>{rInstructions}</Text> : <BarText color="lightgray" small>Brak treści przepisu</BarText>}
+        {rInstructions ? <Text>{rInstructions}</Text> : <BarText color={LIGHT_COLOR} small>Brak treści przepisu</BarText>}
         <View style={[s.flexRight, s.center]}>
-          <SCButton icon="pen" color="lightgray" title="Edytuj" onPress={enablePreviewEdit} />
+          <SCButton icon="pen" color={LIGHT_COLOR} title="Edytuj" onPress={enablePreviewEdit} />
           <SCButton title="Podlicz" onPress={goToCookingMode} />
         </View>
       </>}

@@ -13,6 +13,7 @@ import HorizontalLine from "../HorizontalLine";
 import AmountIndicator from "../AmountIndicator";
 import AddStockModal from "../AddStockModal";
 import { CookingProduct, Product } from "../../types";
+import { LIGHT_COLOR } from "../../assets/constants";
 
 export default function CookingMode(){
   const toast = useToast()
@@ -155,13 +156,13 @@ export default function CookingMode(){
             expirationDate=""
           />
           {item.product_id
-          ? <SCButton icon="wrench" color="lightgray" onPress={() => prepareChangeStock(item)} small />
+          ? <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => prepareChangeStock(item)} small />
           : <SCButton icon="plus" onPress={() => prepareAssignProduct(item)} small />
           }
         </>}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray" small>Dodaj pierwszą pozycję</BarText>}
+      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Dodaj pierwszą pozycję</BarText>}
     />
     </View>
 
@@ -188,8 +189,8 @@ export default function CookingMode(){
             minAmount={product?.ingredient.minimal_amount}
             maxAmount={product?.product?.amount}
             expirationDate="" />
-          <SCButton icon="thermometer-empty" color="lightgray" onPress={() => setSAmount(0)} />
-          <SCButton icon="thermometer-full" color="lightgray" onPress={() => setSAmount(product.stock_amount)} />
+          <SCButton icon="thermometer-empty" color={LIGHT_COLOR} onPress={() => setSAmount(0)} />
+          <SCButton icon="thermometer-full" color={LIGHT_COLOR} onPress={() => setSAmount(product.stock_amount)} />
         </View>
         <SCInput type="numeric" label={`Ilość do odjęcia (${product?.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
       </View>
@@ -213,12 +214,12 @@ export default function CookingMode(){
             subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
             buttons={<>
               <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />
-              <SCButton color="lightgray" title="Wybierz" onPress={() => assignProduct(product.id, item.id)} />
+              <SCButton color={LIGHT_COLOR} title="Wybierz" onPress={() => assignProduct(product.id, item.id)} />
             </>}
           />
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
-        ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego EANu</BarText>}
+        ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów dla tego EANu</BarText>}
         style={s.popUpList}
         />
     </SCModal>

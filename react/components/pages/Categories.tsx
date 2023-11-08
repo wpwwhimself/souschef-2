@@ -10,6 +10,7 @@ import { Category } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
+import { LIGHT_COLOR } from "../../assets/constants";
 
 export default function Categories({navigation}){
   const isFocused = useIsFocused();
@@ -91,12 +92,12 @@ export default function Categories({navigation}){
           title={item.name}
           subtitle={`${item.ingredients_count} skł.`}
           buttons={<>
-            <SCButton icon="wrench" color="lightgray" onPress={() => openEditor(item)} small />
+            <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => openEditor(item)} small />
           </>}
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color="lightgray" small>Brak kategorii</BarText>}
+      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak kategorii</BarText>}
       />
 
     {/* editor */}

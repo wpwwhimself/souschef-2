@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { ACCENT_COLOR } from './constants';
+import { ACCENT_COLOR, BG_COLOR, FG_COLOR } from './constants';
 
 export default StyleSheet.create({
   wrapper: {
@@ -8,7 +8,10 @@ export default StyleSheet.create({
     justifyContent: "flex-start",
     gap: 5,
     height: "100%",
-    backgroundColor: "hsl(0, 0%, 99%)",
+    backgroundColor: BG_COLOR,
+  },
+  text: {
+    color: FG_COLOR,
   },
   center: {
     // flex: 1,

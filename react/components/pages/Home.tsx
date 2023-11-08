@@ -2,7 +2,7 @@ import { RefreshControl, SectionList, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
 import BarText from "../BarText";
-import { ACCENT_COLOR } from "../../assets/constants";
+import { ACCENT_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { rqDelete, rqGet } from "../../helpers/SCFetch";
@@ -132,7 +132,7 @@ export default function Home(){
                 />
               <SCButton
                 icon="trash"
-                color="lightgray"
+                color={LIGHT_COLOR}
                 onPress={() => prepareThrowOutSpoiled(item)}
                 small
                 />
@@ -141,7 +141,7 @@ export default function Home(){
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
         renderSectionFooter={({section}) => section.data.length === 0 &&
-          <BarText color="lightgray" small>{section.emptyNotice}</BarText>
+          <BarText color={LIGHT_COLOR} small>{section.emptyNotice}</BarText>
         }
       />
 

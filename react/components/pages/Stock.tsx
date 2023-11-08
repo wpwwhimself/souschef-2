@@ -7,7 +7,7 @@ import PositionTile from "../PositionTile"
 import HorizontalLine from "../HorizontalLine"
 import BarText from "../BarText"
 import { rqDelete, rqGet, rqPatch } from "../../helpers/SCFetch"
-import { ACCENT_COLOR } from "../../assets/constants"
+import { ACCENT_COLOR, LIGHT_COLOR } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
@@ -171,13 +171,13 @@ export default function Stock({navigation}){
                   expirationDate={item.stock_items_min_expiration_date}
                   />
                 <SCButton icon="plus" onPress={() => addStockByIngredient(item.id)} small />
-                <SCButton color="lightgray" onPress={() => drilldown(item.id)} small />
+                <SCButton color={LIGHT_COLOR} onPress={() => drilldown(item.id)} small />
               </>}
           />
           }
       ItemSeparatorComponent={() => <HorizontalLine />}
       renderSectionFooter={({section}) => section.data.length === 0 &&
-        <BarText color="lightgray" small>{section.emptyNotice}</BarText>
+        <BarText color={LIGHT_COLOR} small>{section.emptyNotice}</BarText>
       }
     />
 
@@ -197,7 +197,7 @@ export default function Stock({navigation}){
               minAmount={item.product.ingredient.minimal_amount}
               expirationDate={item.expiration_date}
               />
-            <SCButton icon="wrench" color="lightgray" onPress={() => editStock(item.id, item.product.ingredient.unit)} small />
+            <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => editStock(item.id, item.product.ingredient.unit)} small />
           </>}
         />}
         ItemSeparatorComponent={() => <HorizontalLine />}

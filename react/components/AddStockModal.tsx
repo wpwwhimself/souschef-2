@@ -1,5 +1,5 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react'
-import { View, Text, Button, StyleSheet, FlatList } from "react-native"
+import { useState, useEffect } from 'react'
+import { View, StyleSheet, FlatList } from "react-native"
 import Header from "./Header"
 import s from "../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
@@ -12,7 +12,6 @@ import Loader from './Loader'
 import PositionTile from './PositionTile'
 import HorizontalLine from './HorizontalLine'
 import { useToast } from "react-native-toast-notifications";
-import { useIsFocused } from '@react-navigation/native'
 import moment from 'moment'
 import AmountIndicator from './AmountIndicator'
 
@@ -60,7 +59,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   useEffect(() => {
     if(visible){
       setShowModal("prd")
-      setManualLookupMode(false)
+      setManualLookupMode("ean")
+      openScanner(true)
       setPEan(ean)
       setPIngredientId(ingId)
     }else{
@@ -210,22 +210,10 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
     {/* get product info */}
     {showModal === "prd" && <>
-      {/* crossroads */
-      manualLookupMode === false &&
-      <View style={[s.flexRight, s.center]}>
-        <SCButton icon="barcode" title="Po EAN" onPress={() => openManualLookup("ean")} />
-        <SCButton icon="box" title="Po składniku" onPress={() => openManualLookup("list")} />
-      </View>
-      }
-
-      {/* lookup by EAN */
-      manualLookupMode === "ean" &&
-      <>
-        <SCModal
-          visible={scannerOn}
-          onRequestClose={() => openScanner(false)}
-          title="Skaner"
-          >
+      {manualLookupMode === "ean" && <>
+        {/* scanner */
+        scannerOn &&
+        <>
           {hasPermissions === null && <BarText color="lightgray" small>Oczekuję na uprawnienia do aparatu</BarText>}
           {hasPermissions === false && <BarText color="lightgray" small>Brak dostępu do aparatu 😟</BarText>}
           {hasPermissions === true && scannerOn &&
@@ -233,34 +221,44 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
             onBarCodeScanned={handleBarCodeScanned}
             style={ss.barCode}
             />}
-        </SCModal>
-        <View style={[s.flexRight, s.center]}>
-          <SCButton icon="barcode" title="Skanuj" onPress={() => openScanner(true)} />
-          <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
-        </View>
-        {!pEan
-        ? <></>
-        : loaderVisible
-        ? <Loader />
-        : <>
-          <FlatList data={products}
-            renderItem={({item}) =>
-              <PositionTile
-                icon={item.ingredient.category.symbol}
-                title={item.name}
-                subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
-                buttons={<>
-                  {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
-                  <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
-                </>}
-              />
-            }
-            ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego EANu</BarText>}
-            style={s.popUpList}
-          />
-          {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />}
-        </>}
+          <View style={[s.flexRight, s.center]}>
+            <SCButton icon="barcode" title="Wpisz EAN ręcznie" onPress={() => {openScanner(false)}} />
+            <SCButton icon="box" title="Po składniku" onPress={() => openManualLookup("list")} />
+          </View>
+        </>
+        }
+
+        {/* lookup by EAN */
+        !scannerOn &&
+        <>
+          <View style={[s.flexRight, s.center]}>
+            <SCInput label="EAN" value={pEan} onChange={mleEanReady} />
+          </View>
+          {!pEan
+          ? <></>
+          : loaderVisible
+          ? <Loader />
+          : <>
+            <FlatList data={products}
+              renderItem={({item}) =>
+                <PositionTile
+                  icon={item.ingredient.category.symbol}
+                  title={item.name}
+                  subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
+                  buttons={<>
+                    {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
+                    <SCButton color="lightgray" title="Wybierz" onPress={() => mllPrdChosen(item.id)} />
+                  </>}
+                />
+              }
+              ItemSeparatorComponent={() => <HorizontalLine />}
+              ListEmptyComponent={<BarText color="lightgray" small>Brak produktów dla tego EANu</BarText>}
+              style={s.popUpList}
+            />
+            {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />}
+          </>}
+        </>
+        }
       </>
       }
 

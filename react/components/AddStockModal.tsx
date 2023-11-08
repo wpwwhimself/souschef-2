@@ -56,13 +56,25 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const [sAmount, setSAmount] = useState<number>(undefined)
   const [sExpirationDate, setSExpirationDate] = useState<string>(undefined)
 
+  const prepareEan = (ean: string) => {
+    setPEan(ean);
+  }
+  const prepareIngredient = (ingId: number) => {
+    setPIngredientId(ingId)
+
+    // get ingredient unit
+    rqGet("ingredients/" + ingId)
+      .then(ing => { setPIngredientUnit(ing.unit) })
+      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
+  }
+
   useEffect(() => {
     if(visible){
       setShowModal("prd")
       setManualLookupMode("ean")
       openScanner(true)
-      setPEan(ean)
-      setPIngredientId(ingId)
+      prepareEan(ean)
+      prepareIngredient(ingId)
     }else{
       setShowModal(false)
     }
@@ -98,7 +110,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   }
 
   const mleEanReady = async (ean: string) => {
-    setPEan(ean);
+    prepareEan(ean);
     if(ean.length === 0) return;
     setLoaderVisible(true);
 
@@ -111,12 +123,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
   const mllIngChosen = async (ing_id: number) => {
     setLoaderVisible(true);
-    setPIngredientId(ing_id);
-
-    // get ingredient unit
-    rqGet("ingredients/" + ing_id)
-      .then(ing => { setPIngredientUnit(ing.unit) })
-      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
+    prepareIngredient(ing_id);
 
     // product list based on the chosen ingredient
     rqGet("products/ingredient/" + ing_id + (mode === "cookingMode" ? "/1" : ""))
@@ -134,7 +141,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     setPEan(ean || product?.ean)
     setPAmount(product?.amount)
     setPEstExpirationDays(product?.est_expiration_days)
-    setPIngredientUnit(product?.ingredient.unit)
+    setPIngredientUnit(product?.ingredient.unit || pIngredientUnit)
     setPStockItemsSumAmount(product?.stock_items_sum_amount)
 
     setSAmount(undefined)

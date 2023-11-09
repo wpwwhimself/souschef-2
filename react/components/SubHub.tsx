@@ -7,7 +7,7 @@ const Tab = createMaterialBottomTabNavigator();
 export default function SubHub({menuItems}){
   return <Tab.Navigator
     activeColor={FG_COLOR}
-    inactiveColor={LIGHT_COLOR}
+    inactiveColor={BG_COLOR}
     barStyle={{ backgroundColor: BG3_COLOR, borderTopColor: ACCENT_COLOR, borderTopWidth: 5 }}
     >
     {menuItems.map((item, key) => <Tab.Screen key={key}

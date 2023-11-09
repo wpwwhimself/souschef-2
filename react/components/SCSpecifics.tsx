@@ -1,6 +1,6 @@
-import { ACCENT_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from "../assets/constants"
+import { ACCENT_COLOR, BG2_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from "../assets/constants"
 import { Button } from "react-native"
-import { TextInput, Modal, Portal, useTheme } from "react-native-paper";
+import { TextInput, Modal, Portal } from "react-native-paper";
 import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
 import { pl, registerTranslation, DatePickerInput } from 'react-native-paper-dates'
 import s from "../assets/style"
@@ -32,7 +32,6 @@ export function SCInput({
   value,
   onChange,
   password = false,
-  style = {},
 }){
   return <View style={[ssinput.container, s.flexRight, s.nowrap]}>
     {
@@ -93,10 +92,8 @@ export function SCSelect({
   value,
   items,
   onChange,
-  style = {},
 }){
   const [showdd, setShowdd] = useState(false)
-  const theme = useTheme();
 
   return <View style={[ssselect.container, s.flexRight]}>
     <DropDown
@@ -108,9 +105,9 @@ export function SCSelect({
       value={value}
       setValue={onChange}
       list={items}
-      theme={theme}
       dropDownItemStyle={{ zIndex: 999 }}
-      dropDownItemSelectedStyle={{ zIndex: 999 }}
+      dropDownItemSelectedStyle={{ zIndex: 999, backgroundColor: BG2_COLOR }}
+      dropDownItemTextStyle={{ color: FG_COLOR }}
       dropDownStyle={{ zIndex: 999 }}
       />
   </View>

@@ -336,7 +336,7 @@ export default function Recipes({navigation}){
           />
 
         <Header icon="scroll">Przepis</Header>
-        {rInstructions ? <Text>{rInstructions}</Text> : <BarText color={LIGHT_COLOR} small>Brak treści przepisu</BarText>}
+        {rInstructions ? <Text style={{color: FG_COLOR}}>{rInstructions}</Text> : <BarText color={LIGHT_COLOR} small>Brak treści przepisu</BarText>}
         <View style={[s.flexRight, s.center]}>
           <SCButton icon="pen" color={LIGHT_COLOR} title="Edytuj" onPress={enablePreviewEdit} />
           <SCButton title="Podlicz" onPress={goToCookingMode} />

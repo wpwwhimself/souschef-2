@@ -1,4 +1,4 @@
-import { ACCENT_COLOR, LIGHT_COLOR } from "../assets/constants"
+import { ACCENT_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from "../assets/constants"
 import { Button } from "react-native"
 import { TextInput, Modal, Portal, useTheme } from "react-native-paper";
 import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
@@ -56,7 +56,7 @@ export function SCInput({
     </>
     : type === "checkbox"
     ? <>
-      {label && <Text>{label}</Text>}
+      {label && <Text style={{color: FG_COLOR}}>{label}</Text>}
       <View style={s.center}>
         <Switch
           trackColor={{ false: "dimgray", true: ACCENT_COLOR }}
@@ -146,6 +146,6 @@ const ssmodal = StyleSheet.create({
   inner: {
     padding: 25,
     gap: 5,
-    backgroundColor: "white",
+    backgroundColor: BG_COLOR,
   }
 })

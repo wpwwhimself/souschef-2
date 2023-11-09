@@ -3,27 +3,37 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import Home from './components/pages/Home';
 import StockHub from './components/pages/StockHub';
 import RecipesHub from './components/pages/RecipesHub';
-import { ACCENT_COLOR, BG2_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from './assets/constants';
+import { darkmode, ACCENT_COLOR, BG2_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from './assets/constants';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { PaperProvider, DefaultTheme } from 'react-native-paper';
+import { PaperProvider, DefaultTheme, MD3DarkTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { StatusBar, Text, View } from 'react-native';
+import { StatusBar, Text } from 'react-native';
 import ProfileHub from './components/pages/ProfileHub';
 
 const Tab = createMaterialBottomTabNavigator();
 
-// theme
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: ACCENT_COLOR,
-    background: BG_COLOR,
-    secondaryContainer: LIGHT_COLOR,
-    surface: BG_COLOR,
-  }
-}
 export default function App() {
+  // theme
+  const theme = darkmode ? {
+    ...DefaultTheme,
+    colors: {
+      ...MD3DarkTheme.colors,
+      primary: ACCENT_COLOR,
+      background: BG_COLOR,
+      secondaryContainer: LIGHT_COLOR,
+      surface: BG_COLOR,
+    }
+  } : {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: ACCENT_COLOR,
+      background: BG_COLOR,
+      secondaryContainer: LIGHT_COLOR,
+      surface: BG_COLOR,
+    }
+  }
+
   const navItems = [
     {
       route: "Home",

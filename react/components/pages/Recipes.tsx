@@ -12,7 +12,7 @@ import { useToast } from "react-native-toast-notifications";
 import { Ingredient, Recipe, RecipeIngredient, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { prepareSelectItems } from "../../helpers/Prepare";
-import { ACCENT_COLOR, LIGHT_COLOR } from "../../assets/constants";
+import { ACCENT_COLOR, FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import AmountIndicator from "../AmountIndicator";
 import TitledText from "../TitledText";
 
@@ -354,7 +354,7 @@ export default function Recipes({navigation}){
         <SCInput label="Nazwa" value={rName} onChange={setRName} />
         <SCInput label="Podtytuł" value={rSubtitle} onChange={setRSubtitle} />
         <View style={[s.flexRight, s.center]}>
-          <Text>Danie na:</Text>
+          <Text style={{color: FG_COLOR}}>Danie na:</Text>
           <SCInput type="checkbox" label="obiad" value={rForDinner} onChange={setRForDinner} />
           <SCInput type="checkbox" label="kolację" value={rForSupper} onChange={setRForSupper} />
         </View>

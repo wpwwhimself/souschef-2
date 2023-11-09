@@ -1,7 +1,7 @@
 import { Appearance } from "react-native";
 
 const colorScheme = Appearance.getColorScheme();
-export const darkmode = (colorScheme !== "dark");
+export const darkmode = (colorScheme === "dark");
 
 export const ACCENT_COLOR = "#ff9900";
 export const FG_COLOR = darkmode ? "hsl(0, 0%, 99%)" : "hsl(0, 0%, 1%)";

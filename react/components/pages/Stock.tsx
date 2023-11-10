@@ -1,13 +1,11 @@
 import { FlatList, RefreshControl, SectionList, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
-import TopHeader from "../TopHeader"
 import { useState, useEffect } from "react"
 import PositionTile from "../PositionTile"
 import HorizontalLine from "../HorizontalLine"
-import BarText from "../BarText"
 import { rqDelete, rqGet, rqPatch } from "../../helpers/SCFetch"
-import { ACCENT_COLOR, LIGHT_COLOR } from "../../assets/constants"
+import { LIGHT_COLOR } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
@@ -148,8 +146,7 @@ export default function Stock({navigation}){
   ]
 
   return <View style={s.wrapper}>
-    <TopHeader title="Przeglądaj obecny stan swojej kuchni" />
-
+    <Header icon="box-open" level={1}>Stan</Header>
     <SCButton icon="plus" title="Dodaj wpis" onPress={() => setShowAddStockModal(true)} />
     <AddStockModal
       visible={showAddStockModal}
@@ -159,7 +156,7 @@ export default function Stock({navigation}){
 
     <SectionList
       sections={content}
-      renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR} center>{section.header}</Header>}
+      renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
       refreshControl={<RefreshControl refreshing={loaderVisible} onRefresh={getData} />}
       renderItem={({item}) => <PositionTile
               icon={item.category.symbol}
@@ -177,7 +174,7 @@ export default function Stock({navigation}){
           }
       ItemSeparatorComponent={() => <HorizontalLine />}
       renderSectionFooter={({section}) => section.data.length === 0 &&
-        <BarText color={LIGHT_COLOR} small>{section.emptyNotice}</BarText>
+        <Header level={3}>{section.emptyNotice}</Header>
       }
     />
 

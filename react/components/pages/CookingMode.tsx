@@ -1,14 +1,12 @@
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
-import BarText from "../BarText";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import PositionTile from "../PositionTile";
 import { useEffect, useState } from "react";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from "@react-navigation/native";
-import Loader from "../Loader";
 import HorizontalLine from "../HorizontalLine";
 import AmountIndicator from "../AmountIndicator";
 import AddStockModal from "../AddStockModal";
@@ -139,7 +137,7 @@ export default function CookingMode(){
   }
 
   return <View style={[s.wrapper]}>
-    <Header icon="balance-scale">Zmiana stanów</Header>
+    <Header icon="balance-scale" level={1}>Podliczanie</Header>
 
     <View style={{flex: 1}}>
     <FlatList data={list}
@@ -162,7 +160,7 @@ export default function CookingMode(){
         </>}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Dodaj pierwszą pozycję</BarText>}
+      ListEmptyComponent={<Header level={3}>Dodaj pierwszą pozycję</Header>}
     />
     </View>
 
@@ -219,7 +217,7 @@ export default function CookingMode(){
           />
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
-        ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów dla tego EANu</BarText>}
+        ListEmptyComponent={<Header level={3}>Brak produktów dla tego EANu</Header>}
         style={s.popUpList}
         />
     </SCModal>

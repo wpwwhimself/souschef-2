@@ -3,15 +3,14 @@ import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PositionTile from "../PositionTile";
-import BarText from "../BarText";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Ingredient, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import { prepareSelectItems } from "../../helpers/Prepare";
-import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
 import { LIGHT_COLOR } from "../../assets/constants";
+import Header from "../Header";
 
 export default function Ingredients({navigation}){
   const isFocused = useIsFocused();
@@ -98,7 +97,7 @@ export default function Ingredients({navigation}){
   }
 
   return <View style={s.wrapper}>
-    <TopHeader title="Składniki" subtitle="Co możemy mieć w kuchni" />
+    <Header icon="box" level={1}>Składniki</Header>
 
     <SCButton icon="plus" title="Dodaj składnik" onPress={() => openEditor()} />
 
@@ -121,7 +120,7 @@ export default function Ingredients({navigation}){
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak składników</BarText>}
+      ListEmptyComponent={<Header level={3}>Brak składników</Header>}
       />
 
     {/* editor */}

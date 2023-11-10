@@ -3,14 +3,13 @@ import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PositionTile from "../PositionTile";
-import BarText from "../BarText";
 import { SCButton, SCModal, SCInput } from "../SCSpecifics";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Category } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
 import { LIGHT_COLOR } from "../../assets/constants";
+import Header from "../Header";
 
 export default function Categories({navigation}){
   const isFocused = useIsFocused();
@@ -79,8 +78,7 @@ export default function Categories({navigation}){
   }
 
   return <View style={s.wrapper}>
-    <TopHeader title="Kategorie" subtitle="Lista dostępnych kategorii produktów" />
-
+    <Header icon="boxes" level={1}>Kategorie</Header>
     <SCButton icon="plus" title="Dodaj kategorię" onPress={() => openEditor()} />
 
     {/* list */}
@@ -97,7 +95,7 @@ export default function Categories({navigation}){
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak kategorii</BarText>}
+      ListEmptyComponent={<Header level={3}>Brak kategorii</Header>}
       />
 
     {/* editor */}

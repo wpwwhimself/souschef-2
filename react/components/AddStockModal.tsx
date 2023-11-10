@@ -3,7 +3,6 @@ import { View, StyleSheet, FlatList } from "react-native"
 import Header from "./Header"
 import s from "../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
-import BarText from './BarText'
 import { rqGet, rqPost } from '../helpers/SCFetch'
 import { Product, SelectItem } from '../types'
 import { SCButton, SCModal, SCInput, SCSelect } from './SCSpecifics'
@@ -222,8 +221,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
         {/* scanner */
         scannerOn &&
         <>
-          {hasPermissions === null && <BarText color={LIGHT_COLOR} small>Oczekuję na uprawnienia do aparatu</BarText>}
-          {hasPermissions === false && <BarText color={LIGHT_COLOR} small>Brak dostępu do aparatu 😟</BarText>}
+          {hasPermissions === null && <Header level={3}>Oczekuję na uprawnienia do aparatu</Header>}
+          {hasPermissions === false && <Header level={3}>Brak dostępu do aparatu 😟</Header>}
           {hasPermissions === true && scannerOn &&
           <BarCodeScanner
             onBarCodeScanned={handleBarCodeScanned}
@@ -260,7 +259,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
                 />
               }
               ItemSeparatorComponent={() => <HorizontalLine />}
-              ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów dla tego EANu</BarText>}
+              ListEmptyComponent={<Header level={3}>Brak produktów dla tego EANu</Header>}
               style={s.popUpList}
             />
             {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0, pEan)} />}
@@ -292,7 +291,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
               />
             }
             ItemSeparatorComponent={() => <HorizontalLine />}
-            ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów dla tego składnika</BarText>}
+            ListEmptyComponent={<Header level={3}>Brak produktów dla tego składnika</Header>}
             style={s.popUpList}
           />
           {mode !== "cookingMode" && <SCButton icon="plus" title="Nowy" onPress={() => mllPrdChosen(0)} />}

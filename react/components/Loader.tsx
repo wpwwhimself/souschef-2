@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text, View } from "react-native";
 import s from "../assets/style"
-import BarText from "./BarText";
+import BarText from "./Header";
 import { ACCENT_COLOR, LIGHT_COLOR } from "../assets/constants";
 
 export default function Loader({mode = "loading"}){

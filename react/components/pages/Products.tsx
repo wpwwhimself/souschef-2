@@ -3,15 +3,14 @@ import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PositionTile from "../PositionTile";
-import BarText from "../BarText";
 import { SCButton, SCModal, SCInput, SCSelect } from "../SCSpecifics";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Product, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import TopHeader from "../TopHeader";
 import { useToast } from "react-native-toast-notifications";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import { LIGHT_COLOR } from "../../assets/constants";
+import Header from "../Header";
 
 export default function Products({navigation}){
   const isFocused = useIsFocused();
@@ -113,11 +112,11 @@ export default function Products({navigation}){
   }
 
   return <View style={s.wrapper}>
-    <TopHeader title="Produkty" />
+    <Header icon="flask" level={1}>Produkty</Header>
 
     <View style={[s.margin, s.center]}>
       <SCSelect items={ingredients} label="Wybierz składnik" value={pIngredientId} onChange={getData} />
-    </View>
+    H</View>
 
     {/* list */}
     {!pIngredientId
@@ -135,7 +134,7 @@ export default function Products({navigation}){
         />
       }
       ItemSeparatorComponent={() => <HorizontalLine />}
-      ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak produktów</BarText>}
+      ListEmptyComponent={<Header level={3}>Brak produktów</Header>}
       />
     </>
     }

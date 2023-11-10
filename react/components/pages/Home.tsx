@@ -1,8 +1,7 @@
 import { RefreshControl, SectionList, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
-import BarText from "../BarText";
-import { ACCENT_COLOR, LIGHT_COLOR } from "../../assets/constants";
+import { LIGHT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { rqDelete, rqGet } from "../../helpers/SCFetch";
@@ -99,8 +98,9 @@ export default function Home(){
 
   return (
     <View style={[s.wrapper]}>
+      <Header icon="house-user" level={1}>Na bieżąco</Header>
       <SectionList sections={content}
-        renderSectionHeader={({section}) => <Header icon={section.icon} color={ACCENT_COLOR} center>{section.header}</Header>}
+        renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
         refreshControl={<RefreshControl refreshing={loaderForShoppingList || loaderForSpoiled} onRefresh={getData} />}
         renderItem={({item, section}) => section.name == "shoppingList"
           ? <PositionTile
@@ -141,7 +141,7 @@ export default function Home(){
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
         renderSectionFooter={({section}) => section.data.length === 0 &&
-          <BarText color={LIGHT_COLOR} small>{section.emptyNotice}</BarText>
+          <Header level={3}>{section.emptyNotice}</Header>
         }
       />
 

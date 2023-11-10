@@ -2,7 +2,6 @@ import { View, Text } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react"
-import PasswordInputModal from "../PasswordInputModal";
 import { getKey, setKey } from "../../helpers/Storage";
 import { SCButton, SCInput } from "../SCSpecifics";
 import { useToast } from "react-native-toast-notifications";
@@ -45,6 +44,8 @@ export default function Settings(){
   }
 
   return <View style={s.wrapper}>
+    <Header icon="cog" level={1}>Ustawienia</Header>
+
     <Header icon="database">Baza danych</Header>
     <SCInput label="Adres serwera" value={dbUrl} type="url" onChange={setDbUrl} />
     <SCInput label="Magiczne słowo" value={dbPassword} onChange={setDbPassword} password />

@@ -5,7 +5,7 @@ import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
 import { pl, registerTranslation, DatePickerInput } from 'react-native-paper-dates'
 import s from "../assets/style"
 import DropDown from "react-native-paper-dropdown"
-import BarText from "./BarText"
+import BarText from "./Header"
 import { useState } from "react";
 import { prepareDate } from "../helpers/Prepare";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -128,7 +128,7 @@ export function SCModal({title = undefined, visible, loader = false, onRequestCl
       >
       <View style={ssmodal.inner}>
       {loader ? <Loader /> : <>
-        {title && <BarText>{title}</BarText>}
+        {title && <BarText level={1}>{title}</BarText>}
         {children}
       </>}
       </View>

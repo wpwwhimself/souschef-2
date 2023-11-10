@@ -4,7 +4,6 @@ import s from "../../assets/style"
 import { useState, useEffect } from "react";
 import { useIsFocused, useRoute } from "@react-navigation/native";
 import PositionTile from "../PositionTile";
-import BarText from "../BarText";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import Loader from "../Loader";
@@ -238,6 +237,8 @@ export default function Recipes({navigation}){
   }, [isFocused]);
 
   return <View style={s.wrapper}>
+    <Header icon="scroll" level={1}>Przepisy</Header>
+
     <Header icon="lightbulb">Propozycje</Header>
     <SCButton icon="dice" color={LIGHT_COLOR} title="Losuj propozycje" onPress={getSuggestions} />
     {suggestionsLoaderVisible
@@ -280,7 +281,7 @@ export default function Recipes({navigation}){
           />
         }
         ItemSeparatorComponent={() => <HorizontalLine />}
-        ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak przepisów</BarText>}
+        ListEmptyComponent={<Header level={3}>Brak przepisów</Header>}
         />
     </View>
 
@@ -309,7 +310,7 @@ export default function Recipes({navigation}){
               </>}
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
-          ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak składników</BarText>}
+          ListEmptyComponent={<Header level={3}>Brak składników</Header>}
           style={s.popUpList}
           />
         <View style={[s.flexRight, s.center]}>
@@ -331,12 +332,12 @@ export default function Recipes({navigation}){
               buttons={item.stock_amount < item.amount && !item.optional && <Text style={{ color: ACCENT_COLOR }}>Za mało na stanie</Text>}
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
-          ListEmptyComponent={<BarText color={LIGHT_COLOR} small>Brak składników</BarText>}
+          ListEmptyComponent={<Header level={3}>Brak składników</Header>}
           style={s.popUpList}
           />
 
         <Header icon="scroll">Przepis</Header>
-        {rInstructions ? <Text style={{color: FG_COLOR}}>{rInstructions}</Text> : <BarText color={LIGHT_COLOR} small>Brak treści przepisu</BarText>}
+        {rInstructions ? <Text style={{color: FG_COLOR}}>{rInstructions}</Text> : <Header level={3}>Brak treści przepisu</Header>}
         <View style={[s.flexRight, s.center]}>
           <SCButton icon="pen" color={LIGHT_COLOR} title="Edytuj" onPress={enablePreviewEdit} />
           <SCButton title="Podlicz" onPress={goToCookingMode} />

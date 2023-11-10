@@ -11,7 +11,7 @@ import HorizontalLine from "../HorizontalLine";
 import AmountIndicator from "../AmountIndicator";
 import AddStockModal from "../AddStockModal";
 import { CookingProduct, Product } from "../../types";
-import { LIGHT_COLOR } from "../../assets/constants";
+import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 
 export default function CookingMode(){
   const toast = useToast()
@@ -228,7 +228,7 @@ export default function CookingMode(){
       visible={dangerModalMode}
       onRequestClose={() => setDangerModalMode(false)}
       >
-      <Text>{dangerModalMode && dangerModes[dangerModalMode ?? ""].text}</Text>
+      <Text style={{color: FG_COLOR}}>{dangerModalMode && dangerModes[dangerModalMode ?? ""].text}</Text>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="fire-alt" title="Tak" color={dangerModalMode === "submit" ? "green" : "red"} onPress={dangerModalMode && dangerModes[dangerModalMode ?? ""].confirm} />
       </View>

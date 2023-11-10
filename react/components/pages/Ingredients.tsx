@@ -9,7 +9,7 @@ import HorizontalLine from "../HorizontalLine";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import { useToast } from "react-native-toast-notifications";
-import { LIGHT_COLOR } from "../../assets/constants";
+import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import Header from "../Header";
 
 export default function Ingredients({navigation}){
@@ -149,7 +149,7 @@ export default function Ingredients({navigation}){
       visible={eraserVisible}
       onRequestClose={() => setEraserVisible(false)}
       >
-      <Text>Czy na pewno chcesz usunąć składnik {cName}?</Text>
+      <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć składnik {cName}?</Text>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
       </View>

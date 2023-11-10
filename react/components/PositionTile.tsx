@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import s from "../assets/style"
 import Icon from "react-native-vector-icons/FontAwesome"
 import { ReactNode } from "react";
+import { FG_COLOR } from "../assets/constants";
 
 interface I{
   title: string,
@@ -13,7 +14,7 @@ interface I{
 export default function PositionTile({title, subtitle, icon, buttons}: I){
   const iiicon = (icon)
     ? /\p{Emoji}/u.test(icon)
-      ? <Text>{icon}</Text>
+      ? <Text style={{color: FG_COLOR}}>{icon}</Text>
       : <Icon name={icon} />
     : undefined;
 

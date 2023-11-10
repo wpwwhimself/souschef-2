@@ -9,7 +9,7 @@ import { Product, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { useToast } from "react-native-toast-notifications";
 import { prepareSelectItems } from "../../helpers/Prepare";
-import { LIGHT_COLOR } from "../../assets/constants";
+import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import Header from "../Header";
 
 export default function Products({navigation}){
@@ -164,7 +164,7 @@ export default function Products({navigation}){
       visible={eraserVisible}
       onRequestClose={() => setEraserVisible(false)}
       >
-      <Text>Czy na pewno chcesz usunąć produkt {pName}?</Text>
+      <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć produkt {pName}?</Text>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
       </View>

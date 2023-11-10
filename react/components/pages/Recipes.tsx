@@ -389,7 +389,7 @@ export default function Recipes({navigation}){
       visible={dangerModalMode}
       onRequestClose={() => setDangerModalMode(false)}
       >
-      <Text>{dangerModalMode && dangerModes[dangerModalMode ?? ""].text}</Text>
+      <Text style={{color: FG_COLOR}}>{dangerModalMode && dangerModes[dangerModalMode ?? ""].text}</Text>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="fire-alt" title="Tak" color="red" onPress={dangerModalMode && dangerModes[dangerModalMode ?? ""].confirm} />
       </View>

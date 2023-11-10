@@ -1,7 +1,7 @@
 import { RefreshControl, SectionList, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
-import { LIGHT_COLOR } from "../../assets/constants";
+import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { rqDelete, rqGet } from "../../helpers/SCFetch";
@@ -157,7 +157,7 @@ export default function Home(){
         visible={throwOutModal}
         onRequestClose={closeThrowOutSpoiledModal}
         >
-        {stockItemToThrowOut && <Text>Czy na pewno chcesz usunąć produkt {stockItemToThrowOut.product.name}?</Text>}
+        {stockItemToThrowOut && <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć produkt {stockItemToThrowOut.product.name}?</Text>}
         <View style={[s.flexRight, s.center]}>
           <SCButton icon="fire-alt" title="Tak" color="red" onPress={throwOutSpoiled} />
         </View>

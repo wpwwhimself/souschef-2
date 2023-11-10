@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import PositionTile from "../PositionTile"
 import HorizontalLine from "../HorizontalLine"
 import { rqDelete, rqGet, rqPatch } from "../../helpers/SCFetch"
-import { LIGHT_COLOR } from "../../assets/constants"
+import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
@@ -222,7 +222,7 @@ export default function Stock({navigation}){
       visible={stockEraser}
       onRequestClose={() => setStockEraser(false)}
       >
-      <Text>Czy na pewno chcesz wyczyścić ten produkt?</Text>
+      <Text style={{color: FG_COLOR}}>Czy na pewno chcesz wyczyścić ten produkt?</Text>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
       </View>

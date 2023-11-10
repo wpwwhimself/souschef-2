@@ -71,7 +71,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   useEffect(() => {
     if(visible){
       setShowModal("prd")
-      setManualLookupMode("ean")
+      openManualLookup("ean")
       openScanner(true)
       prepareEan(ean)
       prepareIngredient(ingId)
@@ -251,7 +251,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
                 <PositionTile
                   icon={item.ingredient.category.symbol}
                   title={item.name}
-                  subtitle={`${item.ean || "brak EAN"} • ${item.amount} ${item.ingredient.unit}`}
+                  subtitle={`${item.ingredient.name} • ${item.ean || "brak EAN"}`}
                   buttons={<>
                     {mode === "cookingMode" && <AmountIndicator amount={item.stock_items_sum_amount} unit={item.ingredient.unit} maxAmount={item.amount} minAmount={item.ingredient.minimal_amount} expirationDate="" />}
                     <SCButton color={LIGHT_COLOR} title="Wybierz" onPress={() => mllPrdChosen(item.id)} />

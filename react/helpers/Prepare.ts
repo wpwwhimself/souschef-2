@@ -24,3 +24,9 @@ export function prepareSelectItems(
 }
 
 export const prepareDate = (date: Date) => moment(date).format("YYYY-MM-DD");
+
+export const prepareDashAmount = (amount_to_sub: number, stock_amount: number) =>
+  stock_amount - Math.max(
+    stock_amount - amount_to_sub,
+    Math.ceil(stock_amount) - 1, // expecting future stock amount: (x, x+1] => x, x => x-1
+  );

@@ -27,7 +27,7 @@ export default function PositionTile({title, subtitle, icon, buttons}: I){
     {/* text content */}
     <View style={[ss.text]}>
       <Text style={[s.text, s.bold, s.big]}>{title}</Text>
-      {subtitle && <Text style={[s.text]}>{subtitle}</Text>}
+      {!!subtitle && <Text style={[s.text]}>{subtitle}</Text>}
     </View>
 
     {/* buttons */}

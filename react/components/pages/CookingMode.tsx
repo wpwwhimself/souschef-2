@@ -1,7 +1,7 @@
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
-import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
+import { SCButton, SCInput, SCModal, SCRadio, SCSelect } from "../SCSpecifics";
 import PositionTile from "../PositionTile";
 import { useEffect, useState } from "react";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
@@ -10,8 +10,9 @@ import { useIsFocused } from "@react-navigation/native";
 import HorizontalLine from "../HorizontalLine";
 import AmountIndicator from "../AmountIndicator";
 import AddStockModal from "../AddStockModal";
-import { CookingProduct, Product } from "../../types";
+import { CookingProduct, Product, SelectItem } from "../../types";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
+import { prepareDashAmount } from "../../helpers/Prepare";
 
 export default function CookingMode(){
   const toast = useToast()
@@ -27,6 +28,11 @@ export default function CookingMode(){
   const [product, setProduct] = useState<CookingProduct>()
   const [products, setProducts] = useState<Product[]>()
   const [sAmount, setSAmount] = useState(0)
+  const [dashLevels, setDashLevels] = useState<SelectItem[]>([
+    {label: "nadal OK", value: 0},
+    {label: "mało", value: 0.75},
+    {label: "nic", value: 1},
+  ])
 
   const getData = () => {
     setLoaderVisible(true)
@@ -59,6 +65,11 @@ export default function CookingMode(){
   const prepareChangeStock = (cookingProduct: CookingProduct) => {
     setProduct(cookingProduct)
     setSAmount(cookingProduct.amount)
+    setDashLevels([
+      {label: "nadal OK", value: 0},
+      {label: "mało", value: prepareDashAmount(0.75, cookingProduct.stock_amount)},
+      {label: "nic", value: prepareDashAmount(1, cookingProduct.stock_amount)},
+    ])
     setShowModStockModal(true)
   }
   const changeStock = () => {
@@ -144,7 +155,10 @@ export default function CookingMode(){
       refreshControl={<RefreshControl refreshing={loaderVisible} onRefresh={getData} />}
       renderItem={({item}: {item: CookingProduct}) => <PositionTile
         title={item.ingredient.name}
-        subtitle={item.product?.name}
+        subtitle={[
+          item.product?.name,
+          item.ingredient.dash && "🤏",
+        ].filter(Boolean).join(" • ")}
         icon={item.ingredient.category.symbol}
         buttons={<>
           <AmountIndicator title="Do odjęcia"
@@ -187,10 +201,15 @@ export default function CookingMode(){
             minAmount={product?.ingredient.minimal_amount}
             maxAmount={product?.product?.amount}
             expirationDate="" />
-          <SCButton icon="thermometer-empty" color={LIGHT_COLOR} onPress={() => setSAmount(0)} />
-          <SCButton icon="thermometer-full" color={LIGHT_COLOR} onPress={() => setSAmount(product.stock_amount)} />
+          {!product?.ingredient.dash && <>
+            <SCButton icon="thermometer-empty" color={LIGHT_COLOR} onPress={() => setSAmount(0)} />
+            <SCButton icon="thermometer-full" color={LIGHT_COLOR} onPress={() => setSAmount(product.stock_amount)} />
+          </>}
         </View>
-        <SCInput type="numeric" label={`Ilość do odjęcia (${product?.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
+        {product?.ingredient.dash
+          ? <SCRadio label="Ile zostało" items={dashLevels} value={sAmount} onChange={setSAmount} />
+          : <SCInput type="numeric" label={`Ilość do odjęcia (${product?.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
+        }
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Popraw" onPress={changeStock} />

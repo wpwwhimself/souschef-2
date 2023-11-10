@@ -4,9 +4,9 @@ import Header from "./Header"
 import s from "../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
 import { rqGet, rqPost } from '../helpers/SCFetch'
-import { Product, SelectItem } from '../types'
-import { SCButton, SCModal, SCInput, SCSelect } from './SCSpecifics'
-import { prepareSelectItems } from '../helpers/Prepare'
+import { Ingredient, Product, SelectItem } from '../types'
+import { SCButton, SCModal, SCInput, SCSelect, SCRadio } from './SCSpecifics'
+import { prepareDashAmount, prepareSelectItems } from '../helpers/Prepare'
 import Loader from './Loader'
 import PositionTile from './PositionTile'
 import HorizontalLine from './HorizontalLine'
@@ -48,9 +48,15 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const [pEan, setPEan] = useState("")
   const [pIngredientId, setPIngredientId] = useState(0)
   const [pIngredientUnit, setPIngredientUnit] = useState("")
+  const [pIngredientDash, setPIngredientDash] = useState<boolean>()
   const [pAmount, setPAmount] = useState<number>(undefined)
   const [pEstExpirationDays, setPEstExpirationDays] = useState<number>(undefined)
   const [pStockItemsSumAmount, setPStockItemsSumAmount] = useState(0)
+  const [dashLevels, setDashLevels] = useState<SelectItem[]>([
+    {label: "nadal OK", value: 0},
+    {label: "mało", value: 0.75},
+    {label: "nic", value: 1},
+  ])
 
   // stock item parameters
   const [sAmount, setSAmount] = useState<number>(undefined)
@@ -62,10 +68,11 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const prepareIngredient = (ingId: number) => {
     setPIngredientId(ingId)
 
-    // get ingredient unit
     rqGet("ingredients/" + ingId)
-      .then(ing => { setPIngredientUnit(ing.unit) })
-      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
+      .then((ing: Ingredient) => {
+        setPIngredientUnit(ing.unit)
+        setPIngredientDash(ing.dash)
+      }).catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
   }
 
   useEffect(() => {
@@ -142,6 +149,12 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     setPAmount(product?.amount)
     setPEstExpirationDays(product?.est_expiration_days)
     setPIngredientUnit(product?.ingredient.unit || pIngredientUnit)
+    setPIngredientDash(product?.ingredient.dash || pIngredientDash)
+    setDashLevels([
+      {label: "nadal OK", value: 0},
+      {label: "mało", value: prepareDashAmount(0.75, product?.stock_items_sum_amount)},
+      {label: "nic", value: prepareDashAmount(1, product?.stock_items_sum_amount)},
+    ])
     setPStockItemsSumAmount(product?.stock_items_sum_amount)
 
     setSAmount(undefined)
@@ -330,7 +343,10 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
           <SCButton icon="thermometer-empty" color={LIGHT_COLOR} onPress={() => setSAmount(0)} />
           <SCButton icon="thermometer-full" color={LIGHT_COLOR} onPress={() => setSAmount(pStockItemsSumAmount)} />
         </View>}
-        <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
+        {mode === "cookingMode" && pIngredientDash
+        ? <SCRadio label={`Ilość (${pIngredientUnit})`} items={dashLevels} value={sAmount} onChange={setSAmount} />
+        : <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={sAmount} onChange={setSAmount} />
+        }
         {mode !== "cookingMode" && <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />}
       </View>
 

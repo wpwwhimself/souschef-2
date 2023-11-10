@@ -3,7 +3,7 @@
     "name": "Souschef",
     "description": "An app for a sclerotic cook",
     "slug": "souschef",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "platforms": [
       "android",
       "web"

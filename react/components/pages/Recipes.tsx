@@ -45,6 +45,7 @@ export default function Recipes({navigation}){
   const [riId, setRiId] = useState<number>()
   const [riIngredientId, setRiIngredientId] = useState<number>()
   const [iUnit, setIUnit] = useState<string>()
+  const [iDash, setIDash] = useState<boolean>()
   const [riAmount, setRiAmount] = useState<number>()
   const [riOptional, setRiOptional] = useState<boolean>()
 
@@ -110,6 +111,10 @@ export default function Recipes({navigation}){
     rqGet(`ingredients/${ing_id}`)
       .then((ing: Ingredient) => {
         setIUnit(ing.unit)
+        setIDash(ing.dash)
+        if(ing.dash){
+          setRiAmount(0)
+        }
       }).catch(err => {
         toast.show("Nie udało się pobrać jednostki: "+err.message, {type: "danger"})
       })
@@ -117,7 +122,7 @@ export default function Recipes({navigation}){
 
   const handleEditIngredient = (recipeIngredient?: RecipeIngredient) => {
     setRiId(recipeIngredient?.id)
-    setRiIngredientId(recipeIngredient?.ingredient_id)
+    handleSetRiIngredientId(recipeIngredient?.ingredient_id)
     setRiAmount(recipeIngredient?.amount)
     setRiOptional(recipeIngredient?.optional)
     setRecipeIngredientModVisible(true)
@@ -301,7 +306,7 @@ export default function Recipes({navigation}){
             <PositionTile
               title={item.ingredient.name}
               subtitle={[
-                `${item.amount} ${item.ingredient.unit}`,
+                item.ingredient.dash ? "🤏" : `${item.amount} ${item.ingredient.unit}`,
                 item.optional ? "➕" : undefined,
               ].filter(Boolean).join(" • ")}
               icon={item.ingredient.category.symbol}
@@ -325,7 +330,7 @@ export default function Recipes({navigation}){
             <PositionTile
               title={item.ingredient.name}
               subtitle={[
-                `${item.amount} ${item.ingredient.unit}`,
+                item.ingredient.dash ? "🤏" : `${item.amount} ${item.ingredient.unit}`,
                 item.optional ? "➕" : undefined,
               ].filter(Boolean).join(" • ")}
               icon={item.ingredient.category.symbol}
@@ -374,7 +379,7 @@ export default function Recipes({navigation}){
       >
       <View style={[s.margin, s.center]}>
         <SCSelect items={ingredients} label="Składnik" value={riIngredientId} onChange={handleSetRiIngredientId} />
-        <SCInput type="numeric" label={"Ilość" + (iUnit ? ` (${iUnit})` : "")} value={riAmount} onChange={setRiAmount} />
+        {!iDash && <SCInput type="numeric" label={"Ilość" + (iUnit ? ` (${iUnit})` : "")} value={riAmount} onChange={setRiAmount} />}
         <SCInput type="checkbox" label="Opcjonalny" value={riOptional} onChange={setRiOptional} />
       </View>
       <View style={[s.flexRight, s.center]}>

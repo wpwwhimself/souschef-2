@@ -1,6 +1,6 @@
 import { ACCENT_COLOR, BG2_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from "../assets/constants"
 import { Button } from "react-native"
-import { TextInput, Modal, Portal } from "react-native-paper";
+import { TextInput, Modal, Portal, RadioButton } from "react-native-paper";
 import { InputModeOptions, StyleSheet, Switch, Text, View } from "react-native";
 import { pl, registerTranslation, DatePickerInput } from 'react-native-paper-dates'
 import s from "../assets/style"
@@ -10,6 +10,7 @@ import { useState } from "react";
 import { prepareDate } from "../helpers/Prepare";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Loader from "./Loader";
+import { SelectItem } from "../types";
 
 registerTranslation('pl', pl)
 
@@ -118,6 +119,35 @@ const ssselect = StyleSheet.create({
     justifyContent: "center",
   },
 })
+
+interface RadioProps{
+  label: string,
+  value: any,
+  items: SelectItem[],
+  onChange: any,
+}
+export function SCRadio({label, value, items, onChange}: RadioProps){
+  return <View style={[s.flexRight, ssradio.container]}>
+    {label && <Text style={{color: FG_COLOR}}>{label}</Text>}
+    <View>
+      {items.map((item) => <View style={[s.flexRight]} key={item.label}>
+        <RadioButton
+          value={item.value}
+          status={value === item.value ? "checked" : "unchecked"}
+          onPress={() => onChange(item.value)}
+        />
+        <Text style={{color: FG_COLOR}}>{item.label}</Text>
+      </View>)}
+    </View>
+  </View>
+}
+
+const ssradio = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+  },
+})
+
 
 export function SCModal({title = undefined, visible, loader = false, onRequestClose, children}){
   return <Portal>

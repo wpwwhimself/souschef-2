@@ -6,7 +6,7 @@ import PositionTile from "../PositionTile";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Ingredient, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
+import { SCButton, SCInput, SCModal, SCRadio, SCSelect } from "../SCSpecifics";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import { useToast } from "react-native-toast-notifications";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
@@ -96,6 +96,12 @@ export default function Ingredients({navigation}){
       })
   }
 
+  const dashLevels: SelectItem[] = [
+    {label: "nie", value: null},
+    {label: "przy braku", value: 0},
+    {label: "przy końcówce", value: 0.3},
+  ]
+
   return <View style={s.wrapper}>
     <Header icon="box" level={1}>Składniki</Header>
 
@@ -113,7 +119,7 @@ export default function Ingredients({navigation}){
             item.minimal_amount !== null && "min. " + item.minimal_amount,
             item.freezable && "🧊",
             item.dash && "🤏",
-          ].filter(Boolean).join(" • ") || undefined}
+          ].filter(Boolean).join(" • ")}
           buttons={<>
             <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => openEditor(item)} small />
           </>}
@@ -134,8 +140,11 @@ export default function Ingredients({navigation}){
         <SCSelect label="Kategoria" value={cCategoryId} items={categories} onChange={setCCategoryId} />
         <SCInput type="checkbox" label="Trzymany w lodówce" value={cFreezable} onChange={setCFreezable} />
         <SCInput label="Jednostka" value={cUnit} onChange={setCUnit} />
-        <SCInput type="numeric" label={`Minimalna ilość (${cUnit})`} value={cMinimalAmount} onChange={setCMinimalAmount} />
         <SCInput type="checkbox" label="Powolne zużycie" value={cDash} onChange={setCDash} />
+        {cDash
+        ? <SCRadio label="Ostrzegaj o braku" items={dashLevels} value={cMinimalAmount} onChange={setCMinimalAmount} />
+        : <SCInput type="numeric" label={`Minimalna ilość (${cUnit})`} value={cMinimalAmount} onChange={setCMinimalAmount} />
+        }
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />

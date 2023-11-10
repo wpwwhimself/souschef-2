@@ -27,6 +27,7 @@ export default function Stock({navigation}){
   const [showAddStockModal, setShowAddStockModal] = useState(false)
 
   const [iName, setIName] = useState("")
+  const [iDash, setIDash] = useState<boolean>()
   const [stockDdDetails, setStockDdDetails] = useState([])
 
   // stock item parameters
@@ -55,6 +56,7 @@ export default function Stock({navigation}){
     rqGet("stock/ingredient/" + ing_id)
       .then((items) => {
         setIName(items[0].product.ingredient.name)
+        setIDash(items[0].product.ingredient.dash)
         setStockDdDetails(items)
       })
       .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
@@ -64,6 +66,13 @@ export default function Stock({navigation}){
   const addStockByIngredient = (ingId: number) => {
     setIngId(ingId)
     setShowAddStockModal(true)
+  }
+
+  const handleChangeDashAmount = (value: string) => {
+    setSAmount(parseFloat(value) + +(Math.floor(sAmount) !== sAmount) * 0.25)
+  }
+  const handleChangeDashAmountRemainder = (remainder_present: boolean) => {
+    setSAmount(Math.floor(sAmount) + +remainder_present * 0.25)
   }
 
   const editStock = async (stock_id: number, unit: string) => {
@@ -97,6 +106,7 @@ export default function Stock({navigation}){
       setStockEditor(false);
       setStockDdDetails([]);
       setIName("");
+      setIDash(undefined);
       setStockDrilldown(false);
     })
   }
@@ -115,6 +125,7 @@ export default function Stock({navigation}){
       setStockEditor(false);
       setStockDdDetails([]);
       setIName("");
+      setIDash(undefined);
       setStockDrilldown(false);
       setStockEraser(false);
     })
@@ -207,7 +218,13 @@ export default function Stock({navigation}){
       onRequestClose={() => setStockEditor(false)}
       >
       <View style={[s.margin, s.center]}>
-        <SCInput type="numeric" label={`Ilość (${pUnit})`} value={sAmount} onChange={setSAmount} />
+        {iDash
+        ? <>
+          <SCInput type="numeric" label={`Ilość pełnych (${pUnit})`} value={Math.floor(sAmount)} onChange={handleChangeDashAmount} />
+          <SCInput type="checkbox" label={`Dodaj otwarte (${pUnit})`} value={Math.floor(sAmount) !== sAmount} onChange={handleChangeDashAmountRemainder} />
+        </>
+        : <SCInput type="numeric" label={`Ilość (${pUnit})`} value={sAmount} onChange={setSAmount} />
+        }
         <SCInput type="date" label="Data przydatności" value={sExpirationDate} onChange={setSExpirationDate} />
       </View>
       <View style={[s.flexRight, s.center]}>

@@ -69,10 +69,10 @@ export default function Stock({navigation}){
   }
 
   const handleChangeDashAmount = (value: string) => {
-    setSAmount(parseFloat(value) + +(Math.floor(sAmount) !== sAmount) * 0.25)
+    setSAmount(parseFloat(value) + +((Math.floor(sAmount) || 0) !== sAmount) * 0.25)
   }
   const handleChangeDashAmountRemainder = (remainder_present: boolean) => {
-    setSAmount(Math.floor(sAmount) + +remainder_present * 0.25)
+    setSAmount((Math.floor(sAmount) || 0) + +remainder_present * 0.25)
   }
 
   const editStock = async (stock_id: number, unit: string) => {
@@ -220,8 +220,8 @@ export default function Stock({navigation}){
       <View style={[s.margin, s.center]}>
         {iDash
         ? <>
-          <SCInput type="numeric" label={`Ilość pełnych (${pUnit})`} value={Math.floor(sAmount)} onChange={handleChangeDashAmount} />
-          <SCInput type="checkbox" label={`Dodaj otwarte (${pUnit})`} value={Math.floor(sAmount) !== sAmount} onChange={handleChangeDashAmountRemainder} />
+          <SCInput type="numeric" label={`Ilość pełnych (${pUnit})`} value={Math.floor(sAmount) || 0} onChange={handleChangeDashAmount} />
+          <SCInput type="checkbox" label={`Dodaj otwarte (${pUnit})`} value={sAmount && (Math.floor(sAmount) || 0) !== sAmount} onChange={handleChangeDashAmountRemainder} />
         </>
         : <SCInput type="numeric" label={`Ilość (${pUnit})`} value={sAmount} onChange={setSAmount} />
         }

@@ -116,7 +116,7 @@ export default function Products({navigation}){
 
     <View style={[s.margin, s.center]}>
       <SCSelect items={ingredients} label="Wybierz składnik" value={pIngredientId} onChange={getData} />
-    H</View>
+    </View>
 
     {/* list */}
     {!pIngredientId

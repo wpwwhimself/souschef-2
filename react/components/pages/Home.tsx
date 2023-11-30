@@ -1,30 +1,35 @@
-import { RefreshControl, SectionList, Text, View } from "react-native";
+import { FlatList, RefreshControl, SectionList, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
-import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
+import { ACCENT_COLOR, FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { rqDelete, rqGet } from "../../helpers/SCFetch";
+import { rqDelete, rqGet, rqPost } from "../../helpers/SCFetch";
 import PositionTile from "../PositionTile";
 import AmountIndicator from "../AmountIndicator";
 import HorizontalLine from "../HorizontalLine";
 import { useToast } from "react-native-toast-notifications";
 import { SCButton, SCModal } from "../SCSpecifics";
-import { StockItem } from "../../types";
+import { Ingredient, Recipe, StockItem } from "../../types";
 import AddStockModal from "../AddStockModal";
 
-export default function Home(){
+export default function Home({navigation}){
   const isFocused = useIsFocused();
   const toast = useToast();
   const [loaderForShoppingList, setLoaderForShoppingList] = useState(true)
   const [loaderForSpoiled, setLoaderForSpoiled] = useState(true)
+  const [smallLoader, setSmallLoader] = useState(false)
   const [shoppingList, setShoppingList] = useState([])
-  const [spoiled, setSpoiled] = useState([])
+  const [spoiled, setSpoiled] = useState<StockItem[]>([])
   const [throwOutModal, setThrowOutModal] = useState(false)
   const [stockItemToThrowOut, setStockItemToThrowOut] = useState(undefined)
 
   const [showAddStockModal, setShowAddStockModal] = useState(false)
   const [ingredientId, setIngredientId] = useState<number>(undefined)
+
+  const [showRecipesModal, setShowRecipesModal] = useState(false)
+  const [ingForRecipes, setIngForRecipes] = useState<Ingredient>()
+  const [recipes, setRecipes] = useState<Recipe[]>([])
 
   const getData = async () => {
     setLoaderForShoppingList(true);
@@ -91,6 +96,28 @@ export default function Home(){
     setStockItemToThrowOut(false)
   }
 
+  const showRecipesForIngredient = (stockItem: StockItem) => {
+    setIngForRecipes(stockItem.product.ingredient)
+    setShowRecipesModal(true)
+    setSmallLoader(true)
+
+    rqGet(`recipes/ingredient/${stockItem.product.ingredient.id}`)
+      .then(recipes => {
+        setRecipes(recipes)
+      }).catch(err => {
+        toast.show(`Problem: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setSmallLoader(false)
+      })
+  }
+  const closeRecipesForIngredient = () => {
+    setShowRecipesModal(false)
+  }
+  const goToCookingMode = (recipe: Recipe) => {
+    closeRecipesForIngredient()
+    navigation.navigate("RecipesHub", {screen: "Recipes", params: {recipe: recipe}})
+  }
+
   const prepareAddStock = (ingId: number) => {
     setIngredientId(ingId)
     setShowAddStockModal(true)
@@ -131,6 +158,12 @@ export default function Home(){
                 expirationDate={item.expiration_date}
                 />
               <SCButton
+                icon="utensils"
+                color={ACCENT_COLOR}
+                onPress={() => showRecipesForIngredient(item)}
+                small
+                />
+              <SCButton
                 icon="trash"
                 color={LIGHT_COLOR}
                 onPress={() => prepareThrowOutSpoiled(item)}
@@ -150,6 +183,34 @@ export default function Home(){
         onRequestClose={() => {setShowAddStockModal(false)}}
         ingId={ingredientId}
       />
+
+      {/* recipe modal */}
+      <SCModal
+        title={`Przepisy z: ${ingForRecipes?.name}`}
+        visible={showRecipesModal}
+        onRequestClose={closeRecipesForIngredient}
+        loader={smallLoader}
+      >
+        <FlatList data={recipes}
+          renderItem={({item}) =>
+            <PositionTile
+              title={item.name}
+              buttons={<>
+                <AmountIndicator
+                  amount={item.ingredients.length - item.stock_insufficient_count}
+                  unit="skł."
+                  maxAmount={item.ingredients.length}
+                  amountAsFraction
+                  highlightAt={1}
+                  />
+                <SCButton color={LIGHT_COLOR} onPress={() => goToCookingMode(item)} small />
+              </>}
+            />
+          }
+          ItemSeparatorComponent={() => <HorizontalLine />}
+          ListEmptyComponent={<Header level={3}>Brak przepisów z tym składnikiem</Header>}
+        />
+      </SCModal>
 
       {/* danger modal */}
       <SCModal

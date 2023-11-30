@@ -129,6 +129,15 @@ class RecipeController extends Controller
     return $data;
   }
 
+  public function getRecipeByIngredient($ing_id){
+    $data = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
+      ->whereHas("ingredients", fn($q) => $q->where("ingredient_id", $ing_id))
+      ->orderBy("name")
+      ->get()
+    ;
+    return $data;
+  }
+
   public function suggestRecipes(){
     try{
       $for_dinner = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")

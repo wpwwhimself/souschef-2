@@ -2,7 +2,7 @@ import { FlatList, RefreshControl, Text, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react";
-import { useIsFocused, useRoute } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import PositionTile from "../PositionTile";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
@@ -15,7 +15,7 @@ import { ACCENT_COLOR, FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import AmountIndicator from "../AmountIndicator";
 import TitledText from "../TitledText";
 
-export default function Recipes({navigation}){
+export default function Recipes({route, navigation}){
   const isFocused = useIsFocused();
   const [recipes, setRecipes] = useState<Recipe[]>();
   const [loaderVisible, setLoaderVisible] = useState(true)
@@ -27,7 +27,6 @@ export default function Recipes({navigation}){
   const [recipeIngredientModVisible, setRecipeIngredientModVisible] = useState(false)
   const [editPreview, setEditPreview] = useState(false)
   const toast = useToast();
-  const route = useRoute();
 
   const [ingredients, setIngredients] = useState<SelectItem[]>()
   const [suggestions, setSuggestions] = useState<{for_dinner: Recipe, for_supper: Recipe}>()
@@ -238,6 +237,9 @@ export default function Recipes({navigation}){
     if(isFocused){
       getData()
       getSuggestions()
+      if(route.params?.recipe){
+        showPreview(route.params.recipe)
+      }
     }
   }, [isFocused]);
 

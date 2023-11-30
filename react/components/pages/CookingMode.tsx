@@ -112,6 +112,11 @@ export default function CookingMode(){
       toast.update(toastId, `Problem: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setShowAssignProductModal(false)
+      rqGet(`cooking-products/${cooking_product_id}`)
+        .then(cp => prepareChangeStock(cp))
+        .catch(err => {
+          toast.show(`Problem: ${err.message}`, {type: "danger"})
+        })
       getData()
     })
   }

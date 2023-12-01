@@ -125,6 +125,8 @@ class RecipeController extends Controller
     : Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
       ->orderBy("name")
       ->get()
+      ->sortBy("stock_insufficient_percentage")
+      ->values()
     ;
     return $data;
   }
@@ -134,6 +136,7 @@ class RecipeController extends Controller
       ->whereHas("ingredients", fn($q) => $q->where("ingredient_id", $ing_id))
       ->orderBy("name")
       ->get()
+      ->sortBy("stock_insufficient_percentage")->values()
     ;
     return $data;
   }
@@ -143,7 +146,6 @@ class RecipeController extends Controller
       $for_dinner = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
         ->where("for_dinner", true)
         ->get()
-        ->sortBy("stock_insufficient_count")->values()
         ->random()
       ;
     }catch(Exception $e){
@@ -153,7 +155,6 @@ class RecipeController extends Controller
       $for_supper = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
         ->where("for_supper", true)
         ->get()
-        ->sortBy("stock_insufficient_count")->values()
         ->filter(fn($el) => $el->id !== $for_dinner->id)
         ->random()
       ;

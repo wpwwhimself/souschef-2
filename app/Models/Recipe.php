@@ -15,8 +15,9 @@ class Recipe extends Model
     ];
     protected $appends = [
         "stock_insufficient_count",
+        "stock_insufficient_percentage",
     ];
-    
+
     public function getStockInsufficientCountAttribute(){
         $count = 0;
         foreach($this->ingredients as $ingredient){
@@ -25,6 +26,9 @@ class Recipe extends Model
             }
         }
         return $count;
+    }
+    public function getStockInsufficientPercentageAttribute(){
+        return ($this->stock_insufficient_count) / $this->ingredients->count();
     }
 
     public function ingredients(){

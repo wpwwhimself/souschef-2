@@ -15,6 +15,7 @@ import moment from 'moment'
 import AmountIndicator from './AmountIndicator'
 import { LIGHT_COLOR } from "../assets/constants"
 import IngredientSelector from './IngredientSelector'
+import { getKey } from '../helpers/Storage'
 
 // interface UPCProduct{
 //   title: string,
@@ -138,8 +139,19 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const mllPrdChosen = async (product_id: number, ean?: string) => {
     const product = products.find(prd => prd.id === product_id);
 
+    // new product, EAN available -- search for data
+    if(!product_id && ean){
+      rqGet(`product/${ean}`, {}, ["eanUrl", "EANToken", "apikey"])
+        .then(scan => {
+          setPName(scan.title)
+        }).catch(err => {
+          toast.show(err.message, {type: "danger"})
+        })
+    }else{
+      setPName(product?.name)
+    }
+
     setPId(product?.id)
-    setPName(product?.name)
     setPEan(ean || product?.ean)
     setPAmount(product?.amount)
     setPEstExpirationDays(product?.est_expiration_days)

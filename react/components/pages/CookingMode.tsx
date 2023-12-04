@@ -1,7 +1,7 @@
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import s from "../../assets/style"
 import Header from "../Header";
-import { SCButton, SCInput, SCModal, SCRadio, SCSelect } from "../SCSpecifics";
+import { SCButton, SCInput, SCModal, SCRadio } from "../SCSpecifics";
 import PositionTile from "../PositionTile";
 import { useEffect, useState } from "react";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";

@@ -5,7 +5,7 @@ import s from "../assets/style"
 import { BarCodeScanner } from "expo-barcode-scanner"
 import { rqGet, rqPost } from '../helpers/SCFetch'
 import { Ingredient, Product, SelectItem } from '../types'
-import { SCButton, SCModal, SCInput, SCSelect, SCRadio } from './SCSpecifics'
+import { SCButton, SCModal, SCInput, SCRadio } from './SCSpecifics'
 import { prepareDashAmount, prepareSelectItems } from '../helpers/Prepare'
 import Loader from './Loader'
 import PositionTile from './PositionTile'
@@ -14,6 +14,7 @@ import { useToast } from "react-native-toast-notifications";
 import moment from 'moment'
 import AmountIndicator from './AmountIndicator'
 import { LIGHT_COLOR } from "../assets/constants"
+import IngredientSelector from './IngredientSelector'
 
 // interface UPCProduct{
 //   title: string,
@@ -39,7 +40,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const [loaderVisible, setLoaderVisible] = useState(false)
   const toast = useToast();
 
-  const [ingredients, setIngredients] = useState<SelectItem[]>([])
   const [products, setProducts] = useState<Product[]>([])
 
   // product parameters
@@ -94,11 +94,6 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
   const openManualLookup = async (lookupMode: "ean" | "list") => {
     mllIngChosen(pIngredientId);
-
-    rqGet("ingredients")
-      .then(ings => { setIngredients(prepareSelectItems(ings, "name", "id")) })
-      .catch(err => toast.show(`Problem z szukaniem składników: ${err.message}`, {type: "danger"}))
-    ;
 
     setShowModal("prd");
     setManualLookupMode(lookupMode);
@@ -285,7 +280,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
       {/* lookup by list */
       manualLookupMode === "list" &&
       <>
-        <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={mllIngChosen} />
+        <IngredientSelector ingId={pIngredientId} onChange={mllIngChosen} forceOpen={!pIngredientId} />
         {!pIngredientId
         ? <></>
         : loaderVisible
@@ -326,7 +321,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
         : <>
           <SCInput label="Nazwa" value={pName} onChange={setPName} />
           <SCInput label="EAN" value={pEan} onChange={setPEan} />
-          <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={mllIngChosen} />
+          <IngredientSelector ingId={pIngredientId} onChange={mllIngChosen} />
           <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={(val) => {setPAmount(val); setSAmount(sAmount || val)}} />
         </>
         }

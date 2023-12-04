@@ -3,25 +3,24 @@ import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PositionTile from "../PositionTile";
-import { SCButton, SCModal, SCInput, SCSelect } from "../SCSpecifics";
+import { SCButton, SCModal, SCInput } from "../SCSpecifics";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
 import { Product, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { useToast } from "react-native-toast-notifications";
-import { prepareSelectItems } from "../../helpers/Prepare";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import Header from "../Header";
+import IngredientSelector from "../IngredientSelector";
 
 export default function Products({navigation}){
   const isFocused = useIsFocused();
-  const [ingredients, setIngredients] = useState([] as SelectItem[]);
   const [products, setProducts] = useState([] as Product[]);
   const [editorVisible, setEditorVisible] = useState(false);
   const [eraserVisible, setEraserVisible] = useState(false);
-  const [ingLoaderVisible, setIngLoaderVisible] = useState(true);
   const [prdLoaderVisible, setPrdLoaderVisible] = useState(true);
   const toast = useToast();
 
+  const [ingredientOnDisplay, setIngredientOnDisplay] = useState(0);
   const [pId, setPId] = useState(0);
   const [pEan, setPEan] = useState("");
   const [pName, setPName] = useState("");
@@ -30,18 +29,9 @@ export default function Products({navigation}){
   const [pAmount, setPAmount] = useState(0);
   const [pEstExpirationDays, setPEstExpirationDays] = useState<number>(undefined);
 
-  const getIngredients = async () => {
-    setIngLoaderVisible(true);
-
-    rqGet("ingredients")
-      .then(ings => setIngredients(prepareSelectItems(ings, "name", "id")))
-      .catch(err => toast.show("Problem: "+err.message, {type: "danger"}))
-      .finally(() => setIngLoaderVisible(false))
-    ;
-  }
-
   const getData = async (ing_id: number) => {
     setPrdLoaderVisible(true);
+    setIngredientOnDisplay(ing_id);
     setPIngredientId(ing_id);
 
     // get ingredient unit
@@ -58,10 +48,8 @@ export default function Products({navigation}){
   }
 
   useEffect(() => {
-    setIngLoaderVisible(true);
     if(isFocused) {
-      getIngredients();
-      getData(pIngredientId);
+      getData(ingredientOnDisplay);
     };
   }, [isFocused]);
 
@@ -93,7 +81,7 @@ export default function Products({navigation}){
       toast.update(toastId, `Nie udało się zapisać: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setEditorVisible(false)
-      getData(pIngredientId)
+      getData(ingredientOnDisplay)
     })
   }
   const handleDelete = async () => {
@@ -107,7 +95,7 @@ export default function Products({navigation}){
       }).finally(() => {
         setEraserVisible(false);
         setEditorVisible(false);
-        getData(pIngredientId);
+        getData(ingredientOnDisplay);
       })
   }
 
@@ -115,7 +103,7 @@ export default function Products({navigation}){
     <Header icon="flask" level={1}>Produkty</Header>
 
     <View style={[s.margin, s.center]}>
-      <SCSelect items={ingredients} label="Wybierz składnik" value={pIngredientId} onChange={getData} />
+      <IngredientSelector ingId={ingredientOnDisplay} onChange={getData} />
     </View>
 
     {/* list */}
@@ -148,7 +136,7 @@ export default function Products({navigation}){
       <View style={[s.margin, s.center]}>
         <SCInput label="Nazwa" value={pName} onChange={setPName} />
         <SCInput label="EAN" value={pEan} onChange={setPEan} />
-        <SCSelect items={ingredients} label="Składnik" value={pIngredientId} onChange={setPIngredientId} />
+        <IngredientSelector ingId={pIngredientId} onChange={setPIngredientId} />
         <SCInput type="numeric" label={`Ilość (${pIngredientUnit})`} value={pAmount} onChange={setPAmount} />
         <SCInput type="numeric" label="Szac. przydatność (dni)" value={pEstExpirationDays} onChange={setPEstExpirationDays} />
       </View>

@@ -76,6 +76,7 @@ export function SCInput({
       onChangeText={(nv) => type == "numeric" ? onChange(nv.replace(/,/g, ".")) : onChange(nv)}
       secureTextEntry={password}
       style={{width: "100%"}}
+      selectTextOnFocus={true}
       />
     }
   </View>

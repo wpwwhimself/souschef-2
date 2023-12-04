@@ -5,15 +5,15 @@ import { useState, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import PositionTile from "../PositionTile";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
-import { SCButton, SCInput, SCModal, SCSelect } from "../SCSpecifics";
+import { SCButton, SCInput, SCModal } from "../SCSpecifics";
 import Loader from "../Loader";
 import { useToast } from "react-native-toast-notifications";
-import { Ingredient, Recipe, RecipeIngredient, SelectItem } from "../../types";
+import { Ingredient, Recipe, RecipeIngredient } from "../../types";
 import HorizontalLine from "../HorizontalLine";
-import { prepareSelectItems } from "../../helpers/Prepare";
 import { ACCENT_COLOR, FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import AmountIndicator from "../AmountIndicator";
 import TitledText from "../TitledText";
+import IngredientSelector from "../IngredientSelector";
 
 export default function Recipes({route, navigation}){
   const isFocused = useIsFocused();
@@ -28,7 +28,6 @@ export default function Recipes({route, navigation}){
   const [editPreview, setEditPreview] = useState(false)
   const toast = useToast();
 
-  const [ingredients, setIngredients] = useState<SelectItem[]>()
   const [suggestions, setSuggestions] = useState<{for_dinner: Recipe, for_supper: Recipe}>()
 
   // recipe header params
@@ -93,16 +92,7 @@ export default function Recipes({route, navigation}){
   }
 
   const enablePreviewEdit = () => {
-    setSmallLoaderVisible(true)
-    rqGet("ingredients")
-      .then((ings: Ingredient[]) => {
-        setIngredients(prepareSelectItems(ings, "name", "id", true))
-      }).catch(err => {
-        toast.show("Nie udało się pobrać składników: "+err.message, {type: "danger"})
-      }).finally(() => {
-        setSmallLoaderVisible(false)
-        setEditPreview(true)
-      })
+    setEditPreview(true)
   }
 
   const handleSetRiIngredientId = (ing_id: number) => {
@@ -380,7 +370,7 @@ export default function Recipes({route, navigation}){
       title="Składnik"
       >
       <View style={[s.margin, s.center]}>
-        <SCSelect items={ingredients} label="Składnik" value={riIngredientId} onChange={handleSetRiIngredientId} />
+        <IngredientSelector ingId={riIngredientId} onChange={handleSetRiIngredientId} />
         {!iDash && <SCInput type="numeric" label={"Ilość" + (iUnit ? ` (${iUnit})` : "")} value={riAmount} onChange={setRiAmount} />}
         <SCInput type="checkbox" label="Opcjonalny" value={riOptional} onChange={setRiOptional} />
       </View>

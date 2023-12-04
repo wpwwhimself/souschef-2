@@ -102,6 +102,11 @@ export default function CookingMode(){
       })
   }
 
+  const dismissAssignProductModal = () => {
+    setShowAssignProductModal(false)
+    setProduct(undefined)
+  }
+
   const assignProduct = (cooking_product_id: number, product_id: number) => {
     const toastId = toast.show("Przypisuję produkt...")
     rqPatch(`cooking-products/${cooking_product_id}/1`, {
@@ -225,7 +230,7 @@ export default function CookingMode(){
     {/* cp assign product */}
     <SCModal
       visible={showAssignProductModal} loader={smallLoaderVisible}
-      onRequestClose={() => setShowAssignProductModal(false)}
+      onRequestClose={dismissAssignProductModal}
       title={`Przypisz produkt do: ${product?.ingredient.name}`}
       >
       <FlatList data={products}

@@ -129,15 +129,24 @@ export default function Home({navigation}){
       <SectionList sections={content}
         renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
         refreshControl={<RefreshControl refreshing={loaderForShoppingList || loaderForSpoiled} onRefresh={getData} />}
-        renderItem={({item, section}) => section.name == "shoppingList"
+        renderItem={({item, section}) => {
+          const [buttonOn, setButtonOn] = useState(false)
+          return section.name == "shoppingList"
           ? <PositionTile
             icon={item.category_symbol}
             title={item.name}
+            grayedOut={buttonOn}
             buttons={<>
               <AmountIndicator amount={item.stock_items_sum_amount}
                 unit={item.unit}
                 minAmount={item.minimal_amount}
                 expirationDate={item.stock_items_min_expiration_date}
+                />
+              <SCButton
+                icon="check"
+                onPress={() => setButtonOn(!buttonOn)}
+                color={buttonOn ? "green" : LIGHT_COLOR}
+                small
                 />
               <SCButton
                 icon="shopping-cart"
@@ -171,7 +180,7 @@ export default function Home({navigation}){
                 />
             </>}
           />
-        }
+        }}
         ItemSeparatorComponent={() => <HorizontalLine />}
         renderSectionFooter={({section}) => section.data.length === 0 &&
           <Header level={3}>{section.emptyNotice}</Header>

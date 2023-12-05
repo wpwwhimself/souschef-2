@@ -9,16 +9,17 @@ interface I{
   subtitle?: string,
   icon?: string,
   buttons?: ReactNode,
+  grayedOut?: boolean,
 }
 
-export default function PositionTile({title, subtitle, icon, buttons}: I){
+export default function PositionTile({title, subtitle, icon, buttons, grayedOut = false}: I){
   const iiicon = (icon)
     ? /\p{Emoji}/u.test(icon)
       ? <Text style={{color: FG_COLOR}}>{icon}</Text>
       : <Icon name={icon} />
     : undefined;
 
-  return <View style={[ss.wrapper, s.flexRight, ss.icon, {justifyContent: "space-between"}]}>
+  return <View style={[ss.wrapper, s.flexRight, ss.icon, {justifyContent: "space-between", opacity: grayedOut ? 0.3 : 1}]}>
     {/* icon */}
     <View>
       {iiicon}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SCButton, SCInput, SCModal } from "./SCSpecifics";
-import { SectionList, View } from "react-native";
+import { Keyboard, SectionList, View } from "react-native";
 import Header from "./Header";
 import { SelectItem } from "../types";
 import HorizontalLine from "./HorizontalLine";
@@ -29,6 +29,7 @@ export default function IngredientSelector({ingId, onChange, color = ACCENT_COLO
   const toast = useToast()
 
   useEffect(() => {
+    Keyboard.dismiss()
     setSmallLoaderVisible(true)
     rqGet("ingredients")
       .then(ings => {

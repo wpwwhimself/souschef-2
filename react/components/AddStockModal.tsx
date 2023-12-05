@@ -17,14 +17,6 @@ import { LIGHT_COLOR } from "../assets/constants"
 import IngredientSelector from './IngredientSelector'
 import { getKey } from '../helpers/Storage'
 
-// interface UPCProduct{
-//   title: string,
-//   barcode: string,
-//   metadata: {
-//     quantity: string,
-//   },
-// }
-
 interface BSInput{
   visible: boolean,
   onRequestClose: () => any,
@@ -164,7 +156,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     ])
     setPStockItemsSumAmount(product?.stock_items_sum_amount)
 
-    setSAmount(undefined)
+    setSAmount(product?.amount)
     setSExpirationDate(
       product?.est_expiration_days != 0
       ? moment().add(product?.est_expiration_days, 'd').format("YYYY-MM-DD")

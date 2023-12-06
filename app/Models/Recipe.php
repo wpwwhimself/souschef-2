@@ -28,7 +28,10 @@ class Recipe extends Model
         return $count;
     }
     public function getStockInsufficientPercentageAttribute(){
-        return ($this->stock_insufficient_count) / $this->ingredients->count();
+        return $this->ingredients->count()
+            ? $this->stock_insufficient_count / $this->ingredients->count()
+            : 1
+        ;
     }
 
     public function ingredients(){

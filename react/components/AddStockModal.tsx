@@ -15,7 +15,6 @@ import moment from 'moment'
 import AmountIndicator from './AmountIndicator'
 import { LIGHT_COLOR } from "../assets/constants"
 import IngredientSelector from './IngredientSelector'
-import { getKey } from '../helpers/Storage'
 
 interface BSInput{
   visible: boolean,

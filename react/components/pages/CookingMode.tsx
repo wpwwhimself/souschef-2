@@ -13,6 +13,7 @@ import AddStockModal from "../AddStockModal";
 import { CookingProduct, Product, SelectItem } from "../../types";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import { prepareDashAmount } from "../../helpers/Prepare";
+import { getKey } from "../../helpers/Storage";
 
 export default function CookingMode(){
   const toast = useToast()
@@ -98,7 +99,6 @@ export default function CookingMode(){
         toast.show("Problem: "+err.message, {type: "danger"})
       }).finally(() => {
         setSmallLoaderVisible(false)
-        setShowAssignProductModal(true)
       })
   }
 
@@ -117,10 +117,18 @@ export default function CookingMode(){
       toast.update(toastId, `Problem: ${err.message}`, {type: "danger"})
     }).finally(() => {
       setShowAssignProductModal(false)
-      rqGet(`cooking-products/${cooking_product_id}`)
-        .then(cp => prepareChangeStock(cp))
-        .catch(err => {
-          toast.show(`Problem: ${err.message}`, {type: "danger"})
+
+      // ⚙️ update amount immediately after binding
+      getKey("editAmountAfterCookingProductBound")
+        .then(stgLvl => {
+          if(stgLvl == 0) return;
+          rqGet(`cooking-products/${cooking_product_id}`)
+            .then((cp: CookingProduct) => {
+              if(stgLvl == 1 && !cp.ingredient.dash) return;
+              prepareChangeStock(cp)
+            }).catch(err => {
+              toast.show(`Problem: ${err.message}`, {type: "danger"})
+            })
         })
       getData()
     })

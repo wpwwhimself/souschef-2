@@ -54,6 +54,7 @@ export interface Recipe{
   for_dinner: boolean,
   for_supper: boolean,
   ingredients?: RecipeIngredient[],
+  required_ingredients?: RecipeIngredient[],
   stock_insufficient_count: number,
 }
 

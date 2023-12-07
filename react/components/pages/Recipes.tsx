@@ -266,9 +266,9 @@ export default function Recipes({route, navigation}){
             }
             buttons={<>
               <AmountIndicator
-                amount={item.ingredients.length - item.stock_insufficient_count}
+                amount={item.required_ingredients.length - item.stock_insufficient_count}
                 unit="skł."
-                maxAmount={item.ingredients.length}
+                maxAmount={item.required_ingredients.length}
                 amountAsFraction
                 highlightAt={1}
                 />

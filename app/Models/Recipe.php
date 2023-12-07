@@ -28,16 +28,26 @@ class Recipe extends Model
         return $count;
     }
     public function getStockInsufficientPercentageAttribute(){
-        return $this->ingredients->count()
-            ? $this->stock_insufficient_count / $this->ingredients->count()
+        return $this->requiredIngredients->count()
+            ? $this->stock_insufficient_count / $this->requiredIngredients->count()
             : 1
         ;
     }
 
     public function ingredients(){
         return $this->hasMany(RecipeIngredient::class)
+          ->orderBy("optional")
           ->orderByDesc("amount")
-          ->orderByDesc("optional")
+          ->join("ingredients", "ingredients.id", "=", "ingredient_id")
+          ->orderBy("ingredients.name")
+          ->select("recipe_ingredients.*")
+        ;
+    }
+    public function requiredIngredients(){
+        return $this->hasMany(RecipeIngredient::class)
+          ->where("optional", false)
+          ->orderBy("optional")
+          ->orderByDesc("amount")
           ->join("ingredients", "ingredients.id", "=", "ingredient_id")
           ->orderBy("ingredients.name")
           ->select("recipe_ingredients.*")

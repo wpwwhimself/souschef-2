@@ -160,12 +160,12 @@ class ProductController extends Controller
     ->leftJoin("categories", "category_id", "=", "categories.id")
     ->groupBy("i.id")
     ->havingRaw("stock_items_sum_amount <= i.minimal_amount")
-    ->orHavingRaw("stock_items_min_expiration_date < CURDATE()")
+    ->orHavingRaw("stock_items_max_expiration_date < CURDATE()")
     ->selectRaw(implode(", ", [
       "i.*",
       "categories.symbol as category_symbol",
       "coalesce(sum(stock_items.amount), 0) as stock_items_sum_amount",
-      "min(stock_items.expiration_date) as stock_items_min_expiration_date",
+      "max(stock_items.expiration_date) as stock_items_max_expiration_date",
       ]))
       ->orderBy("stock_items_sum_amount")
       ->orderBy("i.name")

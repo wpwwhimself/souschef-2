@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class StockItem extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    protected $fillable = [
-        "product_id",
-        "amount",
-        "expiration_date",
-    ];
+  protected $fillable = [
+    "product_id",
+    "amount",
+    "expiration_date",
+  ];
 
-    public function product(){
-        return $this->belongsTo(Product::class);
-    }
+  public function product(){
+    return $this->belongsTo(Product::class);
+  }
 }

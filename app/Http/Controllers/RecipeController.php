@@ -18,15 +18,15 @@ class RecipeController extends Controller
   */
   public function getCookingProduct($id = null){
     $data = $id
-    ? CookingProduct::with("product", "ingredient", "ingredient.category")->findOrFail($id)
-    : CookingProduct::with("product", "ingredient", "ingredient.category")
-    ->leftJoin("ingredients", "ingredients.id", "=", "ingredient_id")
-    ->select("cooking_products.*")
-    ->orderByRaw("case when product_id is null then 0 else 1 end")
-    ->orderByRaw("case when dash then 1 else 0 end")
-    ->orderBy("ingredients.name")
-    ->orderByDesc("cooking_products.amount")
-    ->get()
+      ? CookingProduct::with("product", "ingredient", "ingredient.category")->findOrFail($id)
+      : CookingProduct::with("product", "ingredient", "ingredient.category")
+        ->leftJoin("ingredients", "ingredients.id", "=", "ingredient_id")
+        ->select("cooking_products.*")
+        ->orderByRaw("case when product_id is null then 0 else 1 end")
+        ->orderByRaw("case when dash then 1 else 0 end")
+        ->orderBy("ingredients.name")
+        ->orderByDesc("cooking_products.amount")
+        ->get()
     ;
     return $data;
   }

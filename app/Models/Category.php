@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    protected $table = "categories";
-    protected $fillable = [
-        "name", "symbol"
-    ];
+  protected $table = "categories";
+  protected $fillable = [
+    "name", "symbol"
+  ];
 
-    public function ingredients(){
-        return $this->hasMany(Ingredient::class);
-    }
+  public function ingredients(){
+    return $this->hasMany(Ingredient::class);
+  }
 }

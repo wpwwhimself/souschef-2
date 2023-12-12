@@ -29,6 +29,7 @@ Route::middleware(MagicWord::class)->group(function(){
 
     Route::prefix("ingredients")->group(function(){
       Route::get("/{id?}", "getIngredient")->name("get-ingredient");
+      Route::get("/category/{cat_id}", "getIngredientByCategory");
       Route::post("/", "postIngredient")->name("post-ingredient");
       Route::patch("/{id}", "patchIngredient")->name("patch-ingredient");
       Route::delete("/{id}", "deleteIngredient")->name("delete-ingredient");

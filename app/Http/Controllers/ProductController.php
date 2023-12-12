@@ -50,6 +50,10 @@ class ProductController extends Controller
     $data = $id ? Ingredient::findOrFail($id) : Ingredient::orderBy("name")->with("category")->get();
     return $data;
   }
+  public function getIngredientByCategory($cat_id){
+    $data = Ingredient::where("category_id", $cat_id)->orderBy("name")->with("category")->get();
+    return $data;
+  }
 
   public function postIngredient(Request $rq){
     $data = Ingredient::create([

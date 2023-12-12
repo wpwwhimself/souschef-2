@@ -139,19 +139,22 @@ export default function Stock({navigation}){
     header: string,
     icon: string,
     data: any[],
+    color: string,
     emptyNotice: string,
   }
   const content: ContentEl[] = [
     {
       header: "Lodówka",
       icon: "cubes",
-      data: stockFreezer,
+      data: [stockFreezer],
+      color: "#0099ff77",
       emptyNotice: "Lodówka pusta",
     },
     {
       header: "Szafka",
       icon: "cookie-bite",
-      data: stockCupboard,
+      data: [stockCupboard],
+      color: "#ff990077",
       emptyNotice: "Szafka pusta",
     },
   ]
@@ -165,26 +168,28 @@ export default function Stock({navigation}){
       ingId={ingId}
     />
 
-    <SectionList
-      sections={content}
+    <SectionList sections={content}
       renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
       refreshControl={<RefreshControl refreshing={loaderVisible} onRefresh={getData} />}
-      renderItem={({item}) => <PositionTile
-              icon={item.category.symbol}
-              title={item.name}
-              buttons={<>
-                <AmountIndicator amount={item.stock_items_sum_amount}
-                  unit={item.unit}
-                  minAmount={item.minimal_amount}
-                  expirationDate={item.stock_items_min_expiration_date}
-                  />
-                <SCButton icon="plus" onPress={() => addStockByIngredient(item.id)} small />
-                <SCButton color={LIGHT_COLOR} onPress={() => drilldown(item.id)} small />
-              </>}
-          />
-          }
+      renderItem={({item, section}) => <FlatList data={item}
+        numColumns={3}
+        renderItem={({item}) => <PositionTile tile
+          icon={item.category.symbol}
+          title={item.name}
+          numbers={<AmountIndicator amount={item.stock_items_sum_amount}
+            unit={item.unit}
+            minAmount={item.minimal_amount}
+            expirationDate={item.stock_items_min_expiration_date}
+          />}
+          buttons={<>
+            <SCButton icon="plus" onPress={() => addStockByIngredient(item.id)} small />
+            <SCButton color={LIGHT_COLOR} onPress={() => drilldown(item.id)} small />
+          </>}
+          color={section.color}
+        />}
+      />}
       ItemSeparatorComponent={() => <HorizontalLine />}
-      renderSectionFooter={({section}) => section.data.length === 0 &&
+      renderSectionFooter={({section}) => section.data[0].length === 0 &&
         <Header level={3}>{section.emptyNotice}</Header>
       }
       stickySectionHeadersEnabled={true}

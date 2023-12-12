@@ -97,6 +97,7 @@ export default function IngredientSelector({ingId, onChange, color = ACCENT_COLO
         </View>}
         ItemSeparatorComponent={() => <HorizontalLine />}
         style={{ maxHeight: 600 }}
+        stickySectionHeadersEnabled={true}
       />
     </SCModal>
   </View>

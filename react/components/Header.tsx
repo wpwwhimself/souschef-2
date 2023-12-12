@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TextStyle, StyleProp, ViewStyle } from "react-native";
 import s from "../assets/style";
-import { ACCENT_COLOR, FG_COLOR, LIGHT_COLOR } from "../assets/constants";
+import { ACCENT_COLOR, BG_COLOR, FG_COLOR, LIGHT_COLOR } from "../assets/constants";
 import Icon from "react-native-vector-icons/FontAwesome5"
 
 export default function Header({children, icon = undefined, level = 2}){
@@ -37,6 +37,7 @@ const bts = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: BG_COLOR,
   },
   line: {
     flex: 1,

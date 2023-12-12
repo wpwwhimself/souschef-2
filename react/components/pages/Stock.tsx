@@ -187,6 +187,7 @@ export default function Stock({navigation}){
       renderSectionFooter={({section}) => section.data.length === 0 &&
         <Header level={3}>{section.emptyNotice}</Header>
       }
+      stickySectionHeadersEnabled={true}
     />
 
     <SCModal

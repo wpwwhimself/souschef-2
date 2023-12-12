@@ -185,6 +185,7 @@ export default function Home({navigation}){
         renderSectionFooter={({section}) => section.data.length === 0 &&
           <Header level={3}>{section.emptyNotice}</Header>
         }
+        stickySectionHeadersEnabled={true}
       />
 
       <AddStockModal

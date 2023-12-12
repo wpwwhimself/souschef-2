@@ -1,4 +1,4 @@
-import { View } from "react-native"
+import { SectionList, View } from "react-native"
 import Header from "../Header"
 import s from "../../assets/style"
 import { useState, useEffect } from "react"
@@ -19,9 +19,9 @@ export default function Settings(){
 
   const [editAmountAfterCookingProductBound, setEditAmountAfterCookingProductBound] = useState<0 | 1 | 2>(0)
   const editAmountAfterCookingProductBoundValues: SelectItem[] = [
-    { value: 0, label: "Nie" },
-    { value: 1, label: "Tylko dla powolnego zużycia" },
     { value: 2, label: "Tak" },
+    { value: 1, label: "Tylko dla powolnego zużycia" },
+    { value: 0, label: "Nie" },
   ]
 
   const storage = {
@@ -41,41 +41,67 @@ export default function Settings(){
     });
   }, [isFocused]);
 
-  const handleDbSave = () => {
+  const handleSave = () => {
     setKey("dbUrl", dbUrl);
     setKey("magicWord", dbPassword);
-    toast.show("Dane bazy zmodyfikowane", {type: "success"});
-  }
-  const handleEanSave = () => {
     setKey("eanUrl", eanUrl);
     setKey("EANToken", eanToken);
-    toast.show("Dane dot. EAN zmodyfikowane", {type: "success"});
-  }
-  const handleIntSave = () => {
+
     setKey("editAmountAfterCookingProductBound", editAmountAfterCookingProductBound);
-    toast.show("Dane dot. intuicji zmodyfikowane", {type: "success"});
+
+    toast.show("Dane zapisane", {type: "success"});
   }
+
+  interface ContentEl{
+    header: string,
+    icon: string,
+    data: any[],
+  }
+  const content: ContentEl[] = [
+    {
+      header: "Baza danych",
+      icon: "database",
+      data: [
+        <SCInput label="Adres serwera" value={dbUrl} type="url" onChange={setDbUrl} />,
+        <SCInput label="Magiczne słowo" value={dbPassword} onChange={setDbPassword} password />,
+      ]
+    },
+    {
+      header: "Wyszukiwanie EANów",
+      icon: "barcode",
+      data: [
+        <SCInput label="Adres serwera" value={eanUrl} type="url" onChange={setEanUrl} />,
+        <SCInput label="Magiczne słowo" value={eanToken} onChange={setEanToken} />,
+      ]
+    },
+    {
+      header: "Wygląd",
+      icon: "palette",
+      data: [
+        <Header level={3}>Brak ustawień... Na razie...</Header>
+      ]
+    },
+    {
+      header: "Intuicja",
+      icon: "comment-dots",
+      data: [
+        <Header icon="balance-scale" level={3}>Podliczanie</Header>,
+        <SCRadio label="Edytuj ilość produktu po powiązaniu ze składnikiem"
+          items={editAmountAfterCookingProductBoundValues}
+          value={editAmountAfterCookingProductBound}
+          onChange={setEditAmountAfterCookingProductBound}
+        />,
+      ]
+    },
+  ]
 
   return <View style={s.wrapper}>
     <Header icon="cog" level={1}>Ustawienia</Header>
-
-    <Header icon="database">Baza danych</Header>
-    <SCInput label="Adres serwera" value={dbUrl} type="url" onChange={setDbUrl} />
-    <SCInput label="Magiczne słowo" value={dbPassword} onChange={setDbPassword} password />
-    <SCButton icon="check" title="Zatwierdź" onPress={handleDbSave} />
-
-    <Header icon="barcode">Wyszukiwanie EANów</Header>
-    <SCInput label="Adres serwera" value={eanUrl} type="url" onChange={setEanUrl} />
-    <SCInput label="Magiczne słowo" value={eanToken} onChange={setEanToken} />
-    <SCButton icon="check" title="Zatwierdź" onPress={handleEanSave} />
-
-    <Header icon="comment-dots">Intuicja</Header>
-    <Header icon="balance-scale" level={3}>Podliczanie</Header>
-    <SCRadio label="Edytuj ilość produktu po powiązaniu ze składnikiem"
-      items={editAmountAfterCookingProductBoundValues}
-      value={editAmountAfterCookingProductBound}
-      onChange={setEditAmountAfterCookingProductBound}
+    <SectionList sections={content}
+      renderItem={({item}) => item}
+      renderSectionHeader={({section}) => <Header icon={section.icon}>{section.header}</Header>}
+      stickySectionHeadersEnabled={true}
     />
-    <SCButton icon="check" title="Zatwierdź" onPress={handleIntSave} />
+    <SCButton icon="check" title="Zatwierdź" onPress={handleSave} />
   </View>
 }

@@ -3,9 +3,9 @@ import s from "../../assets/style"
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PositionTile from "../PositionTile";
-import { SCButton, SCModal, SCInput } from "../SCSpecifics";
+import { SCButton, SCModal, SCInput, SCSelect } from "../SCSpecifics";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
-import { Category } from "../../types";
+import { Category, Ingredient } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { useToast } from "react-native-toast-notifications";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
@@ -22,6 +22,9 @@ export default function Categories({navigation}){
   const [cId, setCId] = useState(0);
   const [cName, setCName] = useState("");
   const [cSymbol, setCSymbol] = useState("");
+
+  const [orphans, setOrphans] = useState<Ingredient[]>()
+  const [orphansNewCategory, setOrphansNewCategory] = useState<number>()
 
   const getData = async () => {
     setCatLoaderVisible(true);
@@ -62,17 +65,31 @@ export default function Categories({navigation}){
       getData()
     })
   }
+  const prepareDelete = () => {
+    rqGet(`ingredients/category/${cId}`)
+      .then(res => {
+        setOrphans(res)
+        setOrphansNewCategory(undefined)
+      }).catch(err => {
+        toast.show(`Problem: ${err.message}`, {type: "danger"})
+      })
+    
+    setEraserVisible(true)
+  }
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    rqDelete(`categories/${cId}`)
-      .then(res => {
+    rqDelete(`categories/${cId}`, {
+      orphansNewFK: orphansNewCategory,
+    }).then(res => {
         toast.update(toastId, "Kategoria usunięta", {type: "success"});
       }).catch(err => {
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
       }).finally(() => {
         setEditorVisible(false)
         setEraserVisible(false)
+        setOrphans(undefined)
+        setOrphansNewCategory(undefined)
         getData()
       })
   }
@@ -110,7 +127,7 @@ export default function Categories({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
-        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => setEraserVisible(true)} />}
+        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={prepareDelete} />}
       </View>
     </SCModal>
 
@@ -121,8 +138,16 @@ export default function Categories({navigation}){
       onRequestClose={() => setEraserVisible(false)}
       >
       <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć kategorię {cName}?</Text>
+      {orphans.length && <>
+        <Text style={{color: FG_COLOR}}>Należy zmienić kategorię dla {orphans.length} składników:</Text>
+        <SCSelect items={categories}
+          label="Nowa kategoria"
+          value={orphansNewCategory}
+          onChange={setOrphansNewCategory}
+        />
+      </>}
       <View style={[s.flexRight, s.center]}>
-        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+        {(!orphans.length || orphansNewCategory) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
       </View>
     </SCModal>
   </View>

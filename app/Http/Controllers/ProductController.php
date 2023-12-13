@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\CookingProduct;
 use App\Models\Ingredient;
 use App\Models\Product;
+use App\Models\RecipeIngredient;
 use App\Models\StockItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -38,8 +40,10 @@ class ProductController extends Controller
     return $data;
   }
 
-  public function deleteCategory($id){
-    Category::findOrFail($id)->delete();
+  public function deleteCategory($id, Request $rq){
+    $data = Category::findOrFail($id);
+    $data->ingredients->update(["category_id" => $rq->orphansNewFK]);
+    $data->delete();
     return response()->json("Category deleted");
   }
 
@@ -76,8 +80,12 @@ class ProductController extends Controller
     return $data;
   }
 
-  public function deleteIngredient($id){
-    Ingredient::findOrFail($id)->delete();
+  public function deleteIngredient($id, Request $rq){
+    $data = Ingredient::findOrFail($id);
+    $data->products->update(["ingredient_id" => $rq->orphansNewFK]);
+    RecipeIngredient::where("ingredient_id", $id)->update(["ingredient_id" => $rq->orphansNewFK]);
+    CookingProduct::where("ingredient_id", $id)->update(["ingredient_id" => $rq->orphansNewFK]);
+    $data->delete();
     return response()->json("Ingredient deleted");
   }
 
@@ -124,7 +132,10 @@ class ProductController extends Controller
   }
 
   public function deleteProduct($id){
-    Product::findOrFail($id)->delete();
+    $data = Product::findOrFail($id);
+    $data->stockItems->delete();
+    CookingProduct::where("product_id", $id)->update(["product_id" => null]);
+    $data->delete();
     return response()->json("Product deleted");
   }
 

@@ -24,7 +24,7 @@ export default function Categories({navigation}){
   const [cSymbol, setCSymbol] = useState("");
 
   const [orphans, setOrphans] = useState<Ingredient[]>()
-  const [orphansNewCategory, setOrphansNewCategory] = useState<number>()
+  const [orphansNewFK, setOrphansNewFK] = useState<number>()
 
   const getData = async () => {
     setCatLoaderVisible(true);
@@ -69,7 +69,7 @@ export default function Categories({navigation}){
     rqGet(`ingredients/category/${cId}`)
       .then(res => {
         setOrphans(res)
-        setOrphansNewCategory(undefined)
+        setOrphansNewFK(undefined)
       }).catch(err => {
         toast.show(`Problem: ${err.message}`, {type: "danger"})
       })
@@ -80,7 +80,7 @@ export default function Categories({navigation}){
     const toastId = toast.show("Zapisuję...");
 
     rqDelete(`categories/${cId}`, {
-      orphansNewFK: orphansNewCategory,
+      orphansNewFK: orphansNewFK,
     }).then(res => {
         toast.update(toastId, "Kategoria usunięta", {type: "success"});
       }).catch(err => {
@@ -89,7 +89,7 @@ export default function Categories({navigation}){
         setEditorVisible(false)
         setEraserVisible(false)
         setOrphans(undefined)
-        setOrphansNewCategory(undefined)
+        setOrphansNewFK(undefined)
         getData()
       })
   }
@@ -142,12 +142,12 @@ export default function Categories({navigation}){
         <Text style={{color: FG_COLOR}}>Należy zmienić kategorię dla {orphans.length} składników:</Text>
         <SCSelect items={categories}
           label="Nowa kategoria"
-          value={orphansNewCategory}
-          onChange={setOrphansNewCategory}
+          value={orphansNewFK}
+          onChange={setOrphansNewFK}
         />
       </>}
       <View style={[s.flexRight, s.center]}>
-        {(!orphans.length || orphansNewCategory) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
+        {(!orphans.length || orphansNewFK) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
       </View>
     </SCModal>
   </View>

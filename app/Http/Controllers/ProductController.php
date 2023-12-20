@@ -202,10 +202,6 @@ class ProductController extends Controller
   }
 
   public function postStockItem(Request $rq){
-    if($rq->amount <= 0){
-      return response()->json($this::STK_CLEANED_UP);
-    }
-
     // find stock items with the same expiration date and post to them
     $data = StockItem::where("product_id", $rq->productId)
       ->where("expiration_date", $rq->expirationDate)

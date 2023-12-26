@@ -102,6 +102,11 @@ export default function CookingMode(){
       })
   }
 
+  const prepareClearCP = (cookingProduct: CookingProduct) => {
+    setProduct(cookingProduct)
+    setDangerModalMode("clearOne")
+  }
+
   const dismissAssignProductModal = () => {
     setShowAssignProductModal(false)
     setProduct(undefined)
@@ -154,8 +159,8 @@ export default function CookingMode(){
       confirm: clearList,
     },
     clearOne: {
-      title: "Usunięcie produktu z listy",
-      text: `Czy na pewno chcesz usunąć produkt ${product?.product?.name} z listy?`,
+      title: "Usunięcie pozycji z listy",
+      text: `Czy na pewno chcesz usunąć składnik ${product?.ingredient.name} z listy?`,
       confirm: clearList,
     },
     submit: {
@@ -189,6 +194,7 @@ export default function CookingMode(){
           ? <SCButton icon="wrench" color={LIGHT_COLOR} onPress={() => prepareChangeStock(item)} small />
           : <SCButton icon="plus" onPress={() => prepareAssignProduct(item)} small />
           }
+          <SCButton icon="times" onPress={() => prepareClearCP(item)} color="red" small />
         </>}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}

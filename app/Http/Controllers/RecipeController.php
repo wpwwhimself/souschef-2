@@ -142,23 +142,26 @@ class RecipeController extends Controller
     return $data;
   }
 
-  public function suggestRecipes(){
+  public function suggestRecipes($stocked_only = false){
     try{
       $for_dinner = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
         ->where("for_dinner", true)
         ->get()
-        ->random()
       ;
+      if($stocked_only) $for_dinner = $for_dinner?->filter(fn($rcp) => $rcp->stock_insufficient_count == 0);
+      $for_dinner = $for_dinner
+        ->random();
     }catch(Exception $e){
       $for_dinner = null;
     }
     try{
       $for_supper = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
         ->where("for_supper", true)
-        ->get()
+        ->get();
+      // if($stocked_only) $for_supper = $for_supper->filter(fn($rcp) => $rcp->stock_insufficient_count == 0);
+      $for_supper = $for_supper
         ->filter(fn($el) => $el->id !== $for_dinner->id)
-        ->random()
-      ;
+        ->random();
     }catch(Exception $e){
       $for_supper = null;
     }

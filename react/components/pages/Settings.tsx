@@ -17,6 +17,7 @@ export default function Settings(){
   const [eanUrl, setEanUrl] = useState("");
   const [eanToken, setEanToken] = useState("");
 
+  const [suggestOnlyStockedRecipes, setSuggestOnlyStockedRecipes] = useState(false)
   const [editAmountAfterCookingProductBound, setEditAmountAfterCookingProductBound] = useState<0 | 1 | 2>(0)
   const editAmountAfterCookingProductBoundValues: SelectItem[] = [
     { value: 2, label: "Tak" },
@@ -47,6 +48,7 @@ export default function Settings(){
     setKey("eanUrl", eanUrl);
     setKey("EANToken", eanToken);
 
+    setKey("suggestOnlyStockedRecipes", suggestOnlyStockedRecipes);
     setKey("editAmountAfterCookingProductBound", editAmountAfterCookingProductBound);
 
     toast.show("Dane zapisane", {type: "success"});
@@ -85,6 +87,11 @@ export default function Settings(){
       header: "Intuicja",
       icon: "comment-dots",
       data: [
+        <Header icon="scroll" level={3}>Przepisy</Header>,
+        <SCInput label="Sugeruj tylko przepisy z kompletem składników" type="checkbox"
+          value={suggestOnlyStockedRecipes}
+          onChange={setSuggestOnlyStockedRecipes}
+        />,
         <Header icon="balance-scale" level={3}>Podliczanie</Header>,
         <SCRadio label="Edytuj ilość produktu po powiązaniu ze składnikiem"
           items={editAmountAfterCookingProductBoundValues}

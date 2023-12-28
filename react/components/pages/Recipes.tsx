@@ -14,6 +14,7 @@ import { ACCENT_COLOR, FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import AmountIndicator from "../AmountIndicator";
 import TitledText from "../TitledText";
 import IngredientSelector from "../IngredientSelector";
+import { getKey } from "../../helpers/Storage";
 
 export default function Recipes({route, navigation}){
   const isFocused = useIsFocused();
@@ -58,12 +59,17 @@ export default function Recipes({route, navigation}){
 
   const getSuggestions = () => {
     setSuggestionsLoaderVisible(true)
-    rqGet("recipes/actions/suggestions")
-      .then(rcps => setSuggestions(rcps))
-      .catch(err => {
-        toast.show("Problem z wczytaniem sugestii: "+err.message, {type: "danger"})
-      }).finally(() => {
-        setSuggestionsLoaderVisible(false)
+
+    getKey("suggestOnlyStockedRecipes")
+      .then(stgSuggStocked => {
+        console.log(stgSuggStocked);
+        rqGet(`recipes/actions/suggestions/${stgSuggStocked ? 1 : 0}`)
+          .then(rcps => setSuggestions(rcps))
+          .catch(err => {
+            toast.show("Problem z wczytaniem sugestii: "+err.message, {type: "danger"})
+          }).finally(() => {
+            setSuggestionsLoaderVisible(false)
+          })
       })
   }
   const sgsLabels = {

@@ -4,13 +4,14 @@ import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PositionTile from "../PositionTile";
 import { rqDelete, rqGet, rqPatch, rqPost } from "../../helpers/SCFetch";
-import { Ingredient, SelectItem } from "../../types";
+import { Ingredient, Product, SelectItem } from "../../types";
 import HorizontalLine from "../HorizontalLine";
 import { SCButton, SCInput, SCModal, SCRadio, SCSelect } from "../SCSpecifics";
 import { prepareSelectItems } from "../../helpers/Prepare";
 import { useToast } from "react-native-toast-notifications";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
 import Header from "../Header";
+import IngredientSelector from "../IngredientSelector";
 
 export default function Ingredients({navigation}){
   const isFocused = useIsFocused();
@@ -28,6 +29,9 @@ export default function Ingredients({navigation}){
   const [cMinimalAmount, setCMinimalAmount] = useState<number>(undefined);
   const [cUnit, setCUnit] = useState("");
   const [cDash, setCDash] = useState(false);
+
+  const [orphans, setOrphans] = useState<Product[]>()
+  const [orphansNewFK, setOrphansNewFK] = useState<number>()
 
   const getData = async () => {
     setIngLoaderVisible(true);
@@ -81,17 +85,31 @@ export default function Ingredients({navigation}){
       getData()
     })
   }
+  const prepareDelete = () => {
+    rqGet(`products/ingredient/${cId}`)
+      .then(res => {
+        setOrphans(res)
+        setOrphansNewFK(undefined)
+      }).catch(err => {
+        toast.show(`Problem: ${err.message}`, {type: "danger"})
+      })
+    
+    setEraserVisible(true)
+  }
   const handleDelete = async () => {
     const toastId = toast.show("Zapisuję...");
 
-    rqDelete(`ingredients/${cId}`)
-      .then(res => {
+    rqDelete(`ingredients/${cId}`, {
+      orphansNewFK: orphansNewFK,
+    }).then(res => {
         toast.update(toastId, "Składnik usunięty", {type: "success"});
       }).catch(err => {
         toast.update(toastId, `Nie udało się usunąć: ${err.message}`, {type: "danger"})
       }).finally(() => {
         setEraserVisible(false)
         setEditorVisible(false)
+        setOrphans(undefined)
+        setOrphansNewFK(undefined)
         getData()
       })
   }
@@ -148,7 +166,7 @@ export default function Ingredients({navigation}){
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />
-        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={() => setEraserVisible(true)} />}
+        {cId != 0 && <SCButton icon="trash" color="red" title="Usuń" onPress={prepareDelete} />}
       </View>
     </SCModal>
 
@@ -159,8 +177,15 @@ export default function Ingredients({navigation}){
       onRequestClose={() => setEraserVisible(false)}
       >
       <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć składnik {cName}?</Text>
+      {orphans.length && <>
+        <Text style={{color: FG_COLOR}}>Należy zmienić składniki dla {orphans.length} produktów:</Text>
+        <IngredientSelector
+          ingId={orphansNewFK}
+          onChange={setOrphansNewFK}
+        />
+      </>}
       <View style={[s.flexRight, s.center]}>
-        <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />
+        {(!orphans.length || orphansNewFK) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
       </View>
     </SCModal>
   </View>

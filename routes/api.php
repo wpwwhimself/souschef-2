@@ -71,7 +71,7 @@ Route::middleware(MagicWord::class)->group(function(){
       Route::post("/", "postRecipe")->name("post-recipe");
       Route::patch("/{id}", "patchRecipe")->name("patch-recipe");
       Route::delete("/{id}", "deleteRecipe")->name("delete-recipe");
-      Route::get("/actions/suggestions", "suggestRecipes");
+      Route::get("/actions/suggestions/{stocked_only?}", "suggestRecipes");
     });
 
     Route::prefix("recipe-ingredients")->group(function(){

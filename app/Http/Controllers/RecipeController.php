@@ -158,7 +158,7 @@ class RecipeController extends Controller
       $for_supper = Recipe::with("ingredients", "ingredients.ingredient", "ingredients.ingredient.category")
         ->where("for_supper", true)
         ->get();
-      // if($stocked_only) $for_supper = $for_supper->filter(fn($rcp) => $rcp->stock_insufficient_count == 0);
+      if($stocked_only) $for_supper = $for_supper?->filter(fn($rcp) => $rcp->stock_insufficient_count == 0);
       $for_supper = $for_supper
         ->filter(fn($el) => $el->id !== $for_dinner->id)
         ->random();

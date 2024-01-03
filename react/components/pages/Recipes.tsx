@@ -62,7 +62,6 @@ export default function Recipes({route, navigation}){
 
     getKey("suggestOnlyStockedRecipes")
       .then(stgSuggStocked => {
-        console.log(stgSuggStocked);
         rqGet(`recipes/actions/suggestions/${stgSuggStocked ? 1 : 0}`)
           .then(rcps => setSuggestions(rcps))
           .catch(err => {

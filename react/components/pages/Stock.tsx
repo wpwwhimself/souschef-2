@@ -9,7 +9,7 @@ import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
 import { SCButton, SCInput, SCModal } from "../SCSpecifics"
-import { StockItem } from "../../types"
+import { Ingredient, Recipe, StockItem } from "../../types"
 import { useToast } from "react-native-toast-notifications";
 import { Text } from "react-native"
 import AddStockModal from "../AddStockModal"
@@ -36,6 +36,10 @@ export default function Stock({navigation}){
   const [sExpirationDate, setSExpirationDate] = useState("")
   const [pUnit, setPUnit] = useState("")
   const [ingId, setIngId] = useState<number>(undefined)
+
+  const [showRecipesModal, setShowRecipesModal] = useState(false)
+  const [ingForRecipes, setIngForRecipes] = useState<Ingredient>()
+  const [recipes, setRecipes] = useState<Recipe[]>([])
 
   const getData = async () => {
     setLoaderVisible(true);
@@ -131,6 +135,28 @@ export default function Stock({navigation}){
     })
   }
 
+  const showRecipesForIngredient = (ingredient: Ingredient) => {
+    setIngForRecipes(ingredient)
+    setShowRecipesModal(true)
+    setSmallLoaderVisible(true)
+
+    rqGet(`recipes/ingredient/${ingredient.id}`)
+      .then(recipes => {
+        setRecipes(recipes)
+      }).catch(err => {
+        toast.show(`Problem: ${err.message}`, {type: "danger"})
+      }).finally(() => {
+        setSmallLoaderVisible(false)
+      })
+  }
+  const closeRecipesForIngredient = () => {
+    setShowRecipesModal(false)
+  }
+  const goToCookingMode = (recipe: Recipe) => {
+    closeRecipesForIngredient()
+    navigation.navigate("RecipesHub", {screen: "Recipes", params: {recipe: recipe}})
+  }
+
   useEffect(() => {
     if(isFocused && !showAddStockModal) getData();
   }, [isFocused, showAddStockModal]);
@@ -182,6 +208,7 @@ export default function Stock({navigation}){
             expirationDate={item.stock_items_min_expiration_date}
           />}
           buttons={<>
+            <SCButton icon="utensils" onPress={() => showRecipesForIngredient(item)} small />
             <SCButton icon="plus" onPress={() => addStockByIngredient(item.id)} small />
             <SCButton color={LIGHT_COLOR} onPress={() => drilldown(item.id)} small />
           </>}
@@ -215,6 +242,34 @@ export default function Stock({navigation}){
           </>}
         />}
         ItemSeparatorComponent={() => <HorizontalLine />}
+      />
+    </SCModal>
+
+    {/* recipe modal */}
+    <SCModal
+      title={`Przepisy z: ${ingForRecipes?.name}`}
+      visible={showRecipesModal}
+      onRequestClose={closeRecipesForIngredient}
+      loader={smallLoaderVisible}
+    >
+      <FlatList data={recipes}
+        renderItem={({item}) =>
+          <PositionTile
+            title={item.name}
+            buttons={<>
+              <AmountIndicator
+                amount={item.ingredients.length - item.stock_insufficient_count}
+                unit="skł."
+                maxAmount={item.ingredients.length}
+                amountAsFraction
+                highlightAt={1}
+                />
+              <SCButton color={LIGHT_COLOR} onPress={() => goToCookingMode(item)} small />
+            </>}
+          />
+        }
+        ItemSeparatorComponent={() => <HorizontalLine />}
+        ListEmptyComponent={<Header level={3}>Brak przepisów z tym składnikiem</Header>}
       />
     </SCModal>
 

@@ -22,7 +22,7 @@ interface ContentEl{
 }
 
 export default function IngredientSelector({ingId, onChange, color = ACCENT_COLOR, forceOpen = false}: BSInput){
-  const [ingredientName, setIngredientName] = useState("Wybierz składnik")
+  const [ingredientName, setIngredientName] = useState("")
   const [modalVisible, setModalVisible] = useState(false)
   const [smallLoaderVisible, setSmallLoaderVisible] = useState(true)
   const [content, setContent] = useState<ContentEl[]>()
@@ -70,9 +70,9 @@ export default function IngredientSelector({ingId, onChange, color = ACCENT_COLO
 
   return <View style={[s.flexRight, s.center]}>
     <SCButton
-      title={ingredientName}
+      title={ingredientName || "Wybierz składnik"}
       icon="box"
-      color={color}
+      color={ingredientName ? color : LIGHT_COLOR}
       onPress={openModal}
     />
 

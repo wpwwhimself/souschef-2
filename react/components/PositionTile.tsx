@@ -44,7 +44,7 @@ export default function PositionTile({title, subtitle, icon, numbers, buttons, c
 
     {/* text content */}
     <View style={[ss.text]}>
-      <Text style={[s.text, s.bold, s.big]}>{title}</Text>
+      <Text style={[s.text, s.bold, s.big, tile && {textAlign: "center"}]}>{title}</Text>
       {!!subtitle && <Text style={[s.text]}>{subtitle}</Text>}
     </View>
 

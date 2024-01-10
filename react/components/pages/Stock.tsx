@@ -173,14 +173,14 @@ export default function Stock({navigation}){
       header: "Lodówka",
       icon: "cubes",
       data: [stockFreezer],
-      color: "#0099ff77",
+      color: "#0099ff",
       emptyNotice: "Lodówka pusta",
     },
     {
       header: "Szafka",
       icon: "cookie-bite",
       data: [stockCupboard],
-      color: "#ff990077",
+      color: "#ff9900",
       emptyNotice: "Szafka pusta",
     },
   ]
@@ -208,11 +208,10 @@ export default function Stock({navigation}){
             expirationDate={item.stock_items_min_expiration_date}
           />}
           buttons={<>
-            <SCButton icon="utensils" onPress={() => showRecipesForIngredient(item)} small />
-            <SCButton icon="plus" onPress={() => addStockByIngredient(item.id)} small />
+            <SCButton icon="utensils" color={section.color} onPress={() => showRecipesForIngredient(item)} small />
+            <SCButton icon="plus" color={section.color} onPress={() => addStockByIngredient(item.id)} small />
             <SCButton color={LIGHT_COLOR} onPress={() => drilldown(item.id)} small />
           </>}
-          color={section.color}
         />}
       />}
       ItemSeparatorComponent={() => <HorizontalLine />}

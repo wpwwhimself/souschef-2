@@ -138,7 +138,7 @@ export default function Categories({navigation}){
       onRequestClose={() => setEraserVisible(false)}
       >
       <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć kategorię {cName}?</Text>
-      {orphans.length && <>
+      {orphans?.length && <>
         <Text style={{color: FG_COLOR}}>Należy zmienić kategorię dla {orphans.length} składników:</Text>
         <SCSelect items={categories}
           label="Nowa kategoria"
@@ -147,7 +147,7 @@ export default function Categories({navigation}){
         />
       </>}
       <View style={[s.flexRight, s.center]}>
-        {(!orphans.length || orphansNewFK) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
+        {(!orphans?.length || orphansNewFK) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
       </View>
     </SCModal>
   </View>

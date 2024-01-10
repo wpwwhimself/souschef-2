@@ -177,15 +177,15 @@ export default function Ingredients({navigation}){
       onRequestClose={() => setEraserVisible(false)}
       >
       <Text style={{color: FG_COLOR}}>Czy na pewno chcesz usunąć składnik {cName}?</Text>
-      {orphans.length && <>
-        <Text style={{color: FG_COLOR}}>Należy zmienić składniki dla {orphans.length} produktów:</Text>
+      {orphans?.length && <>
+        <Text style={{color: FG_COLOR}}>Należy zmienić składniki dla {orphans?.length} produktów:</Text>
         <IngredientSelector
           ingId={orphansNewFK}
           onChange={setOrphansNewFK}
         />
       </>}
       <View style={[s.flexRight, s.center]}>
-        {(!orphans.length || orphansNewFK) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
+        {(!orphans?.length || orphansNewFK) && <SCButton icon="fire-alt" title="Tak" color="red" onPress={handleDelete} />}
       </View>
     </SCModal>
   </View>

@@ -107,7 +107,7 @@ export default function Recipes({route, navigation}){
         setIUnit(ing.unit)
         setIDash(ing.dash)
         if(ing.dash){
-          setRiAmount(0)
+          setRiAmount(0.25)
         }
       }).catch(err => {
         toast.show("Nie udało się pobrać jednostki: "+err.message, {type: "danger"})

@@ -7,6 +7,7 @@ export interface Category{
   id: number,
   name: string,
   symbol: string,
+  ordering?: number,
   created_at: Date,
   updated_at: Date,
   ingredients_count?: number,

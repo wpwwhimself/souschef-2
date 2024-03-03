@@ -22,6 +22,7 @@ export default function Categories({navigation}){
   const [cId, setCId] = useState(0);
   const [cName, setCName] = useState("");
   const [cSymbol, setCSymbol] = useState("");
+  const [cOrdering, setCOrdering] = useState(0);
 
   const [orphans, setOrphans] = useState<Ingredient[]>()
   const [orphansNewFK, setOrphansNewFK] = useState<number>()
@@ -45,6 +46,7 @@ export default function Categories({navigation}){
   const openEditor = (category?: Category) => {
     setCName(category?.name);
     setCSymbol(category?.symbol);
+    setCOrdering(category?.ordering);
     setCId(category?.id ?? 0);
     setEditorVisible(true);
   }
@@ -56,6 +58,7 @@ export default function Categories({navigation}){
     rq("categories" + (editing ? `/${cId}` : ""), {
       name: cName,
       symbol: cSymbol,
+      ordering: cOrdering,
     }).then(res => {
       toast.update(toastId, "Kategoria gotowa", {type: "success"});
     }).catch(err => {
@@ -73,7 +76,7 @@ export default function Categories({navigation}){
       }).catch(err => {
         toast.show(`Problem: ${err.message}`, {type: "danger"})
       })
-    
+
     setEraserVisible(true)
   }
   const handleDelete = async () => {
@@ -124,6 +127,7 @@ export default function Categories({navigation}){
       <View style={[s.margin, s.center]}>
         <SCInput label="Nazwa kategorii" value={cName} onChange={setCName} />
         <SCInput label="Emotka" value={cSymbol} onChange={setCSymbol} />
+        <SCInput label="Kolejność na liście" value={cOrdering} onChange={setCOrdering} />
       </View>
       <View style={[s.flexRight, s.center]}>
         <SCButton icon="check" title="Zapisz" onPress={handleSave} />

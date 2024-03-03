@@ -36,9 +36,12 @@ class Recipe extends Model
 
   public function ingredients(){
     return $this->hasMany(RecipeIngredient::class)
-      ->orderBy("optional")
-      ->orderByDesc("amount")
       ->join("ingredients", "ingredients.id", "=", "ingredient_id")
+      ->join("categories", "categories.id", "=", "category_id")
+      ->orderBy("categories.ordering")
+      ->orderByDesc("ingredients.freezable")
+      ->orderByDesc("amount")
+      ->orderBy("optional")
       ->orderBy("ingredients.name")
       ->select("recipe_ingredients.*")
     ;

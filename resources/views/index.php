@@ -113,5 +113,5 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/bundles/web-340c8042e4eb0c71389fecc3f32ab2d6.js" defer></script></body>
+  <script src="/bundles/web-4b70217694f1f4f3425877f38be91c86.js" defer></script></body>
 </html>

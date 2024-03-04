@@ -132,9 +132,9 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
 
     // new product, EAN available -- search for data
     if(!product_id && ean){
-      rqGet(`product/${ean}`, {}, ["eanUrl", "EANToken", "apikey"])
+      rqGet(ean, {}, ["eanUrl", "EANToken", "rapidapi-key"])
         .then(scan => {
-          setPName(scan.title)
+          setPName(scan.product.name)
         }).catch(err => {
           toast.show(err.message, {type: "danger"})
         })

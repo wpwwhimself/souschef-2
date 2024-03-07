@@ -331,7 +331,7 @@ export default function Recipes({route, navigation}){
                 item.optional ? "➕" : undefined,
               ].filter(Boolean).join(" • ")}
               icon={item.ingredient.category.symbol}
-              buttons={item.stock_amount < item.amount && !item.optional && <Text style={{ color: ACCENT_COLOR }}>Za mało na stanie</Text>}
+              buttons={item.stock_amount < item.amount && <Text style={{ color: ACCENT_COLOR + (item.optional ? "77" : "ff") }}>Za mało na stanie</Text>}
               />}
           ItemSeparatorComponent={() => <HorizontalLine />}
           ListEmptyComponent={<Header level={3}>Brak składników</Header>}

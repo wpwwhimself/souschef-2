@@ -42,7 +42,9 @@ class RecipeController extends Controller
 
   public function addCookingProductsFromRecipe($recipe_id){
     $report = [];
-    foreach(Recipe::findOrFail($recipe_id)->ingredients as $ingredient){
+    foreach(Recipe::with("ingredients.ingredient")->findOrFail($recipe_id)->ingredients as $ingredient){
+      if ($ingredient->ingredient->stockItems->count() == 0) continue;
+
       $report[] = CookingProduct::create([
         "ingredient_id" => $ingredient->ingredient_id,
         "amount" => $ingredient->amount,

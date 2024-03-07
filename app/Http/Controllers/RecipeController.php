@@ -21,11 +21,14 @@ class RecipeController extends Controller
       ? CookingProduct::with("product", "ingredient", "ingredient.category")->findOrFail($id)
       : CookingProduct::with("product", "ingredient", "ingredient.category")
         ->leftJoin("ingredients", "ingredients.id", "=", "ingredient_id")
-        ->select("cooking_products.*")
+        ->join("categories", "categories.id", "=", "category_id")
         ->orderByRaw("case when product_id is null then 0 else 1 end")
+        ->orderByRaw("categories.ordering")
+        ->orderByDesc("ingredients.freezable")
+        ->orderByDesc("cooking_products.amount")
         ->orderByRaw("case when dash then 1 else 0 end")
         ->orderBy("ingredients.name")
-        ->orderByDesc("cooking_products.amount")
+        ->select("cooking_products.*")
         ->get()
     ;
     return $data;

@@ -14,6 +14,12 @@ class Product extends Model
     "amount", "est_expiration_days",
   ];
 
+  protected $appends = ["stock_items_sum_amount"];
+
+  public function getStockItemsSumAmountAttribute() {
+    return $this->stockItems?->sum("amount") ?? 0;
+  }
+
   public function ingredient(){
     return $this->belongsTo(Ingredient::class);
   }

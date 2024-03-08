@@ -12,7 +12,7 @@ import AmountIndicator from "../AmountIndicator";
 import AddStockModal from "../AddStockModal";
 import { CookingProduct, Product, SelectItem } from "../../types";
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants";
-import { prepareDashAmount } from "../../helpers/Prepare";
+import { dashAmountUsedDict } from "../../helpers/Prepare";
 import { getKey } from "../../helpers/Storage";
 
 export default function CookingMode(){
@@ -29,11 +29,7 @@ export default function CookingMode(){
   const [product, setProduct] = useState<CookingProduct>()
   const [products, setProducts] = useState<Product[]>()
   const [sAmount, setSAmount] = useState(0)
-  const [dashLevels, setDashLevels] = useState<SelectItem[]>([
-    {label: "nadal OK", value: 0},
-    {label: "mało", value: 0.75},
-    {label: "nic", value: 1},
-  ])
+  const [dashLevels, setDashLevels] = useState<SelectItem[]>(dashAmountUsedDict)
 
   const getData = () => {
     setLoaderVisible(true)
@@ -66,11 +62,9 @@ export default function CookingMode(){
   const prepareChangeStock = (cookingProduct: CookingProduct) => {
     setProduct(cookingProduct)
     setSAmount(cookingProduct.amount)
-    setDashLevels([
-      {label: "nadal OK", value: 0},
-      {label: "mało", value: prepareDashAmount(0.75, cookingProduct.stock_amount)},
-      {label: "nic", value: prepareDashAmount(1, cookingProduct.stock_amount)},
-    ])
+
+    const stock_remainder = cookingProduct.product.stock_items_sum_amount - Math.ceil(cookingProduct.product.stock_items_sum_amount - 1)
+    setDashLevels(dashAmountUsedDict.filter(i => i.value <= stock_remainder))
     setShowModStockModal(true)
   }
   const changeStock = () => {
@@ -231,7 +225,7 @@ export default function CookingMode(){
           </>}
         </View>
         {product?.ingredient.dash
-          ? <SCRadio label="Ile zostało" items={dashLevels} value={sAmount} onChange={setSAmount} />
+          ? <SCRadio label="Ile zużyto" items={dashLevels} value={sAmount} onChange={setSAmount} />
           : <SCInput type="numeric" label={`Ilość do odjęcia (${product?.ingredient.unit})`} value={sAmount} onChange={setSAmount} />
         }
       </View>

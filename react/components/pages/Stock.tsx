@@ -8,11 +8,12 @@ import { rqDelete, rqGet, rqPatch } from "../../helpers/SCFetch"
 import { FG_COLOR, LIGHT_COLOR } from "../../assets/constants"
 import { useIsFocused } from "@react-navigation/native"
 import AmountIndicator from "../AmountIndicator"
-import { SCButton, SCInput, SCModal } from "../SCSpecifics"
-import { Ingredient, Recipe, StockItem } from "../../types"
+import { SCButton, SCInput, SCModal, SCRadio } from "../SCSpecifics"
+import { Ingredient, Recipe, SelectItem, StockItem } from "../../types"
 import { useToast } from "react-native-toast-notifications";
 import { Text } from "react-native"
 import AddStockModal from "../AddStockModal"
+import { dashAmountRemainderDict } from "../../helpers/Prepare"
 
 export default function Stock({navigation}){
   const isFocused = useIsFocused()
@@ -75,8 +76,8 @@ export default function Stock({navigation}){
   const handleChangeDashAmount = (value: string) => {
     setSAmount(parseFloat(value) + +((Math.floor(sAmount) || 0) !== sAmount) * 0.25)
   }
-  const handleChangeDashAmountRemainder = (remainder_present: boolean) => {
-    setSAmount((Math.floor(sAmount) || 0) + +remainder_present * 0.25)
+  const handleChangeDashAmountRemainder = (remainder_present: number) => {
+    setSAmount((Math.floor(sAmount) || 0) + remainder_present)
   }
 
   const editStock = async (stock_id: number, unit: string) => {
@@ -281,7 +282,12 @@ export default function Stock({navigation}){
         {iDash
         ? <>
           <SCInput type="numeric" label={`Ilość pełnych (${pUnit})`} value={Math.floor(sAmount) || 0} onChange={handleChangeDashAmount} />
-          <SCInput type="checkbox" label={`Dodaj otwarte (${pUnit})`} value={sAmount && (Math.floor(sAmount) || 0) !== sAmount} onChange={handleChangeDashAmountRemainder} />
+          <SCRadio
+            items={dashAmountRemainderDict}
+            label={`Stan otwartych (${pUnit})`}
+            value={sAmount - (Math.floor(sAmount) || 0)}
+            onChange={handleChangeDashAmountRemainder}
+          />
         </>
         : <SCInput type="numeric" label={`Ilość (${pUnit})`} value={sAmount} onChange={setSAmount} />
         }

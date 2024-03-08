@@ -6,7 +6,7 @@ import { BarCodeScanner } from "expo-barcode-scanner"
 import { rqGet, rqPost } from '../helpers/SCFetch'
 import { Ingredient, Product, SelectItem } from '../types'
 import { SCButton, SCModal, SCInput, SCRadio } from './SCSpecifics'
-import { prepareDashAmount, prepareSelectItems } from '../helpers/Prepare'
+import { dashAmountUsedDict, prepareSelectItems } from '../helpers/Prepare'
 import Loader from './Loader'
 import PositionTile from './PositionTile'
 import HorizontalLine from './HorizontalLine'
@@ -44,11 +44,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
   const [pAmount, setPAmount] = useState<number>(undefined)
   const [pEstExpirationDays, setPEstExpirationDays] = useState<number>(undefined)
   const [pStockItemsSumAmount, setPStockItemsSumAmount] = useState(0)
-  const [dashLevels, setDashLevels] = useState<SelectItem[]>([
-    {label: "nadal OK", value: 0},
-    {label: "mało", value: 0.75},
-    {label: "nic", value: 1},
-  ])
+  const [dashLevels, setDashLevels] = useState<SelectItem[]>(dashAmountUsedDict)
 
   // stock item parameters
   const [sAmount, setSAmount] = useState<number>(undefined)
@@ -148,11 +144,8 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
     setPEstExpirationDays(product?.est_expiration_days)
     setPIngredientUnit(product?.ingredient.unit || pIngredientUnit)
     setPIngredientDash(product?.ingredient.dash || pIngredientDash)
-    setDashLevels([
-      {label: "nadal OK", value: 0},
-      {label: "mało", value: prepareDashAmount(0.75, product?.stock_items_sum_amount)},
-      {label: "nic", value: prepareDashAmount(1, product?.stock_items_sum_amount)},
-    ])
+    const stock_remainder = product?.stock_items_sum_amount - Math.ceil(product?.stock_items_sum_amount - 1)
+    setDashLevels(dashAmountUsedDict.filter(i => i.value <= stock_remainder))
     setPStockItemsSumAmount(product?.stock_items_sum_amount)
 
     setSAmount(product?.amount)

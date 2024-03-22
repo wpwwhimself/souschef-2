@@ -36,6 +36,17 @@ export interface Ingredient{
   category: Category,
 }
 
+export interface Log {
+  id: number,
+  object: string,
+  object_id: number,
+  cause: string,
+  cause_id?: number,
+  difference: number,
+  updated_at: Date,
+  product?: Product,
+}
+
 export interface Product{
   id: number,
   ean: string,

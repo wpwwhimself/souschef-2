@@ -19,6 +19,9 @@ export default StyleSheet.create({
     justifyContent: 'center',
     gap: 5,
   },
+  alignRight: {
+    alignItems: "flex-end",
+  },
   flexRight: {
     flexDirection: "row",
     alignItems: "center",

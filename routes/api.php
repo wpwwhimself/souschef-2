@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Middleware\MagicWord;
@@ -79,6 +80,10 @@ Route::middleware(MagicWord::class)->group(function(){
       Route::patch("/{id}", "patchRecipeIngredient");
       Route::delete("/{id}", "deleteRecipeIngredient");
     });
+  });
+
+  Route::controller(LogController::class)->prefix("logs")->group(function() {
+    Route::get("/", "getLogs");
   });
 
 });

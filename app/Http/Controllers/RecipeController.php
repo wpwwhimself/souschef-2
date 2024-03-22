@@ -115,6 +115,7 @@ class RecipeController extends Controller
 
         if($amountToClear <= 0) break;
       }
+      LogController::addLog("product", $cp->product_id, -$cp->amount, "recipe");
     }
     CookingProduct::truncate();
     (new ProductController)->stockCleanup();

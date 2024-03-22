@@ -228,10 +228,15 @@ class ProductController extends Controller
 
   public function patchStockItem($id, Request $rq){
     $data = StockItem::findOrFail($id);
+    $previous_amount = $data->amount;
+
     foreach($rq->except("magic_word") as $key => $value){
       $data->{Str::snake($key)} = $value;
     }
     $data->save();
+
+    if ($rq->has("amount"))
+      LogController::addLog("product", $data->product_id, $rq->amount - $previous_amount, "inventory");
 
     if($data->amount <= 0){
       $this->stockCleanup();
@@ -241,7 +246,12 @@ class ProductController extends Controller
   }
 
   public function deleteStockItem($id){
-    StockItem::findOrFail($id)->delete();
+    $data = StockItem::findOrFail($id);
+    $previous_amount = $data->amount;
+
+    $data->delete();
+    LogController::addLog("product", $data->product_id, -$previous_amount, "inventory");
+
     return response()->json("Stock item deleted");
   }
 

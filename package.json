@@ -5,7 +5,7 @@
         "dev": "vite",
         "build-android": "cd react && npm run build-android",
         "build-web": "cd react && npm run build-web",
-        "build": "python build.py",
+        "compile-frontend": "python build.py",
         "front": "cd react && npm start"
     },
     "devDependencies": {

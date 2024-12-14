@@ -25,3 +25,10 @@ This app is available at http://souschef.wpww.pl/ but it's not supposed to work 
 ![Add stock by EAN](_screenshots/lookup.jpg)
 ![Recipe list and suggestions](_screenshots/recipes.jpg)
 ![Recipe preview](_screenshots/recipe_preview.jpg)
+
+## 🧑‍💻 Dev zone
+This project uses node to build frontend mobile app and does not require it for backend to work properly.
+- `npm run compile-frontend` - run mini python creator to create new version:
+  - asks for new version name
+  - updates that in `.json` files
+  - builds the app

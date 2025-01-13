@@ -5,7 +5,7 @@
         "dev": "vite",
         "build-android": "cd react && npm run build-android",
         "build-web": "cd react && npm run build-web",
-        "compile-frontend": "python build.py",
+        "compile-frontend": "powershell .\\build.ps1",
         "front": "cd react && npm start"
     },
     "devDependencies": {

@@ -12,6 +12,7 @@ class Product extends Model
   protected $fillable = [
     "ean", "name", "ingredient_id",
     "amount", "est_expiration_days",
+    "last_used_at",
   ];
 
   protected $appends = ["stock_items_sum_amount"];

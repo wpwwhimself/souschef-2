@@ -98,19 +98,19 @@ class ProductController extends Controller
   * PRODUCTS
   */
   public function getProduct($id = null){
-    $data = $id ? Product::findOrFail($id) : Product::orderBy("name")->with("ingredient", "ingredient.category")->get();
+    $data = $id ? Product::findOrFail($id) : Product::orderByDesc("last_used_at")->orderBy("name")->with("ingredient", "ingredient.category")->get();
     return $data;
   }
 
   public function getProductByEan($ean, $inStock = false){
-    $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->orderBy("name");
+    $data = Product::where("ean", "like", "%$ean%")->with("ingredient", "ingredient.category")->orderByDesc("last_used_at")->orderBy("name");
     if($inStock) $data = $data->has("stockItems")->doesntHave("cookingProducts")->withSum("stockItems", "amount");
     $data = $data->get();
     return $data;
   }
 
   public function getProductByIngredient($ing_id, $inStock = false){
-    $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->orderBy("name");
+    $data = Product::where("ingredient_id", $ing_id)->with("ingredient", "ingredient.category")->orderByDesc("last_used_at")->orderBy("name");
     if($inStock) $data = $data->has("stockItems")->doesntHave("cookingProducts")->withSum("stockItems", "amount");
     $data = $data->get();
     return $data;
@@ -160,6 +160,7 @@ class ProductController extends Controller
         ->whereHas("product.ingredient", fn($q) => $q->where("id", $ing_id))
         ->join("products", "products.id", "=", "product_id")
         ->orderBy("expiration_date")
+        ->orderBy("products.last_used_at")
         ->orderBy("products.name")
         ->selectRaw("stock_items.*")
         ->get()

@@ -64,6 +64,14 @@ class ProductController extends Controller
     return $data;
   }
 
+  public function getIngredientsInStock() {
+    $data = Ingredient::orderBy("name")
+      ->with("category")
+      ->has("stockItems")
+      ->get();
+    return $data;
+  }
+
   public function postIngredient(Request $rq){
     $data = Ingredient::create([
       "name" => $rq->name,

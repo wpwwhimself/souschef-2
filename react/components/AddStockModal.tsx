@@ -276,7 +276,7 @@ export default function AddStockModal({visible, onRequestClose, ean, ingId, mode
       {/* lookup by list */
       manualLookupMode === "list" &&
       <>
-        <IngredientSelector ingId={pIngredientId} onChange={mllIngChosen} forceOpen={!pIngredientId} />
+        <IngredientSelector ingId={pIngredientId} onChange={mllIngChosen} forceOpen={!pIngredientId} inStockOnly={mode === "cookingMode"} />
         {!pIngredientId
         ? <></>
         : loaderVisible

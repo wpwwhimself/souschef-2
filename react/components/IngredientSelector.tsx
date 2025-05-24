@@ -15,13 +15,14 @@ interface BSInput{
   onChange: (newValue: any) => any,
   color?: string,
   forceOpen?: boolean,
+  inStockOnly?: boolean,
 }
 interface ContentEl{
   header: string,
   data: SelectItem[][],
 }
 
-export default function IngredientSelector({ingId, onChange, color = ACCENT_COLOR, forceOpen = false}: BSInput){
+export default function IngredientSelector({ingId, onChange, color = ACCENT_COLOR, forceOpen = false, inStockOnly = false}: BSInput){
   const [ingredientName, setIngredientName] = useState("")
   const [modalVisible, setModalVisible] = useState(false)
   const [smallLoaderVisible, setSmallLoaderVisible] = useState(true)
@@ -31,7 +32,7 @@ export default function IngredientSelector({ingId, onChange, color = ACCENT_COLO
   useEffect(() => {
     Keyboard.dismiss()
     setSmallLoaderVisible(true)
-    rqGet("ingredients")
+    rqGet((inStockOnly ? "ingredients/in-stock-only" : "ingredients"))
       .then(ings => {
         const items = prepareSelectItems(ings, "name", "id")
         const all_letters = items.map((si => si.label.charAt(0).toLocaleLowerCase()))

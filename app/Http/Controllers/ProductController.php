@@ -247,7 +247,7 @@ class ProductController extends Controller
     if ($rq->has("amount"))
       LogController::addLog("product", $data->product_id, $rq->amount - $previous_amount, "inventory");
 
-    if($data->amount <= 0){
+    if($data->amount <= 0.1){
       $this->stockCleanup();
       return response()->json($this::STK_CLEANED_UP);
     }
@@ -265,7 +265,7 @@ class ProductController extends Controller
   }
 
   public function stockCleanup(){
-    StockItem::where("amount", "<=", 0)->delete();
+    StockItem::where("amount", "<=", 0.1)->delete();
   }
 
   private function estimateExpirationDays($product_id, $expiration_date){
